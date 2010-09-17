@@ -8,8 +8,9 @@ def load_json(filename):
     text = open(filename).read()
     pos, end = 0, len(text)
     result = []
+    pos = find_next(text, 0)
     while pos != end:
-        pos = find_next(text, pos)
         request, pos = json._default_decoder.raw_decode(text, idx=pos)
         result.append(request)
+        pos = find_next(text, pos)
     return result
