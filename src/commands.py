@@ -3,9 +3,9 @@
 
 import json
 
-def command(f):
-    f.command = True
-    return f
+def command(function):
+    function.iscommand = True
+    return function
 
 def response_ok(fields):
     fields.update({'status': 'ok'})
@@ -20,6 +20,6 @@ def process_request(request):
     if 'cmd' not in request:
         raise Exception
     cmd = request.pop('cmd')
-    if not hasattr(globals()[cmd], 'command'):
+    if not hasattr(globals()[cmd], 'iscommand'):
         raise Exception
     return globals()[cmd](**request)
