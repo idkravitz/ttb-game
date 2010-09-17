@@ -12,12 +12,17 @@ def parse_request(request):
         request = json.loads(request)
         if not isinstance(request, dict) or not len(request):
             return result('badRequest')
-        return process_request(request)
+        return commands.process_request(request)
     except ValueError:
         return result('badRequest')
 
 def main(argv):
-    print(parse_request(input()))
+    char = sys.stdin.readline()
+    request = []
+    while char:
+        request.append(char)
+        char = sys.stdin.readline()
+    print(parse_request(''.join(request)))
     return 0
 
 if __name__ == '__main__':
