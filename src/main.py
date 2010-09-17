@@ -16,12 +16,7 @@ def parse_request(request):
         return result('badRequest')
 
 def main(argv):
-    char = sys.stdin.readline()
-    request = []
-    while char:
-        request.append(char)
-        char = sys.stdin.readline()
-    print(parse_request(''.join(request)))
+    print(parse_request(''.join(sys.stdin.readlines())))
     return 0
 
 if __name__ == '__main__':
