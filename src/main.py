@@ -8,7 +8,6 @@ import commands
 def parse_request(request):
     result = lambda status: json.dumps({'result': status})
     try:
-        print(request)
         request = json.loads(request)
         if not isinstance(request, dict) or not len(request):
             return result('badRequest')
