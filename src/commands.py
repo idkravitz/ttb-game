@@ -3,23 +3,23 @@
 
 import json
 
-def command(f):
-    f.command = True
-    return f
+def command(function):
+    function.iscommand = True
+    return function
 
 def response_ok(fields):
     fields.update({'status': 'ok'})
-    return json.dump(fields)
+    return json.dumps(fields)
 
 @command
-def register(name, password):
-    answer = { 'sid': name + password }
+def register(username, password):
+    answer = { 'sid': username + password }
     return response_ok(answer)
 
 def process_request(request):
-    if 'cmd' not in request.keys():
+    if 'cmd' not in request:
         raise Exception
     cmd = request.pop('cmd')
-    if not hasattr(globals()[cmd], 'command'):
+    if not hasattr(globals()[cmd], 'iscommand'):
         raise Exception
     return globals()[cmd](**request)

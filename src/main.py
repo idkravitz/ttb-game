@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python3
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 import sys
@@ -8,16 +8,15 @@ import commands
 def parse_request(request):
     result = lambda status: json.dumps({'result': status})
     try:
-        print(request)
         request = json.loads(request)
         if not isinstance(request, dict) or not len(request):
             return result('badRequest')
-        return process_request(request)
+        return commands.process_request(request)
     except ValueError:
         return result('badRequest')
 
 def main(argv):
-    print(parse_request(input()))
+    print(parse_request(''.join(sys.stdin.readlines())))
     return 0
 
 if __name__ == '__main__':
