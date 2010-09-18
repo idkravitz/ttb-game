@@ -8,7 +8,7 @@ class Database:
     instance = None
     def __init__(self):
         self.db = sqlite3.connect(self.db_name)
-        self.db.text_factory = lambda text: unicode(text, 'utf-8', 'ignore')
+        self.db.text_factory = lambda text: unicode(text, 'utf-8')
         cur = self.db.cursor()
         cur.execute("""
         CREATE TABLE IF NOT EXISTS users
