@@ -13,4 +13,10 @@ class JSONBasedException(Exception):
         return json.dumps(self.struct())
 
 class BadRequest(JSONBasedException):
-    status="badRequest"
+    status='badRequest'
+
+class BadCommand(JSONBasedException):
+    status='badCommand'
+
+class InternalError(JSONBasedException):
+    status='internalError'
