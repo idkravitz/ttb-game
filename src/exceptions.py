@@ -5,7 +5,7 @@ import json
 from common import JSON_DUMPS_FORMAT
 
 class JSONBasedException(Exception):
-    status=None
+    status = None
     def __init__(self, message):
         self.message = message
     def struct(self):
@@ -14,10 +14,10 @@ class JSONBasedException(Exception):
         return json.dumps(self.struct(), **JSON_DUMPS_FORMAT)
 
 class BadRequest(JSONBasedException):
-    status='badRequest'
+    status = 'badRequest'
 
 class BadCommand(JSONBasedException):
-    status='badCommand'
+    status = 'badCommand'
 
 class InternalError(JSONBasedException):
-    status='internalError'
+    status = 'internalError'
