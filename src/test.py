@@ -24,9 +24,12 @@ def error(message):
     return 1
 
 def compare(testname):
-    answer = load_json(testname + '.ans')
-    output = load_json(testname + '.out')
-    return answer == output
+    if os.path.exists(testname + '.ans'):
+        answer = load_json(testname + '.ans')
+        output = load_json(testname + '.out')
+        return 'OK' if answer == output else 'FAIL'
+    else:
+        return 'NO ANSWER'
 
 def main(argv):
     if len(argv) != 1:
@@ -44,11 +47,7 @@ def main(argv):
                 with open(testname + '.out', 'w') as sys.stdout:
                     print(parse_request(json.dumps(request)))
                 sys.stdout = oldout
-                if compare(testname):
-                    template = 'Test {0} OK'
-                else:
-                    template = 'Test {0} FAIL'
-                print(template.format(test.replace(testdir, '')))
+                print('Test {0} {1}'.format(test.replace(testdir, ''), compare(testname)))
     return 0
 
 if __name__ == '__main__':
