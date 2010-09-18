@@ -20,10 +20,10 @@ def register(username, password):
 def process_request(request):
     if 'cmd' not in request:
         raise BadRequest('Field cmd required')
-    cmd = request.pop('cmd')
-    if not hasattr(globals()[cmd], 'iscommand'):
+    command = globals().get(request.pop('cmd'))
+    if not hasattr(command, 'iscommand'):
         raise BadCommand('Unknown command')
     try:
-        return globals()[cmd](**request)
+        return command(**request)
     except TypeError:
         raise BadCommand('Command expects different fields')
