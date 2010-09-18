@@ -1,5 +1,5 @@
 {
     "cmd": "register",
-    "username": "Vasya//Pupkin",
+    "username": "//VasyaPupkin",
     "password": "123456"
 }
