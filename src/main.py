@@ -4,16 +4,19 @@
 import sys
 import json
 import commands
+from exceptions import BadRequest
 
 def parse_request(request):
-    result = lambda status: json.dumps({'result': status})
     try:
-        request = json.loads(request)
+        try:
+            request = json.loads(request)
+        except ValueError:
+            raise BadRequest('Error in JSON syntax')
         if not isinstance(request, dict) or not len(request):
-            return result('badRequest')
+            raise BadRequest('The request must be an object')
         return commands.process_request(request)
-    except ValueError:
-        return result('badRequest')
+    except BadRequest as ex:
+        return str(ex)
 
 def main(argv):
     print(parse_request(''.join(sys.stdin.readlines())))
