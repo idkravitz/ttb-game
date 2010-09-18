@@ -1,0 +1,4 @@
+{
+    "message": "Field 'cmd' required", 
+    "status": "badRequest"
+}

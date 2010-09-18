@@ -1,4 +1,4 @@
 {
-    "cmd": "smth",
+    "cmd": "register",
     "password": "123456"
 }
