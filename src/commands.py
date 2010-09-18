@@ -15,12 +15,16 @@ def response_ok(fields):
 
 @command
 def register(username, password):
+    if not username.replace('_', '').isalnum():
+        raise BadCommand('Incorrect username')
+    if not len(password):
+        raise BadCommand('Empty password')
     answer = { 'sid': username + password }
     return response_ok(answer)
 
 def process_request(request):
     if 'cmd' not in request:
-        raise BadRequest('Field cmd required')
+        raise BadRequest('Field "cmd" required')
     command = globals().get(request.pop('cmd'))
     if not hasattr(command, 'iscommand'):
         raise BadCommand('Unknown command')
