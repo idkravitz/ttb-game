@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+from common import JSON_DUMPS_FORMAT
 
 class JSONBasedException(Exception):
     status=None
@@ -10,7 +11,7 @@ class JSONBasedException(Exception):
     def struct(self):
         return { 'status': self.status, 'message': self.message }
     def __str__(self):
-        return json.dumps(self.struct())
+        return json.dumps(self.struct(), **JSON_DUMPS_FORMAT)
 
 class BadRequest(JSONBasedException):
     status='badRequest'

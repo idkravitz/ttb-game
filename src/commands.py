@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+from common import JSON_DUMPS_FORMAT
 from exceptions import BadCommand, BadRequest
 
 def command(function):
@@ -10,7 +11,7 @@ def command(function):
 
 def response_ok(fields):
     fields.update({'status': 'ok'})
-    return json.dumps(fields)
+    return json.dumps(fields, **JSON_DUMPS_FORMAT)
 
 @command
 def register(username, password):
