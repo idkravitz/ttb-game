@@ -29,6 +29,18 @@ class Database:
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             idUser INTEGER,
             idGame INTEGER
+        ); ""","""
+        CREATE TABLE IF NOT EXISTS typeOfStatus
+        (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nameOfStatus TEXT
+        ); ""","""
+        CREATE TABLE IF NOT EXISTS playerStatus
+        (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            idGameUser INTEGER,
+            idStatus INTEGER,
+            setStatusDate DATETIME
         ); """,
         ]
         for query in queries:
