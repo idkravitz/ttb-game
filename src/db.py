@@ -16,6 +16,14 @@ class Database:
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT,
             password TEXT,
+            registrationDate DATE
+        ); """)
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS users
+        (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT,
+            password TEXT,
             sid TEXT
         ); """)
 
