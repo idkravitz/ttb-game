@@ -5,6 +5,7 @@ import re
 import json
 from common import JSON_DUMPS_FORMAT
 from exceptions import BadCommand, BadRequest
+from db import DatabaseInstance
 
 def command(function):
     function.iscommand = True
@@ -20,7 +21,8 @@ def register(username, password):
         raise BadCommand('Incorrect username')
     if not len(password):
         raise BadCommand('Empty password')
-    answer = { 'sid': username + password }
+    sid = DatabaseInstance().register_user(username, password)    
+    answer = { 'sid': sid }
     return response_ok(answer)
 
 def process_request(request):
