@@ -18,14 +18,7 @@ class Database:
             password TEXT,
             registrationDate DATE
         ); """)
-        cur.execute("""
-        CREATE TABLE IF NOT EXISTS users
-        (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT,
-            password TEXT,
-            sid TEXT
-        ); """)
+     
 
 def DatabaseInstance():
     if Database.instance == None:
