@@ -18,6 +18,20 @@ class Database:
             password TEXT,
             registrationDate DATE
         ); """)
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS games
+        (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            idGameCreator INTEGER,
+            gameCreationDate DATETIME
+        ); """)
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS gameUser
+        (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            idUser INTEGER,
+            idGame INTEGER
+        ); """)
      
 
 def DatabaseInstance():
