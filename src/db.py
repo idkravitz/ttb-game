@@ -10,29 +10,29 @@ class Database:
         self.db = sqlite3.connect(self.db_name)
         self.db.text_factory = lambda text: unicode(text, 'utf-8')
         cur = self.db.cursor()
-        cur.execute("""
+        queries = ["""
         CREATE TABLE IF NOT EXISTS users
         (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT,
             password TEXT,
             registrationDate DATE
-        ); """)
-        cur.execute("""
+        ); ""","""
         CREATE TABLE IF NOT EXISTS games
         (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             idGameCreator INTEGER,
             gameCreationDate DATETIME
-        ); """)
-        cur.execute("""
+        ); ""","""
         CREATE TABLE IF NOT EXISTS gameUser
         (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             idUser INTEGER,
             idGame INTEGER
-        ); """)
-     
+        ); """,
+        ]
+        for query in queries:
+            cur.execute(query)
 
 def DatabaseInstance():
     if Database.instance == None:
