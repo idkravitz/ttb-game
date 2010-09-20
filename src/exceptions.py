@@ -24,3 +24,6 @@ class InternalError(JSONBasedException):
 
 class BadPassword(JSONBasedException):
     status = 'badPassword'
+
+class BadSid(JSONBasedException):
+    status = 'badSid'
