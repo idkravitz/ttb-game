@@ -4,7 +4,7 @@
 import sys
 import json
 import commands
-from exceptions import BadRequest, BadCommand
+from exceptions import JSONBasedException, BadRequest
 
 def parse_request(request):
     try:
@@ -15,7 +15,7 @@ def parse_request(request):
         if not isinstance(request, dict) or not len(request):
             raise BadRequest('The request must be an object')
         return commands.process_request(request)
-    except (BadRequest, BadCommand) as ex:
+    except JSONBasedException as ex:
         return str(ex)
 
 def main(argv):
