@@ -27,3 +27,6 @@ class BadPassword(JSONBasedException):
 
 class BadSid(JSONBasedException):
     status = 'badSid'
+
+class AlreadyInGame(JSONBasedException):
+    status = 'alreadyInGame'
