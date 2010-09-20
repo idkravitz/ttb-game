@@ -31,11 +31,12 @@ class Database:
 
     def register_user(self, username, password):
         if username in self.users:
-            if self.users[username] == password:
-                return self.sids[username]
+            if self.users[username][0] == password:
+                return self.users[username][1]
             raise BadPassword('User already exists, but passwords doesn\'t match')
-        self.users[username] = password
-        return self.generate_sid(username, password)
+        sid = self.generate_sid(username, password)
+        self.users[username] = (password, sid)
+        return sid
 
     def unregister_user(self, sid):
         username = self.get_username(sid)
@@ -44,7 +45,7 @@ class Database:
 
     def change_password(self, sid, password):
         username = self.get_username(sid)
-        self.users[username] = password
+        self.users[username][0] = password
 
 def DatabaseInstance():
     if Database.instance is None:
