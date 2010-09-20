@@ -38,7 +38,8 @@ def unregister(sid):
     return response_ok(answer)   
 
 @command
-def clear():  
+def clear():
+    DatabaseInstance().clear_database()   
     return response_ok(answer)  
 
 def process_request(request):
