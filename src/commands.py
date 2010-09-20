@@ -13,7 +13,9 @@ def command(function):
     function.iscommand = True
     return function
 
-def response_ok(fields={}):
+def response_ok(fields=None):
+    if fields is None:
+        fields = {}
     fields.update({'status': 'ok'})
     return json.dumps(fields, **JSON_DUMPS_FORMAT)
 
