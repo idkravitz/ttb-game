@@ -11,6 +11,8 @@ class Database:
     def __init__(self):
         self.users = {}
         self.sids = {}
+        self.games = {} # nameGame: sid
+        self.players = {} # sid: nameGame        
 
     def clear(self):
         self.instance = None
@@ -46,6 +48,13 @@ class Database:
     def change_password(self, sid, password):
         username = self.get_username(sid)
         self.users[username][0] = password
+        
+    def create_game(self, sid, gameName):
+        self.get_username(sid)
+        if sid in self.players:
+            raise alreadyInGame('User is already playing in the game')   
+        self.games[gameName] = sid 
+        self.players[sid] = gameName      
 
 def DatabaseInstance():
     if Database.instance is None:
