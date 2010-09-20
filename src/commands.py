@@ -55,7 +55,17 @@ def createGame(sid, gameName): # check the validity of symbols
     if not len(gameName):
         raise BadCommand('Empty game name')
     DatabaseInstance().create_game(sid, gameName)    
-    return response_ok()    
+    return response_ok()  
+    
+@command
+def joinGame(sid, gameName):
+    DatabaseInstance().join_game(sid, gameName)    
+    return response_ok()
+    
+@command
+def leaveGame(sid, gameName):
+    DatabaseInstance().leave_game(sid, gameName)    
+    return response_ok()             
 
 def process_request(request):
     if 'cmd' not in request:
