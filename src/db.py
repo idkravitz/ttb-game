@@ -33,7 +33,7 @@ class Database:
         if username in self.users:
             if self.users[username][0] == password:
                 return self.users[username][1]
-            raise BadPassword('User already exists, but passwords doesn\'t match')
+            raise BadPassword('User already exists, but passwords don\'t match')
         sid = self.generate_sid(username, password)
         self.users[username] = (password, sid)
         return sid
