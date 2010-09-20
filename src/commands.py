@@ -27,9 +27,8 @@ def register(username, password):
     
 @command
 def unregister(sid):
-    if not self.sids[sid] == username:
-        raise BadSid('Incorrect sid')  
-    return response_ok(answer)     
+    DatabaseInstance().unregister_user(sid)  
+    return response_ok(answer)   
 
 @command
 def clear():  
