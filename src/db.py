@@ -26,12 +26,17 @@ class Database:
         self.sids[sid] = username
         return sid
         
+    def change_password(self, sid, newPassword):
+        if not sid in self.sids:
+            raise BadSid('Incorrect Sid')
+        username = self.sids[sid]    
+        self.users[username] = newPassword             
+        
     def unregister_user(self, sid):
         if not sid in self.sids:
             raise BadSid('Incorrect Sid')
-        self.users.pop(self.sids[sid]) 
-        self.sids.pop(self.sids[sid])
-        return 1           
+        username = self.sids.pop(sid)
+        self.users.pop(username)        
 
 def DatabaseInstance():
     if Database.instance is None:
