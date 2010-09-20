@@ -1,0 +1,8 @@
+{
+    "sid": "user1password", 
+    "status": "ok"
+}
+{
+    "message": "Unknown sid", 
+    "status": "badSid"
+}

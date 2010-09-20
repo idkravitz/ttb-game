@@ -13,9 +13,7 @@ def command(function):
     function.iscommand = True
     return function
 
-def response_ok(fields=None):
-    if fields is None:
-        fields = {}
+def response_ok(fields={}):
     fields.update({'status': 'ok'})
     return json.dumps(fields, **JSON_DUMPS_FORMAT)
 
@@ -27,26 +25,26 @@ def register(username, password):
         raise BadCommand('Too long username')
     if not len(password):
         raise BadCommand('Empty password')
-    sid = DatabaseInstance().register_user(username, password)    
+    sid = DatabaseInstance().register_user(username, password)
     answer = { 'sid': sid }
     return response_ok(answer)
-    
-@command
-def changePassword(sid, newPassword):
-    if not len(newPassword):
-        raise BadCommand('Empty password') 
-    DatabaseInstance().change_password(sid, newPassword)  
-    return response_ok()              
-    
+
 @command
 def unregister(sid):
-    DatabaseInstance().unregister_user(sid)  
-    return response_ok()   
+    DatabaseInstance().unregister_user(sid)
+    return response_ok()
+
+@command
+def changePassword(sid, password):
+    if not len(password):
+        raise BadCommand('Empty password')
+    DatabaseInstance().change_password(sid, password)
+    return response_ok()
 
 @command
 def clear():
-    DatabaseInstance().clear_database()   
-    return response_ok()  
+    DatabaseInstance().clear()
+    return response_ok()
 
 def process_request(request):
     if 'cmd' not in request:

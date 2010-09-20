@@ -1,0 +1,5 @@
+{
+    "cmd": "unregister",
+    "sid": "something"
+}
+
