@@ -24,6 +24,12 @@ def register(username, password):
     sid = DatabaseInstance().register_user(username, password)    
     answer = { 'sid': sid }
     return response_ok(answer)
+    
+@command
+def unregister(sid):
+    if not self.sids[sid] == username:
+        raise BadSid('Incorrect sid')  
+    return response_ok(answer)     
 
 @command
 def clear():  
