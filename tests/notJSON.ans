@@ -1,0 +1,4 @@
+{
+    "message": "The request must be an object", 
+    "status": "badRequest"
+}
