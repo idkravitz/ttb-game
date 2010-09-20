@@ -17,10 +17,10 @@ def load_json(filename):
     try:
         while pos != end:
             request, pos = json._default_decoder.raw_decode(text, idx=pos)
-            result.append(request)
+            result.append(json.dumps(request))
             pos = find_next(text, pos)
     except ValueError:
-        return [text]
+        return result + [text[pos:]]
     return result
 
 def error(message):
@@ -50,7 +50,7 @@ def main(argv):
                 oldout = sys.stdout
                 with open(testname + '.out', 'w') as sys.stdout:
                     for request in requests:
-                        print(parse_request(json.dumps(request)))
+                        print(parse_request(request))
             finally:
                 sys.stdout = oldout
                 print('Test {0} {1}'.format(test.replace(testdir, ''), compare(testname)))

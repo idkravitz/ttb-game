@@ -1,4 +1,4 @@
 {
-    "message": "The request must be an object", 
+    "message": "Error in JSON syntax", 
     "status": "badRequest"
 }
