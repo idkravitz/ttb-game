@@ -26,6 +26,13 @@ def register(username, password):
     return response_ok(answer)
     
 @command
+def changePassword(sid, newPassword):
+    if not len(newPassword):
+        raise BadCommand('Empty password') 
+    DatabaseInstance().change_password(sid, newPassword)  
+    return response_ok(answer)              
+    
+@command
 def unregister(sid):
     DatabaseInstance().unregister_user(sid)  
     return response_ok(answer)   
