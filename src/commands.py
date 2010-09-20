@@ -50,7 +50,7 @@ def clear():
 
 def process_request(request):
     if 'cmd' not in request:
-        raise BadRequest("Field 'cmd' required")
+        raise BadRequest('Field \'cmd\' required')
     command = globals().get(request.pop('cmd'))
     if not hasattr(command, 'iscommand'):
         raise BadCommand('Unknown command')
