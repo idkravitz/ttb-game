@@ -22,18 +22,18 @@ class Database:
         if DEBUG:
             sid = username + password 
         else:
-            sid = 0
+            sid = 0 # change it to a SHA-1 applied to a shuffled date+username+password-hash
         self.sids[sid] = username
         return sid
         
     def change_password(self, sid, newPassword):
-        if not sid in self.sids:
+        if sid not  in self.sids:
             raise BadSid('Incorrect Sid')
         username = self.sids[sid]    
         self.users[username] = newPassword             
         
     def unregister_user(self, sid):
-        if not sid in self.sids:
+        if sid not  in self.sids:
             raise BadSid('Incorrect Sid')
         username = self.sids.pop(sid)
         self.users.pop(username)
