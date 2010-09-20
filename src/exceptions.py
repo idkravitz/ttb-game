@@ -30,3 +30,6 @@ class BadSid(JSONBasedException):
 
 class AlreadyInGame(JSONBasedException):
     status = 'alreadyInGame'
+    
+class NotInGame(JSONBasedException):
+    status = 'notInGame'    
