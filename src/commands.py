@@ -47,6 +47,15 @@ def changePassword(sid, password):
 def clear():
     DatabaseInstance().clear()
     return response_ok()
+    
+@command
+def createGame(sid, gameName): # check the validity of symbols
+    if len(gameName) > MAX_GAMENAME_LENGTH:
+        raise BadCommand('Too long game name')
+    if not len(gameName):
+        raise BadCommand('Empty game name')
+    DatabaseInstance().create_game(sid, gameName)    
+    return response_ok()    
 
 def process_request(request):
     if 'cmd' not in request:
