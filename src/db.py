@@ -25,6 +25,13 @@ class Database:
             sid = 0
         self.sids[sid] = username
         return sid
+        
+    def unregister_user(self, sid):
+        if not sid in self.sids:
+            raise BadSid('Incorrect Sid')
+        self.users.pop(self.sids[sid]) 
+        self.sids.pop(self.sids[sid])
+        return 1           
 
 def DatabaseInstance():
     if Database.instance is None:
