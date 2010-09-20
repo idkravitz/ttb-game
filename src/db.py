@@ -52,9 +52,21 @@ class Database:
     def create_game(self, sid, gameName):
         self.get_username(sid)
         if sid in self.players:
-            raise alreadyInGame('User is already playing in the game')   
+            raise alreadyInGame('User is already playing the game')   
         self.games[gameName] = sid 
-        self.players[sid] = gameName      
+        self.players[sid] = gameName 
+        
+    def join_game(self, sid, gameName):
+        self.get_username(sid)
+        if sid in self.players:
+            raise alreadyInGame('User is already playing the game')    
+        self.players[sid] = gameName 
+        
+    def leave_game(self, sid, gameName):
+        self.get_username(sid)
+        if sid not in self.players:
+            raise notInGame('User is not playing the game')    
+        self.players.pop(sid)                  
 
 def DatabaseInstance():
     if Database.instance is None:
