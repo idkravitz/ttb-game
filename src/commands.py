@@ -25,6 +25,10 @@ def register(username, password):
     answer = { 'sid': sid }
     return response_ok(answer)
 
+@command
+def clear():  
+    return response_ok(answer)  
+
 def process_request(request):
     if 'cmd' not in request:
         raise BadRequest("Field 'cmd' required")
