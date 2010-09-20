@@ -36,7 +36,10 @@ class Database:
         if not sid in self.sids:
             raise BadSid('Incorrect Sid')
         username = self.sids.pop(sid)
-        self.users.pop(username)        
+        self.users.pop(username)
+        
+    def clear_database(self):
+        self.users = {}           
 
 def DatabaseInstance():
     if Database.instance is None:
