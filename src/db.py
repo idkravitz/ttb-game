@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-DEBUG = True
+from exceptions import *
+
+DEBUG = True # should be moved out
 
 class Database:
     instance = None

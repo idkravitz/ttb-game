@@ -7,6 +7,8 @@ from common import JSON_DUMPS_FORMAT
 from exceptions import BadCommand, BadRequest
 from db import DatabaseInstance
 
+MAX_USERNAME_LENGTH = 15
+
 def command(function):
     function.iscommand = True
     return function
@@ -21,6 +23,8 @@ def response_ok(fields=None):
 def register(username, password):
     if not username.replace('_', '').isalnum():
         raise BadCommand('Incorrect username')
+    if len(username) > MAX_USERNAME_LENGTH:
+        raise BadCommand('Too long username')
     if not len(password):
         raise BadCommand('Empty password')
     sid = DatabaseInstance().register_user(username, password)    
