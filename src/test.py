@@ -6,6 +6,7 @@ import os
 import glob
 import json
 from main import parse_request
+from db import DatabaseInstance
 
 def load_json(filename):
     find_next = lambda s, pos: json.decoder.WHITESPACE.match(s, pos).end()
@@ -13,10 +14,13 @@ def load_json(filename):
     pos, end = 0, len(text)
     result = []
     pos = find_next(text, 0)
-    while pos != end:
-        request, pos = json._default_decoder.raw_decode(text, idx=pos)
-        result.append(request)
-        pos = find_next(text, pos)
+    try:
+        while pos != end:
+            request, pos = json._default_decoder.raw_decode(text, idx=pos)
+            result.append(request)
+            pos = find_next(text, pos)
+    except ValueError:
+        return [text]
     return result
 
 def error(message):
@@ -42,10 +46,12 @@ def main(argv):
         for test in glob.iglob(os.path.join(dirpath, '*.tst')):
             testname = os.path.splitext(os.path.normpath(test))[0]
             requests = load_json(test)
-            for request in requests:
+            try:
                 oldout = sys.stdout
                 with open(testname + '.out', 'w') as sys.stdout:
-                    print(parse_request(json.dumps(request)))
+                    for request in requests:
+                        print(parse_request(json.dumps(request)))
+            finally:
                 sys.stdout = oldout
                 print('Test {0} {1}'.format(test.replace(testdir, ''), compare(testname)))
     return 0
