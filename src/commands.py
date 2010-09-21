@@ -5,7 +5,7 @@ import re
 import json
 from common import JSON_DUMPS_FORMAT
 from exceptions import BadCommand, BadRequest
-from db import DatabaseInstance
+from db import db_instance
 
 MAX_USERNAME_LENGTH = 15
 
@@ -27,18 +27,18 @@ def register(username, password):
         raise BadCommand('Too long username')
     if not len(password):
         raise BadCommand('Empty password')
-    sid = DatabaseInstance().register_user(username, password)
+    sid = db_instance().register_user(username, password)
     answer = { 'sid': sid }
     return response_ok(answer)
 
 @command
 def unregister(sid):
-    DatabaseInstance().unregister_user(sid)
+    db_instance().unregister_user(sid)
     return response_ok()
 
 @command
 def clear():
-    DatabaseInstance().clear()
+    db_instance().clear()
     return response_ok()
     
 @command
@@ -47,17 +47,17 @@ def createGame(sid, gameName): # check the validity of symbols
         raise BadCommand('Too long game name')
     if not len(gameName):
         raise BadCommand('Empty game name')
-    DatabaseInstance().create_game(sid, gameName)    
+    db_instance().create_game(sid, gameName)    
     return response_ok()  
     
 @command
 def joinGame(sid, gameName):
-    DatabaseInstance().join_game(sid, gameName)    
+    db_instance().join_game(sid, gameName)    
     return response_ok()
     
 @command
 def leaveGame(sid, gameName):
-    DatabaseInstance().leave_game(sid, gameName)    
+    db_instance().leave_game(sid, gameName)    
     return response_ok()             
 
 def process_request(request):

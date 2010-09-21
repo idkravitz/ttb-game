@@ -2,21 +2,42 @@
 # -*- coding: utf-8 -*-
 
 from exceptions import *
+from sqlalchemy import create_engine, Column, Integer, String, MetaData
+from sqlalchemy.arm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
 
 DEBUG = True # should be moved out
+
+engine = create_engine('sqlite:///:memory:', echo=True)
+Session = sessionmaker(bind=engine)
+Base = declarative_base()
+
+class User(Base):
+    __tablename__ = 'users'
+    
+    id = Column(Integer, primary_key=True)
+    username = Column(String)
+    password = Column(String)
+    sid = Column(String)
+
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+        self.sid = db_instance().generate_sid(username, password)
+
+    def __repr__(self):
+        return "<User({0}, {1}, {2})>".format(self.username, self.password, self.sid)
+
 
 class Database:
     instance = None
 
     def __init__(self):
-        self.users = {}
-        self.sids = {}
-        self.games = {} # nameGame: sid
-        self.players = {} # sid: nameGame        
+        self.session = Session()
 
     def clear(self):
         self.instance = None
-        DatabaseInstance()
+        db_instance()
 
     def generate_sid(self, username, password):
         if DEBUG:
@@ -61,7 +82,7 @@ class Database:
             raise NotInGame('User is not playing the game')    
         self.players.pop(sid)                  
 
-def DatabaseInstance():
+def db_instance():
     if Database.instance is None:
         Database.instance = Database()
     return Database.instance
