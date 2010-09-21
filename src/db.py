@@ -44,17 +44,10 @@ class Database:
         username = self.get_username(sid)
         self.users.pop(username)
         self.sids.pop(sid)
-
-    def change_password(self, sid, password):
-        username = self.get_username(sid)
-        self.users[username][0] = password
         
     def create_game(self, sid, gameName):
-        self.get_username(sid)
-        if sid in self.players:
-            raise AlreadyInGame('User is already playing the game')   
-        self.games[gameName] = sid 
-        self.players[sid] = gameName 
+        self.join_game(sid, gameName)
+        self.games[gameName] = sid  
         
     def join_game(self, sid, gameName):
         self.get_username(sid)
