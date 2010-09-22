@@ -6,6 +6,6 @@
     "status": "ok"
 }
 {
-    "message": "User allready created game", 
+    "message": "User already created game", 
     "status": "badCommand"
 }

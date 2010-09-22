@@ -54,9 +54,9 @@ def createGame(sid, gameName): # check the validity of symbols
         raise BadCommand('Empty game name')
     user = dbi().get_user(sid)
     if dbi().query(Game).join(User).filter(User.id==user.id).count():
-        raise BadCommand('User allready created game')
+        raise BadCommand('User already created game')
     if dbi().query(Game).filter(Game.name==gameName).count():
-        raise AllreadyExists('Game with the same name allready exists')
+        raise AlreadyExists('Game with the same name already exists')
     user.created_game = Game(gameName, user)
     return response_ok()  
     
