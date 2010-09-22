@@ -32,11 +32,13 @@ class Game(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True)
+    max_players = Column(Integer)
     user_id = Column(Integer, ForeignKey('users.id'))
     author = relationship(User, backref=backref('created_game', uselist=False))
 
-    def __init__(self, name, author):
+    def __init__(self, name, max_players, author):
         self.name = name
+        self.max_players = max_players
         self.author = author
 
     def __repr__(self):

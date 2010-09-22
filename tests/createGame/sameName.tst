@@ -13,12 +13,14 @@
 {
     "cmd": "createGame",
     "sid": "GordonFreeman",
-    "gameName": "Half-life"
+    "gameName": "Half-life",
+    "maxPlayers": 3
 }
 
 {
     "cmd": "createGame",
     "sid": "HeadcrabYummy",
-    "gameName": "Half-life"
+    "gameName": "Half-life",
+    "maxPlayers": 3
 }
 

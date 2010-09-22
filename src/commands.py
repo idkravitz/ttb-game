@@ -47,7 +47,7 @@ def clear():
     return response_ok()
     
 @command
-def createGame(sid, gameName): # check the validity of symbols
+def createGame(sid, gameName, maxPlayers): # check the validity of symbols
     if len(gameName) > MAX_GAMENAME_LENGTH:
         raise BadCommand('Too long game name')
     if not len(gameName):
@@ -57,7 +57,7 @@ def createGame(sid, gameName): # check the validity of symbols
         raise BadCommand('User already created game')
     if dbi().query(Game).filter(Game.name==gameName).count():
         raise AlreadyExists('Game with the same name already exists')
-    user.created_game = Game(gameName, user)
+    user.created_game = Game(gameName, maxPlayers, user)
     return response_ok()  
     
 @command
