@@ -6,6 +6,7 @@ import os
 import glob
 import json
 from main import parse_request
+from db import db_instance as dbi
 
 def load_json(filename):
     find_next = lambda s, pos: json.decoder.WHITESPACE.match(s, pos).end()
@@ -53,6 +54,7 @@ def main(argv):
             finally:
                 sys.stdout = oldout
                 print('Test {0} {1}'.format(test.replace(testdir, ''), compare(testname)))
+                dbi().clear()
     return 0
 
 if __name__ == '__main__':

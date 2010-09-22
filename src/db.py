@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from exceptions import BadSid
-from sqlalchemy import create_engine, Column, Integer, String, MetaData
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine, Column, Integer, String, MetaData, ForeignKey
+from sqlalchemy.orm import sessionmaker, relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -27,14 +27,29 @@ class User(Base):
     def __repr__(self):
         return "<User({0}, {1}, {2})>".format(self.username, self.password, self.sid)
 
+class Game(Base):
+    __tablename__ = 'games'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    author = relationship(User, backref=backref('created_game', uselist=False))
+
+    def __init__(self, name, author):
+        self.name = name
+        self.author = author
+
+    def __repr__(self):
+        return "<Game({0},{1})>".format(self.name, self.author.__repr__())
+
 class Database:
     instance = None
+    engine = create_engine('sqlite:///:memory:', echo=False)
 
     def __init__(self):
-        engine = create_engine('sqlite:///:memory:', echo=False)
-        Session = sessionmaker(bind=engine)
+        Session = sessionmaker(bind=self.engine)
         self.session = Session()
-        Base.metadata.create_all(engine)
+        Base.metadata.create_all(bind=self.engine)
 
     def add(self, *args, **kwargs):
         self.session.add(*args, **kwargs)
@@ -48,8 +63,8 @@ class Database:
         return self.session.query(*args, **kwargs)
 
     def clear(self):
-        self.instance = None
-        db_instance()
+        for table in Base.metadata.sorted_tables:
+            self.engine.execute(table.delete())
 
     def generate_sid(self, username, password):
         if DEBUG:

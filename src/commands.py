@@ -5,10 +5,11 @@ import re
 import json
 from common import JSON_DUMPS_FORMAT
 from exceptions import *
-from db import db_instance as dbi, User
-from sqlalchemy.orm.exc import NoResultFound
+from db import db_instance as dbi, User, Game
+from sqlalchemy.orm.exc import NoResultFound 
 
 MAX_USERNAME_LENGTH = 15
+MAX_GAMENAME_LENGTH = 20
 
 def command(function):
     function.iscommand = True
@@ -51,7 +52,12 @@ def createGame(sid, gameName): # check the validity of symbols
         raise BadCommand('Too long game name')
     if not len(gameName):
         raise BadCommand('Empty game name')
-    db_instance().create_game(sid, gameName)    
+    user = dbi().get_user(sid)
+    if dbi().query(Game).join(User).filter(User.id==user.id).count():
+        raise BadCommand('User allready created game')
+    if dbi().query(Game).filter(Game.name==gameName).count():
+        raise AllreadyExists('Game with the same name allready exists')
+    user.created_game = Game(gameName, user)
     return response_ok()  
     
 @command
