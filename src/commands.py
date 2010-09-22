@@ -57,11 +57,11 @@ def clear():
     
 @command
 def createGame(sid, gameName, maxPlayers): # check the validity of symbols
+    user = dbi().get_user(sid)
     if len(gameName) > MAX_GAMENAME_LENGTH:
         raise BadCommand('Too long game name')
     if not len(gameName):
         raise BadCommand('Empty game name')
-    user = dbi().get_user(sid)
     if dbi().query(Player).filter(Player.user_id==user.id).filter(Player.is_creator==True).count():
         raise BadCommand('User already created game')
     if dbi().query(Game).filter(Game.name==gameName).count():
@@ -75,12 +75,26 @@ def createGame(sid, gameName, maxPlayers): # check the validity of symbols
     
 @command
 def joinGame(sid, gameName):
-    db_instance().join_game(sid, gameName)    
+    user = dbi().get_user(sid)
+    game = dbi().get_game(gameName)
+    if dbi().query(Player).join(Game).filter(Game.id==game.id).count() == game.max_players:
+        raise BadGame('Game is full')
+    if game.gameState == 'in_process':
+        raise BadGame('Game is in process')
+    if game.gameState == 'finished':
+        raise BadGame('Game have been finished')
+    player = Player(user, game)
+    dbi().add(player)
     return response_ok()
     
 @command
 def leaveGame(sid, gameName):
-    db_instance().leave_game(sid, gameName)    
+    user = dbi().get_user(sid)
+    game = dbi().get_game(gameName)
+    player = dbi().query(Player).join(User).join(Game).filter(Game.id==game.id).filter(User.id==user.id).one()
+    #if user not in game.users or game.gameState == 'finished':
+    #    raise NotInGame('Player is not in game')
+
     return response_ok()             
 
 def process_request(request):

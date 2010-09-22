@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from exceptions import BadSid
+from exceptions import BadSid, BadCommand
 from sqlalchemy import create_engine, Table, Boolean, Enum, Column, Integer, String, MetaData, Date, ForeignKey
 from sqlalchemy.orm import sessionmaker, relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
@@ -95,6 +95,11 @@ class Database:
             return self.session.query(User).filter_by(sid=sid).one()
         except NoResultFound:
             raise BadSid('Unknown sid')
+    def get_game(self, name):
+        try:
+            return self.session.query(Game).filter_by(name=name).one()
+        except NoResultFound:
+            raise BadCommand('No game with that name')
         
 #    def join_game(self, sid, gameName):
 #        self.get_username(sid)

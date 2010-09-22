@@ -35,4 +35,7 @@ class NotInGame(JSONBasedException):
     status = 'notInGame'    
 
 class AlreadyExists(JSONBasedException):
-    status = "alreadyExists"
+    status = 'alreadyExists'
+
+class BadGame(JSONBasedException):
+    status = 'badGame'
