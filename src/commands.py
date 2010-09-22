@@ -6,8 +6,9 @@ import json
 import common
 from common import JSON_DUMPS_FORMAT
 from exceptions import *
-from db import db_instance as dbi, User, Game
+from db import db_instance as dbi, User, Game, Player
 from sqlalchemy.orm.exc import NoResultFound 
+from datetime import datetime
 
 MAX_USERNAME_LENGTH = 15
 MAX_GAMENAME_LENGTH = 20
@@ -61,11 +62,15 @@ def createGame(sid, gameName, maxPlayers): # check the validity of symbols
     if not len(gameName):
         raise BadCommand('Empty game name')
     user = dbi().get_user(sid)
-    if dbi().query(Game).join(User).filter(User.id==user.id).count():
+    if dbi().query(Player).filter(Player.user_id==user.id).filter(Player.is_creator==True).count():
         raise BadCommand('User already created game')
     if dbi().query(Game).filter(Game.name==gameName).count():
         raise AlreadyExists('Game with the same name already exists')
-    user.created_game = Game(gameName, maxPlayers, user)
+    game = Game(gameName, maxPlayers, datetime.utcnow())
+    dbi().add(game)
+    player = Player(user, game)
+    player.is_creator=True
+    dbi().add(player)
     return response_ok()  
     
 @command

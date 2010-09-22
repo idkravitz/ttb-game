@@ -7,8 +7,7 @@
     "status": "ok"
 }
 {
-    "message": "User already created game", 
-    "status": "badCommand"
+    "status": "ok"
 }
 {
     "message": "Game with the same name already exists", 
