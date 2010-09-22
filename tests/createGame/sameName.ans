@@ -1,0 +1,16 @@
+{
+    "sid": "GordonFreeman", 
+    "status": "ok"
+}
+{
+    "sid": "HeadcrabYummy", 
+    "status": "ok"
+}
+{
+    "message": "User allready created game", 
+    "status": "badCommand"
+}
+{
+    "message": "Game with the same name allready exists", 
+    "status": "allreadyExists"
+}

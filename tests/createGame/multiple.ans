@@ -1,0 +1,11 @@
+{
+    "sid": "GordonFreeman", 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "message": "User allready created game", 
+    "status": "badCommand"
+}
