@@ -6,7 +6,6 @@ import os
 import glob
 import json
 from main import parse_request
-from db import DatabaseInstance
 
 def load_json(filename):
     find_next = lambda s, pos: json.decoder.WHITESPACE.match(s, pos).end()

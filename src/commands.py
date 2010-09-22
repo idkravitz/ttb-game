@@ -4,8 +4,9 @@
 import re
 import json
 from common import JSON_DUMPS_FORMAT
-from exceptions import BadCommand, BadRequest
-from db import db_instance
+from exceptions import *
+from db import db_instance as dbi, User
+from sqlalchemy.orm.exc import NoResultFound
 
 MAX_USERNAME_LENGTH = 15
 
@@ -13,11 +14,9 @@ def command(function):
     function.iscommand = True
     return function
 
-def response_ok(fields=None):
-    if fields is None:
-        fields = {}
-    fields.update({'status': 'ok'})
-    return json.dumps(fields, **JSON_DUMPS_FORMAT)
+def response_ok(**kwargs):
+    kwargs.update({'status': 'ok'})
+    return json.dumps(kwargs, **JSON_DUMPS_FORMAT)
 
 @command
 def register(username, password):
@@ -27,13 +26,18 @@ def register(username, password):
         raise BadCommand('Too long username')
     if not len(password):
         raise BadCommand('Empty password')
-    sid = db_instance().register_user(username, password)
-    answer = { 'sid': sid }
-    return response_ok(answer)
+    try:
+        user = dbi().query(User).filter_by(username=username).one()
+        if user.password != password:
+            raise BadPassword('User already exists, but passwords don\'t match')
+    except NoResultFound:
+        user = User(username, password)
+        dbi().add(user)
+    return response_ok(sid=user.sid)
 
 @command
 def unregister(sid):
-    db_instance().unregister_user(sid)
+    dbi().delete(dbi().get_user(sid))
     return response_ok()
 
 @command

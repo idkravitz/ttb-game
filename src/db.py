@@ -1,24 +1,23 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from exceptions import *
+from exceptions import BadSid
 from sqlalchemy import create_engine, Column, Integer, String, MetaData
-from sqlalchemy.arm import sessionmaker
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm.exc import NoResultFound
 
 DEBUG = True # should be moved out
 
-engine = create_engine('sqlite:///:memory:', echo=True)
-Session = sessionmaker(bind=engine)
 Base = declarative_base()
 
 class User(Base):
     __tablename__ = 'users'
     
     id = Column(Integer, primary_key=True)
-    username = Column(String)
+    username = Column(String, unique=True)
     password = Column(String)
-    sid = Column(String)
+    sid = Column(String, unique=True)
 
     def __init__(self, username, password):
         self.username = username
@@ -28,12 +27,25 @@ class User(Base):
     def __repr__(self):
         return "<User({0}, {1}, {2})>".format(self.username, self.password, self.sid)
 
-
 class Database:
     instance = None
 
     def __init__(self):
+        engine = create_engine('sqlite:///:memory:', echo=False)
+        Session = sessionmaker(bind=engine)
         self.session = Session()
+        Base.metadata.create_all(engine)
+
+    def add(self, *args, **kwargs):
+        self.session.add(*args, **kwargs)
+        self.session.commit()
+
+    def delete(self, *args, **kwargs):
+        self.session.delete(*args, **kwargs)
+        self.session.commit()
+
+    def query(self, *args, **kwargs):
+        return self.session.query(*args, **kwargs)
 
     def clear(self):
         self.instance = None
@@ -44,28 +56,14 @@ class Database:
             sid = username + password
         else:
             sid = 0 # change it to a SHA-1 applied to a shuffled date+username+password-hash
-        self.sids[sid] = username
         return sid
 
-    def get_username(self, sid):
-        if sid not in self.sids:
+    def get_user(self, sid):
+        try:
+            return self.session.query(User).filter_by(sid=sid).one()
+        except NoResultFound:
             raise BadSid('Unknown sid')
-        return self.sids[sid]
 
-    def register_user(self, username, password):
-        if username in self.users:
-            if self.users[username][0] == password:
-                return self.users[username][1]
-            raise BadPassword('User already exists, but passwords don\'t match')
-        sid = self.generate_sid(username, password)
-        self.users[username] = (password, sid)
-        return sid
-
-    def unregister_user(self, sid):
-        username = self.get_username(sid)
-        self.users.pop(username)
-        self.sids.pop(sid)
-        
     def create_game(self, sid, gameName):
         self.join_game(sid, gameName)
         self.games[gameName] = sid  
