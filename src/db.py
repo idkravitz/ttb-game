@@ -6,8 +6,7 @@ from sqlalchemy import create_engine, Column, Integer, String, MetaData, Foreign
 from sqlalchemy.orm import sessionmaker, relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm.exc import NoResultFound
-
-DEBUG = True # should be moved out
+from common import DEBUG
 
 Base = declarative_base()
 

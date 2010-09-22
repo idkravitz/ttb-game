@@ -3,6 +3,7 @@
 
 import re
 import json
+import common
 from common import JSON_DUMPS_FORMAT
 from exceptions import *
 from db import db_instance as dbi, User, Game
@@ -14,6 +15,12 @@ MAX_GAMENAME_LENGTH = 20
 def command(function):
     function.iscommand = True
     return function
+
+def testmode_only(function):
+    if not common.DEBUG:
+        raise BadCommand("Command allowed only in test mode")
+    return function
+    
 
 def response_ok(**kwargs):
     kwargs.update({'status': 'ok'})
@@ -41,6 +48,7 @@ def unregister(sid):
     dbi().delete(dbi().get_user(sid))
     return response_ok()
 
+@testmode_only
 @command
 def clear():
     dbi().clear()
