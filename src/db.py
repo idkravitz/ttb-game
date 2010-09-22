@@ -10,6 +10,13 @@ from common import DEBUG
 
 Base = declarative_base()
 
+players_table = Table('players',metadata,
+    Column(Integer, ForeignKey('users.id', onupdate="CASCADE", ondelete="CASCADE")),
+    Column(Integer, ForeignKey('games.id', onupdate="CASCADE", ondelete="CASCADE")),
+    Column('userCreateGame', Boolean, default = False),
+    Column('playerState', String(10), default = 'active')
+)
+
 class User(Base):
     __tablename__ = 'users'
     
@@ -17,6 +24,7 @@ class User(Base):
     username = Column(String, unique=True)
     password = Column(String)
     sid = Column(String, unique=True)
+    games = relation('Game', secondary=players_table, backref='users')
 
     def __init__(self, username, password):
         self.username = username
@@ -32,16 +40,21 @@ class Game(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True)
     max_players = Column(Integer)
-    user_id = Column(Integer, ForeignKey('users.id'))
-    author = relationship(User, backref=backref('created_game', uselist=False))
+    gameState = Column(String(10))
+    gameDataBegin = Column(Data)
+    users = relation('User', secondary=players_table, backref='games')
+#    user_id = Column(Integer, ForeignKey('users.id'))
+#    author = relationship(User, backref=backref('created_game', uselist=False))
 
-    def __init__(self, name, max_players, author):
+    def __init__(self, name, max_players, gameState, gameDataBegin):
         self.name = name
         self.max_players = max_players
-        self.author = author
+        self.gameState = gameState
+        self.gameDataBegin = gameDataBegin
+#        self.author = author
 
     def __repr__(self):
-        return "<Game({0},{1})>".format(self.name, self.author.__repr__())
+        return "<Game({0},{1})>".format(self.name, self.gameState)
 
 class Database:
     instance = None
