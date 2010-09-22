@@ -43,7 +43,7 @@ def unregister(sid):
 
 @command
 def clear():
-    db_instance().clear()
+    dbi().clear()
     return response_ok()
     
 @command

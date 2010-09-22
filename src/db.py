@@ -79,21 +79,21 @@ class Database:
         except NoResultFound:
             raise BadSid('Unknown sid')
 
-    def create_game(self, sid, gameName):
-        self.join_game(sid, gameName)
-        self.games[gameName] = sid  
+#    def create_game(self, sid, gameName):
+#        self.join_game(sid, gameName)
+#        self.games[gameName] = sid  
         
-    def join_game(self, sid, gameName):
-        self.get_username(sid)
-        if sid in self.players:
-            raise AlreadyInGame('User is already playing the game')    
-        self.players[sid] = gameName 
+#    def join_game(self, sid, gameName):
+#        self.get_username(sid)
+#        if sid in self.players:
+#            raise AlreadyInGame('User is already playing the game')    
+#        self.players[sid] = gameName 
         
-    def leave_game(self, sid, gameName):
-        self.get_username(sid)
-        if sid not in self.players:
-            raise NotInGame('User is not playing the game')    
-        self.players.pop(sid)                  
+#    def leave_game(self, sid, gameName):
+#        self.get_username(sid)
+#        if sid not in self.players:
+#            raise NotInGame('User is not playing the game')    
+#        self.players.pop(sid)                  
 
 def db_instance():
     if Database.instance is None:
