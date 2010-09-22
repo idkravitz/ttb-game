@@ -2,20 +2,13 @@
 # -*- coding: utf-8 -*-
 
 from exceptions import BadSid
-from sqlalchemy import create_engine, Column, Integer, String, MetaData, ForeignKey
+from sqlalchemy import create_engine, Table, Boolean, Column, Integer, String, MetaData, Date, ForeignKey
 from sqlalchemy.orm import sessionmaker, relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm.exc import NoResultFound
 from common import DEBUG
 
 Base = declarative_base()
-
-players_table = Table('players',metadata,
-    Column(Integer, ForeignKey('users.id', onupdate="CASCADE", ondelete="CASCADE")),
-    Column(Integer, ForeignKey('games.id', onupdate="CASCADE", ondelete="CASCADE")),
-    Column('userCreateGame', Boolean, default = False),
-    Column('playerState', String(10), default = 'active')
-)
 
 class User(Base):
     __tablename__ = 'users'
@@ -24,7 +17,6 @@ class User(Base):
     username = Column(String, unique=True)
     password = Column(String)
     sid = Column(String, unique=True)
-    games = relation('Game', secondary=players_table, backref='users')
 
     def __init__(self, username, password):
         self.username = username
@@ -41,20 +33,35 @@ class Game(Base):
     name = Column(String, unique=True)
     max_players = Column(Integer)
     gameState = Column(String(10))
-    gameDataBegin = Column(Data)
-    users = relation('User', secondary=players_table, backref='games')
-#    user_id = Column(Integer, ForeignKey('users.id'))
-#    author = relationship(User, backref=backref('created_game', uselist=False))
+    gameDateBegin = Column(Date)
+#   user_id = Column(Integer, ForeignKey('users.id'))
+#   author = relationship(User, backref=backref('created_game', uselist=False))
 
-    def __init__(self, name, max_players, gameState, gameDataBegin):
+    def __init__(self, name, max_players, gameState, gameDateBegin):
         self.name = name
         self.max_players = max_players
         self.gameState = gameState
-        self.gameDataBegin = gameDataBegin
+        self.gameDateBegin = gameDateBegin
 #        self.author = author
 
     def __repr__(self):
         return "<Game({0},{1})>".format(self.name, self.gameState)
+
+class PlayersTable(Base):
+    __tablename__ = 'players'
+    
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id'))#, onupdate="CASCADE", ondelete="CASCADE")),
+    game_id = Column(Integer, ForeignKey('games.id'))#, onupdate="CASCADE", ondelete="CASCADE")),
+    userCreateGame = Column(Boolean, default = False)
+    playerState = Column(String(10), default = 'active')
+    user = relationship(User, backref=backref('games'))
+    game = relationship(Game, backref=backref('users'))
+    
+    def __init__(self, user, game):
+        self.user_id = user
+        self.game_id = game
+
 
 class Database:
     instance = None
