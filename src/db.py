@@ -48,8 +48,8 @@ class Player(Base):
     game_id = Column(Integer, ForeignKey('games.id', onupdate="CASCADE", ondelete="CASCADE"))
     is_creator = Column(Boolean, default=False)
     playerState = Column(Enum("in_game", "in_lobby"), default="in_lobby")
-    user = relationship(User, backref=backref('games'))
-    game = relationship(Game, backref=backref('users'))
+    user = relationship(User, backref=backref('players'))
+    game = relationship(Game, backref=backref('players'))
     
     def __init__(self, user, game):
         self.user_id = user.id
@@ -63,8 +63,8 @@ class Message(Base):
     game_id = Column(Integer, ForeignKey('games.id', onupdate="CASCADE", ondelete="CASCADE"))
     text = Column(String)
     dateSent = Column(DateTime)
-    user = relationship(User, backref=backref('games'))
-    game = relationship(Game, backref=backref('users')) 
+    user = relationship(User, backref=backref('messages'))
+    game = relationship(Game, backref=backref('messages')) 
     
     def __init__(self, user, game, text):
         self.user_id = user.id
