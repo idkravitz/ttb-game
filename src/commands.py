@@ -116,7 +116,15 @@ def sendMessage(sid, text, gameName):
         raise BadCommand('User is not a player for this game')
     message = Message(user, game, text)    
     dbi().add(message)    
-    return response_ok()                       
+    return response_ok() 
+    
+@command
+def getChatHistory(sid, gameName):
+    user = dbi().get_user(sid)
+    game = dbi().get_game(gameName) 
+    chat = [ {"username": msg.user.username, "message": msg.text, "time": msg.dateSent}                                                                       
+        for msg in game.messages]    
+    return response_ok()                          
 
 def process_request(request):
     if 'cmd' not in request:
