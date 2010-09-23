@@ -136,7 +136,14 @@ def getGamesList(sid):
 def getPlayersList(sid):
     user = dbi().get_user(sid)
     players = [ {"username": name} for name in dbi().query(User.username).all()]   
-    return response_ok(players=players)                                  
+    return response_ok(players=players)
+    
+@command
+def getPlayersListForTheGame(sid):
+    user = dbi().get_user(sid)
+    game = dbi().get_game(gameName)
+    players = [{"username": player.user.username} for player in dbi().query(Player).join(Game).filter(Game.game_id==game.id).all()]   
+    return response_ok(players=players)                                      
 
 def process_request(request):
     if 'cmd' not in request:
