@@ -100,6 +100,8 @@ def leaveGame(sid, gameName):
     except NoResultFound:
         raise BadGame('Cannot leave the game')
     dbi().delete(player)
+    if not dbi().query(Player).filter(Player.game_id==game.id).count():
+        game.gameState = 'finished'
     return response_ok()             
     
 @command
