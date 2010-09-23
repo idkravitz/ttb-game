@@ -8,7 +8,6 @@ from common import *
 from exceptions import *
 from db import db_instance as dbi, User, Game, Player, Message
 
-
 def command(function):
     function.iscommand = True
     return function
@@ -60,17 +59,17 @@ def clear():
 def createGame(sid, gameName, maxPlayers): # check the validity of symbols
     user = dbi().get_user(sid)
     if maxPlayers < 2:
-        raise BadCommand('Number of players must be 2 or higher')
+        raise BadCommand('Number of players must be 2 or more')
     if maxPlayers > MAX_PLAYERS:
-        raise BadCommand("Too many players")
+        raise BadCommand('Too many players')
     checkLen(gameName, MAX_GAMENAME_LENGTH, 'Too long game name')
     checkEmptiness(gameName,'Empty game name')
     if dbi().query(Player).filter(Player.user_id == user.id)\
         .filter(Player.is_creator == True)\
         .filter(Game.state != 'finished').count():
-        raise AlreadyInGame('User already in game')
+        raise AlreadyInGame('User is already playing')
     if dbi().query(Game).filter(Game.name==gameName).filter(Game.state!='finished').count():
-        raise AlreadyExists('Game with the same name already exists')
+        raise AlreadyExists('Game with the such name already exists')
     game = Game(gameName, maxPlayers)
     dbi().add(game)
     player = Player(user.id, game.id)
@@ -84,10 +83,10 @@ def joinGame(sid, gameName):
     game = dbi().get_game(gameName)
     if dbi().query(Player).join(Game).filter(Game.id==game.id).count() == game.max_players:
         raise BadGame('Game is full')
-    if game.state == 'in_process':
+    if game.state == 'started':
         raise BadGame('Game already started')
     if dbi().query(Player).filter(Player.game_id==game.id).filter(Player.user_id==user.id).count():
-        raise AlreadyInGame('You are already in game')
+        raise AlreadyInGame('User is already playing')
     player = Player(user.id, game.id)
     dbi().add(player)
     return response_ok()
@@ -127,20 +126,24 @@ def sendMessage(sid, text, gameName):
 def getChatHistory(sid, gameName):
     user = dbi().get_user(sid)
     game = dbi().get_game(gameName)
-    chat = [ {"username": msg.user.username, "message": msg.text, "time": str(msg.dateSent)}
+    chat = [{
+                "username": msg.user.username, 
+                "message": msg.text, 
+                "time": str(msg.dateSent),
+            }
         for msg in game.messages]
     return response_ok(chat=chat)
 
 @command
 def getGamesList(sid):
     user = dbi().get_user(sid)
-    games = [ {"gameName": name} for name in dbi().query(Game.name).all()]
+    games = [{"gameName": name} for name in dbi().query(Game.name).all()]
     return response_ok(games=games)
 
 @command
 def getPlayersList(sid):
     user = dbi().get_user(sid)
-    players = [ {"username": name} for name in dbi().query(User.username).all()]
+    players = [{"username": name} for name in dbi().query(User.username).all()]
     return response_ok(players=players)
 
 @command
@@ -155,7 +158,7 @@ def getPlayersListForGame(sid, gameName):
 def setPlayerStatus(sid, status):
     user = dbi().get_user(sid)
     if status not in ('ready', 'not_ready'):
-        raise BadCommand('The status can be only \'ready\'/\'not_ready\'')
+        raise BadCommand('Unknown player status')
     try:
         player = dbi().query(Player)\
             .filter(Player.user_id==user.id)\

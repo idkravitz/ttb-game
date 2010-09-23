@@ -6,6 +6,6 @@
     "status": "ok"
 }
 {
-    "message": "User already in game", 
+    "message": "User is already playing", 
     "status": "alreadyInGame"
 }
