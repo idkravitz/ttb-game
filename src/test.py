@@ -6,6 +6,10 @@ import os
 import glob
 import json
 import optparse
+import common
+
+common.DEBUG=True
+
 from main import parse_request
 from db import db_instance as dbi
 

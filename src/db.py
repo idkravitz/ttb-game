@@ -6,7 +6,7 @@ from sqlalchemy import create_engine, Table, Boolean, Enum, Column, Integer, Str
 from sqlalchemy.orm import sessionmaker, relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm.exc import NoResultFound
-from common import copy_args, DEBUG
+from common import copy_args, DEBUG, utcnow
 from datetime import datetime
 
 Base = declarative_base()
@@ -33,10 +33,10 @@ class Game(Base):
     name = Column(String)
     max_players = Column(Integer)
     gameState = Column(Enum("not_started", "in_process", "finished"), default="not_started")
-    gameDateBegin = Column(DateTime, default=datetime.utcnow)
+    gameDateBegin = Column(DateTime, default=utcnow)
 
     @copy_args
-    def __init__(self, name, max_players, gameDateBegin): pass
+    def __init__(self, name, max_players): pass
 
     def __repr__(self):
         return "<Game({0},{1})>".format(self.name, self.gameState)
@@ -63,7 +63,7 @@ class Message(Base):
     user_id = Column(Integer, ForeignKey('users.id', onupdate="CASCADE", ondelete="CASCADE"))
     game_id = Column(Integer, ForeignKey('games.id', onupdate="CASCADE", ondelete="CASCADE"))
     text = Column(String)
-    dateSent = Column(DateTime, default=datetime.utcnow)
+    dateSent = Column(DateTime, default=utcnow)
     user = relationship(User, backref=backref('messages'))
     game = relationship(Game, backref=backref('messages')) 
     

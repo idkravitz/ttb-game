@@ -1,0 +1,29 @@
+{
+    "sid": "GordonFreeman", 
+    "status": "ok"
+}
+{
+    "sid": "headcrabarrgh", 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "games": [
+        {
+            "gameName": [
+                "Half-life"
+            ]
+        }, 
+        {
+            "gameName": [
+                "Half-life 2"
+            ]
+        }
+    ], 
+    "status": "ok"
+}

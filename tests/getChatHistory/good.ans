@@ -1,0 +1,20 @@
+{
+    "sid": "GordonFreeman", 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "chat": [
+        {
+            "message": "...", 
+            "time": "2000-01-01 00:00:00", 
+            "username": "Gordon"
+        }
+    ], 
+    "status": "ok"
+}

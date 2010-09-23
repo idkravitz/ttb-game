@@ -72,7 +72,7 @@ def createGame(sid, gameName, maxPlayers): # check the validity of symbols
         raise BadCommand('User already created game')
     if dbi().query(Game).filter(Game.name==gameName).filter(Game.gameState!='finished').count():
         raise AlreadyExists('Game with the same name already exists')
-    game = Game(gameName, maxPlayers, datetime.utcnow())
+    game = Game(gameName, maxPlayers)
     dbi().add(game)
     player = Player(user, game)
     player.is_creator=True
@@ -129,7 +129,7 @@ def getChatHistory(sid, gameName):
 @command
 def getGamesList(sid):
     user = dbi().get_user(sid)
-    games = [ {"gameName": name} for name in dbi().query(Game.gameName).all()]   
+    games = [ {"gameName": name} for name in dbi().query(Game.name).all()]   
     return response_ok(games=games) 
     
 @command
