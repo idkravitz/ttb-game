@@ -1,0 +1,8 @@
+{
+    "sid": "GordonFreeman", 
+    "status": "ok"
+}
+{
+    "message": "No unfinished game with that name", 
+    "status": "badCommand"
+}
