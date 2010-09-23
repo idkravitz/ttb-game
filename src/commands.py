@@ -145,6 +145,18 @@ def getPlayersListForGame(sid, gameName):
     players = [{"username": player.user.username} for player in dbi().query(Player).join(Game).filter(Game.id==game.id).all()]   
     return response_ok(players=players)                                      
 
+@command
+def setPlayerStatus(sid, status):
+    user = dbi().get_user(sid)
+    if status not in ['ready', 'not ready']:
+        raise BadCommand('The status can be only \'ready\'/\'not_ready\'')
+    try:
+        player = dbi().query(Player).filter(Player.user_id==user.id).filter(Player.playerState=='in_lobby').one()
+    except NoResultFound:
+        raise BadCommand('User is not in lobby')
+    player.playerState = status
+    return response_ok()
+
 def process_request(request):
     if 'cmd' not in request:
         raise BadRequest('Field \'cmd\' required')
