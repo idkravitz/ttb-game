@@ -42,7 +42,7 @@ def register(username, password):
     checkLen(username, MAX_USERNAME_LENGTH, 'Too long username')  
     checkEmptiness(password,'Empty password')
     try:
-        user = dbi().query(User).filter_by(username=username).one()
+        user = dbi().query(User).filter(User.username==username).one()
         if user.password != password:
             raise BadPassword('User already exists, but passwords don\'t match')
     except NoResultFound:
@@ -104,6 +104,7 @@ def leaveGame(sid, gameName):
     dbi().delete(player)
     if not dbi().query(Player).filter(Player.game_id==game.id).count():
         game.gameState = 'finished'
+    dbi().session.commit()
     return response_ok()             
     
 @command
