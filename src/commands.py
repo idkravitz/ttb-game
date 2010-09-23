@@ -62,9 +62,9 @@ def createGame(sid, gameName, maxPlayers): # check the validity of symbols
         raise BadCommand('Too long game name')
     if not len(gameName):
         raise BadCommand('Empty game name')
-    if dbi().query(Player).filter(Player.user_id==user.id)\
-        .filter(Player.is_creator==True)\
-        .filter(Game.gameState!='finished').count():
+    if dbi().query(Player).filter(Player.user_id == user.id)\
+        .filter(Player.is_creator == True)\
+        .filter(Game.gameState != 'finished').count():
         raise BadCommand('User already created game')
     if dbi().query(Game).filter(Game.name==gameName).filter(Game.gameState!='finished').count():
         raise AlreadyExists('Game with the same name already exists')
@@ -93,14 +93,12 @@ def joinGame(sid, gameName):
 def leaveGame(sid, gameName):
     user = dbi().get_user(sid)
     game = dbi().get_game(gameName) 
-    if dbi().query(Player).join(User).join(Game).filter(Game.id==game.id)\
-        .filter(User.id==user.id)\
-        .filter(Game.gameState=='finished').one():
+    try:
+        player = dbi().query(Player).join(Game).filter(Game.id==game.id).filter(Player.id==user.id).one()
+        if player.game.gameState == 'finished':
+            raise BadGame('Game already finished')
+    except NoResultFound:
         raise BadGame('Cannot leave the game')
-#delete player or put state 'left'???
-    #if user not in game.users or game.gameState == 'finished':
-    #    raise NotInGame('Player is not in game')
-
     return response_ok()             
 
 def process_request(request):
