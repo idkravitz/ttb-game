@@ -12,6 +12,7 @@ from datetime import datetime
 
 MAX_USERNAME_LENGTH = 15
 MAX_GAMENAME_LENGTH = 20
+MAX_MESSAGE_LENGTH = 140
 
 def command(function):
     function.iscommand = True
@@ -95,11 +96,24 @@ def leaveGame(sid, gameName):
     game = dbi().get_game(gameName) 
     try:
         player = dbi().query(Player).join(Game).filter(Game.id==game.id).filter(Player.id==user.id).one()
-        if player.game.gameState == 'finished':
-            raise BadGame('Game already finished')
     except NoResultFound:
         raise BadGame('Cannot leave the game')
+    dbi().delete(player)
     return response_ok()             
+    
+@command
+def sentMessage(sid, text, gameName):
+    user = dbi().get_user(sid)
+    game = dbi().get_game(gameName) 
+    if len(user.username) > MAX_MESSAGE_LENGTH:
+        raise BadCommand('Too long message')
+    if dbi().query(Player).join(User).join(Game).filter(Game.id==game.id)\
+        .filter(User.id==user.id)\
+        .filter(Game.gameState=='finished').one():
+        raise BadGame('Cannot leave the game')    
+    message = Message(user, game, text)    
+    dbi().add(message)    
+    return response_ok()                       
 
 def process_request(request):
     if 'cmd' not in request:
