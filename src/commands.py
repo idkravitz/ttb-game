@@ -106,7 +106,7 @@ def leaveGame(sid, gameName):
 def sentMessage(sid, text, gameName):
     user = dbi().get_user(sid)
     game = dbi().get_game(gameName) 
-    checkLen(message.text, MAX_MESSAGE_LEN, 'Too long message')    
+    checkLen(text, MAX_MESSAGE_LEN, 'Too long message')    
     if dbi().query(Player).join(User).join(Game).filter(Game.id==game.id)\
         .filter(User.id==user.id)\
         .filter(Game.gameState=='finished').one():
