@@ -1,0 +1,32 @@
+{
+    "sid": "GordonFreeman", 
+    "status": "ok"
+}
+{
+    "sid": "dogbark", 
+    "status": "ok"
+}
+{
+    "sid": "redhourse", 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "players": [
+        {
+            "username": "red"
+        }, 
+        {
+            "username": "dog"
+        }
+    ], 
+    "status": "ok"
+}

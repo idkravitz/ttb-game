@@ -1,0 +1,15 @@
+{
+    "sid": "redhourse", 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "message": "You are allready playing this game", 
+    "status": "badRequest"
+}
+{
+    "message": "You are allready playing this game", 
+    "status": "badRequest"
+}
