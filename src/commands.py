@@ -62,8 +62,12 @@ def createGame(sid, gameName, maxPlayers): # check the validity of symbols
         raise BadCommand('Too long game name')
     if not len(gameName):
         raise BadCommand('Empty game name')
-    if dbi().query(Player).filter(Player.user_id==user.id).filter(Player.is_creator==True).count():
-        raise BadCommand('User already created game')
+ #   if dbi().query(Player).filter(Player.user_id==user.id).filter(Player.is_creator==True).count():
+ #       raise BadCommand('User already created game')
+    listGame = dbi().query(Player).filter(Player.user_id==user.id).filter(Player.is_creator==True).all()
+    for Game in listGame:
+        dbi().query(Game).filter(Game.id==listGame.user_id).filter(Game.gameState!='finished').count():
+            raise BadCommand('User already created game')
     if dbi().query(Game).filter(Game.name==gameName).count():
         raise AlreadyExists('Game with the same name already exists')
     game = Game(gameName, maxPlayers, datetime.utcnow())
