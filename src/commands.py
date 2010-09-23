@@ -125,6 +125,18 @@ def getChatHistory(sid, gameName):
     chat = [ {"username": msg.user.username, "message": msg.text, "time": str(msg.dateSent)}
         for msg in game.messages]    
     return response_ok(chat=chat)                          
+    
+@command
+def getGamesList(sid):
+    user = dbi().get_user(sid)
+    games = [ {"gameName": name} for name in dbi().query(Game.gameName).all()]   
+    return response_ok(games=games) 
+    
+@command
+def getPlayersList(sid):
+    user = dbi().get_user(sid)
+    players = [ {"username": name} for name in dbi().query(User.username).all()]   
+    return response_ok(players=players)                                  
 
 def process_request(request):
     if 'cmd' not in request:
