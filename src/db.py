@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from exceptions import BadSid, BadCommand
 from sqlalchemy import create_engine, Table, Boolean, Enum, Column, Integer, String, MetaData, Date, ForeignKey, DateTime
 from sqlalchemy.orm import sessionmaker, relationship, backref
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.ext.declarative import declarative_base
 from common import copy_args, DEBUG, utcnow
-from datetime import datetime
+from exceptions import BadSid, BadCommand
 
 Base = declarative_base()
 
@@ -32,8 +31,8 @@ class Game(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String)
     max_players = Column(Integer)
-    gameState = Column(Enum('not_started', 'in_process', 'finished'), default='not_started')
-    gameDateBegin = Column(DateTime, default=utcnow)
+    state = Column(Enum('not_started', 'started', 'finished'), default='not_started')
+    start_time = Column(DateTime, default=utcnow)
 
     @copy_args
     def __init__(self, name, max_players): pass
@@ -48,13 +47,12 @@ class Player(Base):
     user_id = Column(Integer, ForeignKey('users.id', onupdate='CASCADE', ondelete='CASCADE'))
     game_id = Column(Integer, ForeignKey('games.id', onupdate='CASCADE', ondelete='CASCADE'))
     is_creator = Column(Boolean, default=False)
-    playerState = Column(Enum('in_game', 'in_lobby', 'ready', 'not_ready'), default='in_lobby')
+    state = Column(Enum('in_game', 'in_lobby', 'ready', 'not_ready'), default='in_lobby')
     user = relationship(User, backref=backref('players'))
     game = relationship(Game, backref=backref('players'))
 
-    def __init__(self, user, game):
-        self.user_id = user.id
-        self.game_id = game.id
+    @copy_args
+    def __init__(self, user_id, game_id): pass
 
 class Message(Base):
     __tablename__ = 'messages'
@@ -67,10 +65,8 @@ class Message(Base):
     user = relationship(User, backref=backref('messages'))
     game = relationship(Game, backref=backref('messages'))
 
-    def __init__(self, user, game, text):
-        self.user_id = user.id
-        self.game_id = game.id
-        self.text = text
+    @copy_args
+    def __init__(self, user_id, game_id, text): pass
 
 class Database:
     instance = None
@@ -109,9 +105,10 @@ class Database:
             return self.session.query(User).filter_by(sid=sid).one()
         except NoResultFound:
             raise BadSid('Unknown sid')
+
     def get_game(self, name):
         try:
-            return self.session.query(Game).filter_by(name=name).filter(Game.gameState!='finished').one()
+            return self.session.query(Game).filter_by(name=name).filter(Game.state!='finished').one()
         except NoResultFound:
             raise BadCommand('No unfinished game with that name')
 

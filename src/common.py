@@ -15,13 +15,13 @@ MAX_PLAYERS = 16
 
 import inspect
 import functools
-from datetime import datetime
+import datetime
 
 def utcnow():
     if DEBUG:
-        return datetime(2000, 1, 1)
+        return datetime.datetime(2000, 1, 1)
     else:
-        return datetime.utcnow()
+        return datetime.datetime.utcnow()
 
 def copy_args(func):
     '''
