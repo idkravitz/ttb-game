@@ -4,16 +4,11 @@
 import re
 import json
 import common
-from common import JSON_DUMPS_FORMAT
+from common import JSON_DUMPS_FORMAT, MAX_USERNAME_LENGTH, MAX_GAMENAME_LENGTH, MAX_PLAYERS, MAX_MESSAGE_LENGTH
 from exceptions import *
 from db import db_instance as dbi, User, Game, Player, Message
 from sqlalchemy.orm.exc import NoResultFound 
 from datetime import datetime
-
-MAX_USERNAME_LENGTH = 15
-MAX_GAMENAME_LENGTH = 20
-MAX_MESSAGE_LENGTH = 140
-MAX_PLAYERS = 16
 
 def command(function):
     function.iscommand = True
@@ -21,7 +16,7 @@ def command(function):
 
 def testmode_only(function):
     if not common.DEBUG:
-        raise BadCommand("Command allowed only in test mode")
+        raise BadCommand('Command allowed only in test mode')
     return function
     
 def response_ok(**kwargs):
@@ -66,9 +61,9 @@ def clear():
 def createGame(sid, gameName, maxPlayers): # check the validity of symbols
     user = dbi().get_user(sid)
     if maxPlayers < 2:
-        raise BadCommand("Number of players must be 2 or higher")
+        raise BadCommand('Number of players must be 2 or higher')
     if maxPlayers > MAX_PLAYERS:
-        raise BadCommand("Too many players")
+        raise BadCommand('Too many players')
     checkLen(gameName, MAX_GAMENAME_LENGTH, 'Too long game name') 
     checkEmptiness(gameName,'Empty game name')   
     if dbi().query(Player).filter(Player.user_id == user.id)\
@@ -127,27 +122,27 @@ def sendMessage(sid, text, gameName):
 def getChatHistory(sid, gameName):
     user = dbi().get_user(sid)
     game = dbi().get_game(gameName) 
-    chat = [ {"username": msg.user.username, "message": msg.text, "time": str(msg.dateSent)}
+    chat = [ {'username': msg.user.username, 'message': msg.text, 'time': str(msg.dateSent)}
         for msg in game.messages]    
     return response_ok(chat=chat)                          
     
 @command
 def getGamesList(sid):
     user = dbi().get_user(sid)
-    games = [ {"gameName": name} for name in dbi().query(Game.name).all()]   
+    games = [ {'gameName': name} for name in dbi().query(Game.name).all()]   
     return response_ok(games=games) 
     
 @command
 def getPlayersList(sid):
     user = dbi().get_user(sid)
-    players = [ {"username": name} for name in dbi().query(User.username).all()]   
+    players = [ {'username': name} for name in dbi().query(User.username).all()]   
     return response_ok(players=players)
     
 @command
 def getPlayersListForGame(sid, gameName):
     user = dbi().get_user(sid)
     game = dbi().get_game(gameName)
-    players = [{"username": player.user.username} for player in dbi().query(Player).join(Game).filter(Game.id==game.id).all()]   
+    players = [{'username': player.user.username} for player in dbi().query(Player).join(Game).filter(Game.id==game.id).all()]   
     return response_ok(players=players)                                      
 
 @command
@@ -186,4 +181,3 @@ def process_request(request):
                 raise BadCommand('Too many fields')
         field = message.split()[-1]
         raise BadCommand('Unknown field {0}'.format(field))
-

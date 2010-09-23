@@ -24,7 +24,7 @@ class User(Base):
         self.sid = db_instance().generate_sid(username, password)
 
     def __repr__(self):
-        return "<User({0}, {1}, {2})>".format(self.username, self.password, self.sid)
+        return '<User({0}, {1}, {2})>'.format(self.username, self.password, self.sid)
 
 class Game(Base):
     __tablename__ = 'games'
@@ -32,23 +32,23 @@ class Game(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String)
     max_players = Column(Integer)
-    gameState = Column(Enum("not_started", "in_process", "finished"), default="not_started")
+    gameState = Column(Enum('not_started', 'in_process', 'finished'), default='not_started')
     gameDateBegin = Column(DateTime, default=utcnow)
 
     @copy_args
     def __init__(self, name, max_players): pass
 
     def __repr__(self):
-        return "<Game({0},{1})>".format(self.name, self.gameState)
+        return '<Game({0},{1})>'.format(self.name, self.gameState)
 
 class Player(Base):
     __tablename__ = 'players'
     
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id', onupdate="CASCADE", ondelete="CASCADE"))
-    game_id = Column(Integer, ForeignKey('games.id', onupdate="CASCADE", ondelete="CASCADE"))
+    user_id = Column(Integer, ForeignKey('users.id', onupdate='CASCADE', ondelete='CASCADE'))
+    game_id = Column(Integer, ForeignKey('games.id', onupdate='CASCADE', ondelete='CASCADE'))
     is_creator = Column(Boolean, default=False)
-    playerState = Column(Enum("in_game", "in_lobby", "ready", "not_ready"), default="in_lobby")
+    playerState = Column(Enum('in_game', 'in_lobby', 'ready', 'not_ready'), default='in_lobby')
     user = relationship(User, backref=backref('players'))
     game = relationship(Game, backref=backref('players'))
     
@@ -60,8 +60,8 @@ class Message(Base):
     __tablename__ = 'messages'
     
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id', onupdate="CASCADE", ondelete="CASCADE"))
-    game_id = Column(Integer, ForeignKey('games.id', onupdate="CASCADE", ondelete="CASCADE"))
+    user_id = Column(Integer, ForeignKey('users.id', onupdate='CASCADE', ondelete='CASCADE'))
+    game_id = Column(Integer, ForeignKey('games.id', onupdate='CASCADE', ondelete='CASCADE'))
     text = Column(String)
     dateSent = Column(DateTime, default=utcnow)
     user = relationship(User, backref=backref('messages'))

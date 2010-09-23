@@ -8,6 +8,11 @@ JSON_DUMPS_FORMAT = {
 
 DEBUG = False # should be moved out
 
+MAX_USERNAME_LENGTH = 15
+MAX_GAMENAME_LENGTH = 20
+MAX_MESSAGE_LENGTH = 140
+MAX_PLAYERS = 16
+
 import inspect
 import functools
 from datetime import datetime
