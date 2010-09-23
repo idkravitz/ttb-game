@@ -84,10 +84,10 @@ def joinGame(sid, gameName):
     game = dbi().get_game(gameName)
     if dbi().query(Player).join(Game).filter(Game.id==game.id).count() == game.max_players:
         raise BadGame('Game is full')
-    if game.state == 'started':
+    if game.state == 'in_process':
         raise BadGame('Game already started')
-    if game.state == 'finished':
-        raise BadGame('Game has been finished')
+    if dbi().query(Player).filter(Player.game_id==game.id).filter(Player.user_id==user.id).count():
+        raise AlreadyInGame('You are already in game')
     player = Player(user.id, game.id)
     dbi().add(player)
     return response_ok()
