@@ -122,9 +122,9 @@ def sendMessage(sid, text, gameName):
 def getChatHistory(sid, gameName):
     user = dbi().get_user(sid)
     game = dbi().get_game(gameName) 
-    chat = [ {"username": msg.user.username, "message": msg.text, "time": msg.dateSent}                                                                       
+    chat = [ {"username": msg.user.username, "message": msg.text, "time": str(msg.dateSent)}
         for msg in game.messages]    
-    return response_ok()                          
+    return response_ok(chat=chat)                          
 
 def process_request(request):
     if 'cmd' not in request:
@@ -150,3 +150,4 @@ def process_request(request):
                 raise BadCommand('Too many fields')
         field = message.split()[-1]
         raise BadCommand('Unknown field {0}'.format(field))
+
