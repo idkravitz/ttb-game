@@ -30,7 +30,7 @@ class Game(Base):
     __tablename__ = 'games'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True)
+    name = Column(String)
     max_players = Column(Integer)
     gameState = Column(Enum("not_started", "in_process", "finished"), default="not_started")
     gameDateBegin = Column(Date)
@@ -100,12 +100,6 @@ class Database:
             return self.session.query(Game).filter_by(name=name).one()
         except NoResultFound:
             raise BadCommand('No game with that name')
-        
-#    def join_game(self, sid, gameName):
-#        self.get_username(sid)
-#        if sid in self.players:
-#            raise AlreadyInGame('User is already playing the game')    
-#        self.players[sid] = gameName 
         
 #    def leave_game(self, sid, gameName):
 #        self.get_username(sid)
