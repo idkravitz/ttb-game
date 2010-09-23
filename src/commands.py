@@ -69,7 +69,7 @@ def createGame(sid, gameName, maxPlayers): # check the validity of symbols
     if dbi().query(Player).filter(Player.user_id == user.id)\
         .filter(Player.is_creator == True)\
         .filter(Game.gameState != 'finished').count():
-        raise BadCommand('User already created game')
+        raise AlreadyInGame('User already in game')
     if dbi().query(Game).filter(Game.name==gameName).filter(Game.gameState!='finished').count():
         raise AlreadyExists('Game with the same name already exists')
     game = Game(gameName, maxPlayers)
