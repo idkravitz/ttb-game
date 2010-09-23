@@ -23,6 +23,7 @@ exceptions = (
     'notInGame',
     'alreadyInGame',
     'alreadyExists',
+    'playersNotReady',
 )
 
 exception_generator = lambda message: \

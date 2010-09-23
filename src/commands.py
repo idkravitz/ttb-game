@@ -4,6 +4,7 @@
 import re
 import json
 import sqlalchemy.orm.exc
+from sqlalchemy import or_
 from common import *
 from exceptions import *
 from db import db_instance as dbi, User, Game, Player, Message
@@ -101,9 +102,9 @@ def leaveGame(sid, gameName):
             .filter(Player.game_id==game.id)\
             .filter(Player.user_id==user.id)\
             .one()
-    except NoResultFound:
+    except sqlalchemy.orm.exc.NoResultFound:
         raise BadGame('User is not playing')
-    dbi().delete(player)
+    player.playerState = 'left'
     if not dbi().query(Player).filter(Player.game_id==game.id).count():
         game.state = 'finished'
     dbi().session.commit()
@@ -154,18 +155,24 @@ def getPlayersListForGame(sid, gameName):
 @command
 def setPlayerStatus(sid, status):
     user = dbi().get_user(sid)
-    if status not in ('ready', 'not_ready'):
-        raise BadCommand('The status can be only \'ready\'/\'not_ready\'')
+    if status not in ('ready', 'in_loby'):
+        raise BadCommand('The status can be only \'ready\'/\'in_loby\'')
     try:
         player = dbi().query(Player)\
             .filter(Player.user_id==user.id)\
-            .filter(Player.playerState=='in_lobby')\
+            .filter(or_(Player.state=='in_lobby', Player.state=='ready'))\
             .one()
-    except NoResultFound:
+    except sqlalchemy.orm.exc.NoResultFound:
         raise BadCommand('User is not in lobby')
-    player.playerState = status
+    player.state = status
+    query = dbi().query(Player).join(Game).filter(Game.id==player.game_id)
+    if query.count() == query.filter(Player.state=='ready').count():
+        for p in player.game.players:
+            p.state = "in_game"
+        player.game.status = "started"
+    dbi().session.commit()
     return response_ok()
-
+        
 def process_request(request):
     if 'cmd' not in request:
         raise BadRequest('Field \'cmd\' required')

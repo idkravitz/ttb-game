@@ -47,7 +47,7 @@ class Player(Base):
     user_id = Column(Integer, ForeignKey('users.id', onupdate='CASCADE', ondelete='CASCADE'))
     game_id = Column(Integer, ForeignKey('games.id', onupdate='CASCADE', ondelete='CASCADE'))
     is_creator = Column(Boolean, default=False)
-    state = Column(Enum('in_game', 'in_lobby', 'ready', 'not_ready'), default='in_lobby')
+    state = Column(Enum('in_game', 'in_lobby', 'ready', 'left'), default='in_lobby')
     user = relationship(User, backref=backref('players'))
     game = relationship(Game, backref=backref('players'))
 
