@@ -7,9 +7,9 @@
 }
 {
     "message": "You are allready playing this game", 
-    "status": "badRequest"
+    "status": "alreadyInGame"
 }
 {
     "message": "You are allready playing this game", 
-    "status": "badRequest"
+    "status": "alreadyInGame"
 }
