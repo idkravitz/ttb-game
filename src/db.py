@@ -30,12 +30,12 @@ class Game(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    max_players = Column(Integer)
+    players_count = Column(Integer)
     state = Column(Enum('not_started', 'started', 'finished'), default='not_started')
     start_time = Column(DateTime, default=utcnow)
 
     @copy_args
-    def __init__(self, name, max_players): pass
+    def __init__(self, name, players_count): pass
 
     def __repr__(self):
         return '<Game({0},{1})>'.format(self.name, self.gameState)

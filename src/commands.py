@@ -57,15 +57,16 @@ def clear():
     return response_ok()
 
 @command
-def createGame(sid, gameName, maxPlayers): # check the validity of symbols
+def createGame(sid, gameName, playersCount): # check the validity of symbols
     user = dbi().get_user(sid)
-    if maxPlayers < 2:
+    if playersCount < 2:
         raise BadCommand('Number of players must be 2 or more')
-    if maxPlayers > MAX_PLAYERS:
+    if playersCount > MAX_PLAYERS:
         raise BadCommand('Too many players')
     check_len(gameName, MAX_GAMENAME_LENGTH, 'Too long game name')
     check_emptiness(gameName, 'Empty game name')
     if dbi().query(Player)\
+        .join(Game)\
         .filter(Player.user_id == user.id)\
         .filter(Player.is_creator == True)\
         .filter(Game.state != 'finished')\
@@ -76,7 +77,7 @@ def createGame(sid, gameName, maxPlayers): # check the validity of symbols
         .filter(Game.state != 'finished')\
         .count():
         raise AlreadyExists('Game with the such name already exists')
-    game = Game(gameName, maxPlayers)
+    game = Game(gameName, playersCount)
     dbi().add(game)
     player = Player(user.id, game.id)
     player.is_creator = True
@@ -98,7 +99,7 @@ def joinGame(sid, gameName):
     game = dbi().get_game(gameName)
     if dbi().query(Player).join(Game)\
         .filter(Game.id == game.id)\
-        .count() == game.max_players:
+        .count() == game.players_count:
         raise BadGame('Game is full')
     if game.state == 'started':
         raise BadGame('Game already started')
@@ -182,7 +183,7 @@ def setPlayerStatus(sid, status):
         raise BadCommand('User is not in lobby')
     player.state = status
     query = dbi().query(Player).join(Game).filter(Game.id==player.game_id)
-    if query.count() == query.filter(Player.state=='ready').count():
+    if player.game.players_count == query.filter(Player.state=='ready').count():
         for p in player.game.players:
             p.state = "in_game"
         player.game.status = "started"
