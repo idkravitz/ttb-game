@@ -47,7 +47,16 @@ def register(username, password):
 
 @command
 def unregister(sid):
-    dbi().delete(dbi().get_user(sid))
+    user = dbi().get_user(sid)
+    try:
+        player = dbi().query(Player).join(Game)\
+            .filter(Player.user_id == user.id)\
+            .filter(Game.state != 'finished')\
+            .one()
+    except sqlalchemy.orm.exc.NoResultFound:
+        player = None
+    if player:
+        leaveGame(sid, dbi().query(Game).filter(Game.id == player.game_id).one().name)
     return response_ok()
 
 @debug_only

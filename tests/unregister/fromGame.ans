@@ -1,0 +1,36 @@
+{
+    "sid": "GordonFreeman", 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "sid": "BarneyCalhoun", 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "players": [
+        {
+            "username": "Gordon"
+        }, 
+        {
+            "username": "Barney"
+        }
+    ], 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "players": [
+        {
+            "username": "Gordon"
+        }
+    ], 
+    "status": "ok"
+}
