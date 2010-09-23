@@ -3,6 +3,6 @@
     "status": "ok"
 }
 {
-    "message": "too many players", 
+    "message": "Too many players", 
     "status": "badCommand"
 }

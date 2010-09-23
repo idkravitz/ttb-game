@@ -6,7 +6,7 @@ JSON_DUMPS_FORMAT = {
     'indent': 4,
 }
 
-DEBUG = False # should be moved out
+DEBUG = False
 
 MAX_USERNAME_LENGTH = 15
 MAX_GAMENAME_LENGTH = 20

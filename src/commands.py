@@ -7,7 +7,7 @@ import common
 from common import JSON_DUMPS_FORMAT, MAX_USERNAME_LENGTH, MAX_GAMENAME_LENGTH, MAX_PLAYERS, MAX_MESSAGE_LENGTH
 from exceptions import *
 from db import db_instance as dbi, User, Game, Player, Message
-from sqlalchemy.orm.exc import NoResultFound 
+from sqlalchemy.orm.exc import NoResultFound
 from datetime import datetime
 
 def command(function):
@@ -18,24 +18,24 @@ def testmode_only(function):
     if not common.DEBUG:
         raise BadCommand('Command allowed only in test mode')
     return function
-    
+
 def response_ok(**kwargs):
     kwargs.update({'status': 'ok'})
     return json.dumps(kwargs, **JSON_DUMPS_FORMAT)
-    
+
 def checkLen(obj, lengthConst, descr):
     if len(obj) > lengthConst:
-        raise BadCommand(descr) 
-        
+        raise BadCommand(descr)
+
 def checkEmptiness(obj,descr):
     if not len(obj):
-        raise BadCommand(descr)              
+        raise BadCommand(descr)
 
 @command
 def register(username, password):
     if not username.replace('_', '').isalnum():
         raise BadCommand('Incorrect username')
-    checkLen(username, MAX_USERNAME_LENGTH, 'Too long username')  
+    checkLen(username, MAX_USERNAME_LENGTH, 'Too long username')
     checkEmptiness(password,'Empty password')
     try:
         user = dbi().query(User).filter(User.username==username).one()
@@ -56,20 +56,20 @@ def unregister(sid):
 def clear():
     dbi().clear()
     return response_ok()
-    
+
 @command
 def createGame(sid, gameName, maxPlayers): # check the validity of symbols
     user = dbi().get_user(sid)
     if maxPlayers < 2:
         raise BadCommand('Number of players must be 2 or higher')
     if maxPlayers > MAX_PLAYERS:
-        raise BadCommand('Too many players')
-    checkLen(gameName, MAX_GAMENAME_LENGTH, 'Too long game name') 
-    checkEmptiness(gameName,'Empty game name')   
+        raise BadCommand("Too many players")
+    checkLen(gameName, MAX_GAMENAME_LENGTH, 'Too long game name')
+    checkEmptiness(gameName,'Empty game name')
     if dbi().query(Player).filter(Player.user_id == user.id)\
         .filter(Player.is_creator == True)\
         .filter(Game.gameState != 'finished').count():
-        raise BadCommand('User already created game')
+        raise AlreadyInGame('User already in game')
     if dbi().query(Game).filter(Game.name==gameName).filter(Game.gameState!='finished').count():
         raise AlreadyExists('Game with the same name already exists')
     game = Game(gameName, maxPlayers)
@@ -77,8 +77,8 @@ def createGame(sid, gameName, maxPlayers): # check the validity of symbols
     player = Player(user, game)
     player.is_creator=True
     dbi().add(player)
-    return response_ok()  
-    
+    return response_ok()
+
 @command
 def joinGame(sid, gameName):
     user = dbi().get_user(sid)
@@ -92,11 +92,11 @@ def joinGame(sid, gameName):
     player = Player(user, game)
     dbi().add(player)
     return response_ok()
-    
+
 @command
 def leaveGame(sid, gameName):
     user = dbi().get_user(sid)
-    game = dbi().get_game(gameName) 
+    game = dbi().get_game(gameName)
     try:
         player = dbi().query(Player).filter(Player.game_id==game.id).filter(Player.user_id==user.id).one()
     except NoResultFound:
@@ -105,45 +105,45 @@ def leaveGame(sid, gameName):
     if not dbi().query(Player).filter(Player.game_id==game.id).count():
         game.gameState = 'finished'
     dbi().session.commit()
-    return response_ok()             
-    
+    return response_ok()
+
 @command
 def sendMessage(sid, text, gameName):
     user = dbi().get_user(sid)
-    game = dbi().get_game(gameName) 
-    checkLen(text, MAX_MESSAGE_LENGTH, 'Too long message')    
+    game = dbi().get_game(gameName)
+    checkLen(text, MAX_MESSAGE_LENGTH, 'Too long message')
     if not dbi().query(Player).filter(Player.game_id==game.id).filter(Player.user_id==user.id).count():
         raise BadCommand('User is not a player for this game')
-    message = Message(user, game, text)    
-    dbi().add(message)    
-    return response_ok() 
-    
+    message = Message(user, game, text)
+    dbi().add(message)
+    return response_ok()
+
 @command
 def getChatHistory(sid, gameName):
     user = dbi().get_user(sid)
-    game = dbi().get_game(gameName) 
-    chat = [ {'username': msg.user.username, 'message': msg.text, 'time': str(msg.dateSent)}
-        for msg in game.messages]    
-    return response_ok(chat=chat)                          
-    
+    game = dbi().get_game(gameName)
+    chat = [ {"username": msg.user.username, "message": msg.text, "time": str(msg.dateSent)}
+        for msg in game.messages]
+    return response_ok(chat=chat)
+
 @command
 def getGamesList(sid):
     user = dbi().get_user(sid)
-    games = [ {'gameName': name} for name in dbi().query(Game.name).all()]   
-    return response_ok(games=games) 
-    
+    games = [ {"gameName": name} for name in dbi().query(Game.name).all()]
+    return response_ok(games=games)
+
 @command
 def getPlayersList(sid):
     user = dbi().get_user(sid)
-    players = [ {'username': name} for name in dbi().query(User.username).all()]   
+    players = [ {"username": name} for name in dbi().query(User.username).all()]
     return response_ok(players=players)
-    
+
 @command
 def getPlayersListForGame(sid, gameName):
     user = dbi().get_user(sid)
     game = dbi().get_game(gameName)
-    players = [{'username': player.user.username} for player in dbi().query(Player).join(Game).filter(Game.id==game.id).all()]   
-    return response_ok(players=players)                                      
+    players = [{"username": player.user.username} for player in dbi().query(Player).join(Game).filter(Game.id==game.id).all()]
+    return response_ok(players=players)
 
 @command
 def setPlayerStatus(sid, status):
