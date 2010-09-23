@@ -1,0 +1,15 @@
+{
+    "sid": "catmeow", 
+    "status": "ok"
+}
+{
+    "sid": "dogbark", 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "message": "No unfinished game with that name", 
+    "status": "badCommand"
+}
