@@ -1,0 +1,8 @@
+{
+    "sid": "GordonFreeman", 
+    "status": "ok"
+}
+{
+    "message": "Empty game name", 
+    "status": "badCommand"
+}
