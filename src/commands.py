@@ -13,6 +13,7 @@ from datetime import datetime
 MAX_USERNAME_LENGTH = 15
 MAX_GAMENAME_LENGTH = 20
 MAX_MESSAGE_LENGTH = 140
+MAX_PLAYERS = 16
 
 def command(function):
     function.iscommand = True
@@ -64,6 +65,10 @@ def clear():
 @command
 def createGame(sid, gameName, maxPlayers): # check the validity of symbols
     user = dbi().get_user(sid)
+    if maxPlayers < 2:
+        raise BadCommand("Number of players must be 2 or higher")
+    if maxPlayers > MAX_PLAYERS:
+        raise BadCommand("Too many players")
     checkLen(gameName, MAX_GAMENAME_LENGTH, 'Too long game name') 
     checkEmptiness(gameName,'Empty game name')   
     if dbi().query(Player).filter(Player.user_id == user.id)\
