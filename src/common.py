@@ -6,10 +6,17 @@ JSON_DUMPS_FORMAT = {
     'indent': 4,
 }
 
-DEBUG = True # should be moved out
+DEBUG = False # should be moved out
 
 import inspect
 import functools
+from datetime import datetime
+
+def utcnow():
+    if DEBUG:
+        return datetime(2000, 1, 1)
+    else:
+        return datetime.utcnow()
 
 def copy_args(func):
     '''
