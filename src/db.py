@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from exceptions import BadSid, BadCommand
-from sqlalchemy import create_engine, Table, Boolean, Enum, Column, Integer, String, MetaData, Date, ForeignKey
+from sqlalchemy import create_engine, Table, Boolean, Enum, Column, Integer, String, MetaData, Date, ForeignKey, DateTime
 from sqlalchemy.orm import sessionmaker, relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm.exc import NoResultFound
@@ -54,7 +54,23 @@ class Player(Base):
     def __init__(self, user, game):
         self.user_id = user.id
         self.game_id = game.id
-
+        
+class Message(Base):
+    __tablename__ = 'messages'
+    
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id', onupdate="CASCADE", ondelete="CASCADE"))
+    game_id = Column(Integer, ForeignKey('games.id', onupdate="CASCADE", ondelete="CASCADE"))
+    text = Column(String)
+    dateSent = Column(DateTime)
+    user = relationship(User, backref=backref('games'))
+    game = relationship(Game, backref=backref('users')) 
+    
+    def __init__(self, user, game, text):
+        self.user_id = user.id
+        self.game_id = game.id 
+        self.text = text      
+                    
 class Database:
     instance = None
     engine = create_engine('sqlite:///:memory:', echo=False)
