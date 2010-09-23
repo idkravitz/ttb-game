@@ -13,7 +13,7 @@ Base = declarative_base()
 
 class User(Base):
     __tablename__ = 'users'
-    
+
     id = Column(Integer, primary_key=True)
     username = Column(String, unique=True)
     password = Column(String)
@@ -43,7 +43,7 @@ class Game(Base):
 
 class Player(Base):
     __tablename__ = 'players'
-    
+
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id', onupdate="CASCADE", ondelete="CASCADE"))
     game_id = Column(Integer, ForeignKey('games.id', onupdate="CASCADE", ondelete="CASCADE"))
@@ -51,27 +51,27 @@ class Player(Base):
     playerState = Column(Enum("in_game", "in_lobby"), default="in_lobby")
     user = relationship(User, backref=backref('players'))
     game = relationship(Game, backref=backref('players'))
-    
+
     def __init__(self, user, game):
         self.user_id = user.id
         self.game_id = game.id
-        
+
 class Message(Base):
     __tablename__ = 'messages'
-    
+
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id', onupdate="CASCADE", ondelete="CASCADE"))
     game_id = Column(Integer, ForeignKey('games.id', onupdate="CASCADE", ondelete="CASCADE"))
     text = Column(String)
     dateSent = Column(DateTime, default=utcnow)
     user = relationship(User, backref=backref('messages'))
-    game = relationship(Game, backref=backref('messages')) 
-    
+    game = relationship(Game, backref=backref('messages'))
+
     def __init__(self, user, game, text):
         self.user_id = user.id
-        self.game_id = game.id 
-        self.text = text      
-                    
+        self.game_id = game.id
+        self.text = text
+
 class Database:
     instance = None
     engine = create_engine('sqlite:///:memory:', echo=False)

@@ -6,7 +6,7 @@ JSON_DUMPS_FORMAT = {
     'indent': 4,
 }
 
-DEBUG = False # should be moved out
+DEBUG = False
 
 import inspect
 import functools
