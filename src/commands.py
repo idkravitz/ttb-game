@@ -93,8 +93,7 @@ def joinGame(sid, gameName):
 def leaveGame(sid, gameName):
     user = dbi().get_user(sid)
     game = dbi().get_game(gameName) 
-    player = dbi().query(Player).join(User).join(Game).filter(Game.id==game.id).filter(User.id==user.id).\
-        filter(Game.gameState=='in_process').one():
+    player = dbi().query(Player).join(User).join(Game).filter(Game.id==game.id).filter(User.id==user.id).filter(Game.gameState=='in_process').one():
             raise BadGame('Cannot leave the game')
 #delete player or put state 'left'???
     #if user not in game.users or game.gameState == 'finished':
