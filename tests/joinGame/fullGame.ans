@@ -1,0 +1,22 @@
+{
+    "sid": "catmeow", 
+    "status": "ok"
+}
+{
+    "sid": "dogbark", 
+    "status": "ok"
+}
+{
+    "sid": "redhourse", 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "message": "Game is full", 
+    "status": "badGame"
+}	
