@@ -73,7 +73,7 @@ class Message(Base):
                     
 class Database:
     instance = None
-    engine = create_engine('sqlite:///:memory:', echo=True)
+    engine = create_engine('sqlite:///:memory:', echo=False)
 
     def __init__(self):
         Session = sessionmaker(bind=self.engine)
@@ -110,15 +110,9 @@ class Database:
             raise BadSid('Unknown sid')
     def get_game(self, name):
         try:
-            return self.session.query(Game).filter_by(name=name).filter_by(gameState!='finished').one()
+            return self.session.query(Game).filter_by(name=name).filter(Game.gameState!='finished').one()
         except NoResultFound:
             raise BadCommand('No unfinished game with that name')
-        
-#    def leave_game(self, sid, gameName):
-#        self.get_username(sid)
-#        if sid not in self.players:
-#            raise NotInGame('User is not playing the game')    
-#        self.players.pop(sid)                  
 
 def db_instance():
     if Database.instance is None:

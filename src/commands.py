@@ -6,7 +6,7 @@ import json
 import common
 from common import JSON_DUMPS_FORMAT
 from exceptions import *
-from db import db_instance as dbi, User, Game, Player
+from db import db_instance as dbi, User, Game, Player, Message
 from sqlalchemy.orm.exc import NoResultFound 
 from datetime import datetime
 
@@ -95,22 +95,20 @@ def leaveGame(sid, gameName):
     user = dbi().get_user(sid)
     game = dbi().get_game(gameName) 
     try:
-        player = dbi().query(Player).join(Game).filter(Game.id==game.id).filter(Player.id==user.id).one()
+        player = dbi().query(Player).filter(Player.game_id==game.id).filter(Player.user_id==user.id).one()
     except NoResultFound:
         raise BadGame('Cannot leave the game')
     dbi().delete(player)
     return response_ok()             
     
 @command
-def sentMessage(sid, text, gameName):
+def sendMessage(sid, text, gameName):
     user = dbi().get_user(sid)
     game = dbi().get_game(gameName) 
-    if len(user.username) > MAX_MESSAGE_LENGTH:
+    if len(text) > MAX_MESSAGE_LENGTH:
         raise BadCommand('Too long message')
-    if dbi().query(Player).join(User).join(Game).filter(Game.id==game.id)\
-        .filter(User.id==user.id)\
-        .filter(Game.gameState=='finished').one():
-        raise BadGame('Cannot leave the game')    
+    if not dbi().query(Player).filter(Player.game_id==game.id).filter(Player.user_id==user.id).count():
+        raise BadCommand('User is not a player for this game')
     message = Message(user, game, text)    
     dbi().add(message)    
     return response_ok()                       
