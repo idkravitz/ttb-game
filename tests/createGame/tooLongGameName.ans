@@ -1,0 +1,8 @@
+{
+    "sid": "GordonFreeman", 
+    "status": "ok"
+}
+{
+    "message": "Too long game name", 
+    "status": "badCommand"
+}
