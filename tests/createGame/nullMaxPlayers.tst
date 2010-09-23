@@ -8,5 +8,5 @@
     "cmd": "createGame",
     "sid": "GordonFreeman",
     "gameName": "Scrubbles",
-    "maxPlayers": 0
+    "playersCount": 0
 }

@@ -12,7 +12,7 @@
     "cmd": "createGame",
     "sid": "banana123456",
     "gameName": "bigmac",
-    "maxPlayers": 3
+    "playersCount": 3
 }
 {
     "cmd": "joinGame",

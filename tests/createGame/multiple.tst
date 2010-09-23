@@ -8,13 +8,13 @@
     "cmd": "createGame",
     "sid": "GordonFreeman",
     "gameName": "Half-life",
-    "maxPlayers": 10
+    "playersCount": 10
 }
 
 {
     "cmd": "createGame",
     "sid": "GordonFreeman",
     "gameName": "Half-life",
-    "maxPlayers": 2
+    "playersCount": 2
 }
 

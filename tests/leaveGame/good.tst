@@ -7,7 +7,7 @@
     "cmd": "createGame",
     "sid": "testtest",
     "gameName": "chess",
-    "maxPlayers": 2
+    "playersCount": 2
 }
 {
     "cmd": "leaveGame",

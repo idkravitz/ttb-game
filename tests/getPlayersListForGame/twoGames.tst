@@ -19,7 +19,7 @@
 {
     "cmd": "createGame",
     "sid": "redhourse",
-    "maxPlayers": 2,
+    "playersCount": 2,
     "gameName": "catdog"
 }
 
@@ -33,7 +33,7 @@
     "cmd": "createGame",
     "sid": "GordonFreeman",
     "gameName": "Half-life",
-    "maxPlayers": 10
+    "playersCount": 10
 }
 
 {

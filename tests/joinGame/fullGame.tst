@@ -19,7 +19,7 @@
 {
     "cmd": "createGame",
     "sid": "catmeow",
-    "maxPlayers": 2,
+    "playersCount": 2,
     "gameName": "catdog"
 }
 

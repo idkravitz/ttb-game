@@ -7,7 +7,7 @@
 {
     "cmd": "createGame",
     "sid": "redhourse",
-    "maxPlayers": 5,
+    "playersCount": 5,
     "gameName": "catdog"
 }
 

@@ -8,5 +8,5 @@
     "cmd": "createGame",
     "sid": "GordonFreeman",
     "gameName": "",
-    "maxPlayers": 10
+    "playersCount": 10
 }
