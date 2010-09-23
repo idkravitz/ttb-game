@@ -6,7 +6,7 @@ from sqlalchemy import create_engine, Table, Boolean, Enum, Column, Integer, Str
 from sqlalchemy.orm import sessionmaker, relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm.exc import NoResultFound
-from common import DEBUG
+from common import copy_args, DEBUG
 
 Base = declarative_base()
 
@@ -18,9 +18,8 @@ class User(Base):
     password = Column(String)
     sid = Column(String, unique=True)
 
+    @copy_args
     def __init__(self, username, password):
-        self.username = username
-        self.password = password
         self.sid = db_instance().generate_sid(username, password)
 
     def __repr__(self):
@@ -35,10 +34,8 @@ class Game(Base):
     gameState = Column(Enum("not_started", "in_process", "finished"), default="not_started")
     gameDateBegin = Column(Date)
 
-    def __init__(self, name, max_players, gameDateBegin):
-        self.name = name
-        self.max_players = max_players
-        self.gameDateBegin = gameDateBegin
+    @copy_args
+    def __init__(self, name, max_players, gameDateBegin): pass
 
     def __repr__(self):
         return "<Game({0},{1})>".format(self.name, self.gameState)
