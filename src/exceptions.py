@@ -13,29 +13,22 @@ class JSONBasedException(Exception):
     def __str__(self):
         return json.dumps(self.struct(), **JSON_DUMPS_FORMAT)
 
-class BadRequest(JSONBasedException):
-    status = 'badRequest'
+exceptions = (
+    'badCommand',
+    'badRequest',
+    'internalError',
+    'badPassword',
+    'badSid',
+    'badGame',
+    'notInGame',
+    'alreadyInGame',
+    'alreadyExists',
+)
 
-class BadCommand(JSONBasedException):
-    status = 'badCommand'
+exception_generator = lambda message: \
+'''
+class {0}(JSONBasedException):
+    status = "{1}"'''.format(message[0].upper() + message[1:], message)
 
-class InternalError(JSONBasedException):
-    status = 'internalError'
-
-class BadPassword(JSONBasedException):
-    status = 'badPassword'
-
-class BadSid(JSONBasedException):
-    status = 'badSid'
-
-class AlreadyInGame(JSONBasedException):
-    status = 'alreadyInGame'
-    
-class NotInGame(JSONBasedException):
-    status = 'notInGame'    
-
-class AlreadyExists(JSONBasedException):
-    status = 'alreadyExists'
-
-class BadGame(JSONBasedException):
-    status = 'badGame'
+for message in exceptions:
+    exec(exception_generator(message))
