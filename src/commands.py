@@ -23,17 +23,19 @@ def testmode_only(function):
         raise BadCommand("Command allowed only in test mode")
     return function
     
-
 def response_ok(**kwargs):
     kwargs.update({'status': 'ok'})
     return json.dumps(kwargs, **JSON_DUMPS_FORMAT)
+    
+def checkLen(obj, lengthConst, descr):
+    if len(obj) > lengthConst:
+        raise BadCommand(descr)   
 
 @command
 def register(username, password):
     if not username.replace('_', '').isalnum():
         raise BadCommand('Incorrect username')
-    if len(username) > MAX_USERNAME_LENGTH:
-        raise BadCommand('Too long username')
+    checkLen(username, MAX_USERNAME_LENGTH, 'Too long username')  
     if not len(password):
         raise BadCommand('Empty password')
     try:
@@ -59,8 +61,7 @@ def clear():
 @command
 def createGame(sid, gameName, maxPlayers): # check the validity of symbols
     user = dbi().get_user(sid)
-    if len(gameName) > MAX_GAMENAME_LENGTH:
-        raise BadCommand('Too long game name')
+    checkLen(gameName, MAX_GAMENAME_LENGTH, 'Too long game name')    
     if not len(gameName):
         raise BadCommand('Empty game name')
     if dbi().query(Player).filter(Player.user_id == user.id)\
@@ -105,8 +106,7 @@ def leaveGame(sid, gameName):
 def sendMessage(sid, text, gameName):
     user = dbi().get_user(sid)
     game = dbi().get_game(gameName) 
-    if len(text) > MAX_MESSAGE_LENGTH:
-        raise BadCommand('Too long message')
+    checkLen(text, MAX_MESSAGE_LENGTH, 'Too long message')    
     if not dbi().query(Player).filter(Player.game_id==game.id).filter(Player.user_id==user.id).count():
         raise BadCommand('User is not a player for this game')
     message = Message(user, game, text)    
