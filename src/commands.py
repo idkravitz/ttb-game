@@ -29,15 +29,18 @@ def response_ok(**kwargs):
     
 def checkLen(obj, lengthConst, descr):
     if len(obj) > lengthConst:
-        raise BadCommand(descr)   
+        raise BadCommand(descr) 
+        
+def checkEmptiness(obj,descr):
+    if not len(obj):
+        raise BadCommand(descr)              
 
 @command
 def register(username, password):
     if not username.replace('_', '').isalnum():
         raise BadCommand('Incorrect username')
     checkLen(username, MAX_USERNAME_LENGTH, 'Too long username')  
-    if not len(password):
-        raise BadCommand('Empty password')
+    checkEmptiness(password,'Empty password')
     try:
         user = dbi().query(User).filter_by(username=username).one()
         if user.password != password:
@@ -61,9 +64,8 @@ def clear():
 @command
 def createGame(sid, gameName, maxPlayers): # check the validity of symbols
     user = dbi().get_user(sid)
-    checkLen(gameName, MAX_GAMENAME_LENGTH, 'Too long game name')    
-    if not len(gameName):
-        raise BadCommand('Empty game name')
+    checkLen(gameName, MAX_GAMENAME_LENGTH, 'Too long game name') 
+    checkEmptiness(gameName,'Empty game name')   
     if dbi().query(Player).filter(Player.user_id == user.id)\
         .filter(Player.is_creator == True)\
         .filter(Game.gameState != 'finished').count():
