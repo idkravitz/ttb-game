@@ -10,6 +10,6 @@
     "status": "ok"
 }
 {
-    "message": "Game with the same name already exists", 
+    "message": "Game with the such name already exists", 
     "status": "alreadyExists"
 }
