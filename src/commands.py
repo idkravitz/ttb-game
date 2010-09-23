@@ -139,10 +139,10 @@ def getPlayersList(sid):
     return response_ok(players=players)
     
 @command
-def getPlayersListForTheGame(sid):
+def getPlayersListForGame(sid, gameName):
     user = dbi().get_user(sid)
     game = dbi().get_game(gameName)
-    players = [{"username": player.user.username} for player in dbi().query(Player).join(Game).filter(Game.game_id==game.id).all()]   
+    players = [{"username": player.user.username} for player in dbi().query(Player).join(Game).filter(Game.id==game.id).all()]   
     return response_ok(players=players)                                      
 
 def process_request(request):
