@@ -10,13 +10,19 @@ from exceptions import BadSid, BadCommand
 
 Base = declarative_base()
 
+uniqueString = lambda : Column(String, unique=True, nullable=False)
+utcDT = lambda : Column(DateTime, default=utcnow)
+pkey = lambda : Column(Integer, primary_key=True)
+fkey = lambda name : Column(Integer, ForeignKey(name, onupdate='CASCADE', ondelete='CASCADE'))
+requiredString = lambda : Column(String, nullable=False)
+
 class User(Base):
     __tablename__ = 'users'
 
-    id = Column(Integer, primary_key=True)
-    username = Column(String, unique=True)
-    password = Column(String)
-    sid = Column(String, unique=True)
+    id = pkey()
+    username = uniqueString()
+    password = requiredString()
+    sid = uniqueString()
 
     @copy_args
     def __init__(self, username, password):
@@ -28,11 +34,11 @@ class User(Base):
 class Game(Base):
     __tablename__ = 'games'
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    players_count = Column(Integer)
+    id = pkey()
+    name = requiredString()
+    players_count = Column(Integer, nullable=False)
     state = Column(Enum('not_started', 'started', 'finished'), default='not_started')
-    start_time = Column(DateTime, default=utcnow)
+    start_time = utcDT()
 
     @copy_args
     def __init__(self, name, players_count): pass
@@ -40,12 +46,13 @@ class Game(Base):
     def __repr__(self):
         return '<Game({0},{1})>'.format(self.name, self.gameState)
 
+
 class Player(Base):
     __tablename__ = 'players'
 
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id', onupdate='CASCADE', ondelete='CASCADE'))
-    game_id = Column(Integer, ForeignKey('games.id', onupdate='CASCADE', ondelete='CASCADE'))
+    id = pkey()
+    user_id = fkey('users.id')
+    game_id = fkey('games.id')
     is_creator = Column(Boolean, default=False)
     state = Column(Enum('in_game', 'in_lobby', 'ready', 'left'), default='in_lobby')
     user = relationship(User, backref=backref('players'))
@@ -57,11 +64,11 @@ class Player(Base):
 class Message(Base):
     __tablename__ = 'messages'
 
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id', onupdate='CASCADE', ondelete='CASCADE'))
-    game_id = Column(Integer, ForeignKey('games.id', onupdate='CASCADE', ondelete='CASCADE'))
-    text = Column(String)
-    dateSent = Column(DateTime, default=utcnow)
+    id = pkey()
+    user_id = fkey('users.id')
+    game_id = fkey('games.id')
+    text = requiredString()
+    dateSent = utcDT()
     user = relationship(User, backref=backref('messages'))
     game = relationship(Game, backref=backref('messages'))
 
