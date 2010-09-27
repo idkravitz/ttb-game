@@ -10,11 +10,12 @@ from exceptions import BadSid, BadCommand
 
 Base = declarative_base()
 
-uniqueString = lambda : Column(String, unique=True, nullable=False)
-utcDT = lambda : Column(DateTime, default=utcnow)
-pkey = lambda : Column(Integer, primary_key=True)
-fkey = lambda name : Column(Integer, ForeignKey(name, onupdate='CASCADE', ondelete='CASCADE'))
-requiredString = lambda : Column(String, nullable=False)
+uniqueString = lambda: Column(String, unique=True, nullable=False)
+utcDT = lambda: Column(DateTime, default=utcnow)
+pkey = lambda: Column(Integer, primary_key=True)
+fkey = lambda name: Column(Integer, ForeignKey(name, onupdate='CASCADE', ondelete='CASCADE'))
+requiredString = lambda: Column(String, nullable=False)
+requiredInteger = lambda: Column(Integer, nullable=False)
 
 class User(Base):
     __tablename__ = 'users'
@@ -45,8 +46,8 @@ class Faction(Base):
     __tablename__ = 'factions'
 
     id = pkey()
-    name = requiredString() 
-    
+    name = requiredString()
+
     @copy_args
     def __init__(self, name): pass
 
@@ -55,7 +56,7 @@ class Game(Base):
 
     id = pkey()
     name = requiredString()
-    players_count = Column(Integer, nullable=False)
+    players_count = requiredInteger()
     state = Column(Enum('not_started', 'started', 'finished'), default='not_started')
     start_time = utcDT()
     total_cost = Column(Integer, nullable=False, default=5000)
@@ -103,13 +104,13 @@ class Unit(Base):
 
     id = pkey()
     name = requiredString()
-    HP = Column(Integer, nullable=False)
-    MP = Column(Integer, nullable=False)
-    defence = Column(Integer, nullable=False)
-    attack = Column(Integer, nullable=False)
-    range = Column(Integer, nullable=False)
-    damage = Column(Integer, nullable=False)
-    cost = Column(Integer, nullable=False)
+    HP = requiredInteger()
+    MP = requiredInteger()
+    defence = requiredInteger()
+    attack = requiredInteger()
+    range = requiredInteger()
+    damage = requiredInteger()
+    cost = requiredInteger()
     faction_id = fkey('factions.id')
     faction = relationship(Faction, backref=backref('units'))
 
