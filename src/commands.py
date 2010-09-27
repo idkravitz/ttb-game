@@ -207,8 +207,10 @@ def process_request(request):
         raise BadCommand('Unknown command')
     try:
         return command(**request)
-    except TypeError as ex:
-        message = ex.args[0]
+    except TypeError as e:
+        message = e.args[0]
+
+        # wrong number of arguments
         pattern = '''
             \w+\(\)\stakes\sexactly\s(\d+)\s
             non-keyword\spositional\sarguments\s
@@ -221,5 +223,12 @@ def process_request(request):
                 raise BadCommand('Not enough fields')
             else:
                 raise BadCommand('Too many fields')
-        field = message.split()[-1]
-        raise BadCommand('Unknown field {0}'.format(field))
+
+        # unknown argument
+        pattern = "\w+\(\)\sgot\san\sunexpected\skeyword\sargument\s(\'\w+\')"
+        match = re.match(pattern, message, re.VERBOSE)
+        if match:
+            raise BadCommand('Unknown field {0}'.format(match.groups()[0]))
+
+        # other exceptions
+        raise e
