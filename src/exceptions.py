@@ -2,14 +2,17 @@
 # -*- coding: utf-8 -*-
 
 import json
-from common import JSON_DUMPS_FORMAT
+from common import copy_args, JSON_DUMPS_FORMAT
 
 class RequestError(Exception):
     status = None
-    def __init__(self, message):
-        self.message = message
+
+    @copy_args
+    def __init__(self, message): pass
+
     def struct(self):
         return { 'status': self.status, 'message': self.message }
+
     def __str__(self):
         return json.dumps(self.struct(), **JSON_DUMPS_FORMAT)
 
