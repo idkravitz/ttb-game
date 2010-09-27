@@ -7,7 +7,7 @@ import sqlalchemy.orm.exc
 from sqlalchemy import or_
 from common import *
 from exceptions import *
-from db import db_instance as dbi, User, Map, Game, Player, Message, Faction, Unit, Army, Unit_Army
+from db import db_instance as dbi, User, Map, Game, Player, Message, Faction, Unit, Army, UnitArmy
 
 def command(function):
     function.iscommand = True

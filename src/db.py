@@ -127,7 +127,7 @@ class Army(Base):
     @copy_args
     def __init__(self, name): pass 
     
-class Unit_Army(Base):
+class UnitArmy(Base):
     __tablename__ = 'unitArmy'
 
     id = pkey()
