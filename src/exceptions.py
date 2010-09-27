@@ -26,10 +26,9 @@ exceptions = (
     'playersNotReady',
 )
 
-exception_generator = lambda message: \
-'''
-class {0}(JSONBasedException):
-    status = "{1}"'''.format(message[0].upper() + message[1:], message)
+def generate_exception(name, status):
+    return type(name, (JSONBasedException,), { 'status': status })
 
-for message in exceptions:
-    exec(exception_generator(message))
+for status in exceptions:
+    name = status[0].upper() + status[1:]
+    globals()[name] = generate_exception(name, status)
