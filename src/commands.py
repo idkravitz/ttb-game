@@ -198,6 +198,18 @@ def setPlayerStatus(sid, status):
         player.game.status = "started"
     dbi().session.commit()
     return response_ok()
+
+@command
+def uploadMap(sid, name, map):
+    user = dbi().get_user(sid)
+    if dbi().query(Map).filter(name=name).count():
+        raise alreadyExists("Map with such name already exists")
+    if not map is Array:
+        raise BadMap("Field map must contain list of strings")
+    if len(set(__builtins__.map(len, map))) != 1:
+        raise BadMap("Lines in map must have the same width")
+    if len(map[0]) <= 0 or len(map[0]) >= MAX_MAP_LINE_WIDTH:
+        raise BadMap("Line width in map must be in range 1..{0}".format(MAX_MAP_LINE_WIDTH))
         
 def process_request(request):
     if 'cmd' not in request:

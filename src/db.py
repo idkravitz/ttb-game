@@ -35,7 +35,7 @@ class Map(Base):
     __tablename__ = 'maps'  
     
     id = pkey()
-    name = requiredString()
+    name = uniqueString()
     construction = requiredString()
     
     @copy_args

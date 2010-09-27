@@ -24,6 +24,7 @@ exceptions = (
     'alreadyInGame',
     'alreadyExists',
     'playersNotReady',
+    'badMap',
 )
 
 def generate_exception(name, status):
