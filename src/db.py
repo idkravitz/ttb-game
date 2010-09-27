@@ -59,7 +59,7 @@ class Game(Base):
     players_count = requiredInteger()
     state = Column(Enum('not_started', 'started', 'finished'), default='not_started')
     start_time = utcDT()
-    total_cost = Column(Integer, nullable=False)
+    total_cost = Column(Integer, nullable=False, default=5000)
     map_id = fkey('maps.id')
     faction_id = fkey('factions.id')
     map = relationship(Map, backref=backref('games'))
