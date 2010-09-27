@@ -29,7 +29,26 @@ class User(Base):
         self.sid = db_instance().generate_sid(username, password)
 
     def __repr__(self):
-        return '<User({0}, {1}, {2})>'.format(self.username, self.password, self.sid)
+        return '<User({0}, {1}, {2})>'.format(self.username, self.password, self.sid)   
+        
+class Map(Base):
+    __tablename__ = 'maps'  
+    
+    id = pkey()
+    name = requiredString()
+    construction = requiredString()
+    
+    @copy_args
+    def __init__(self, name, construction): pass
+    
+class Faction(Base):
+    __tablename__ = 'factions'
+    
+    id = pkey()
+    name = requiredString() 
+    
+    @copy_args
+    def __init__(self, name): pass                
 
 class Game(Base):
     __tablename__ = 'games'
@@ -39,13 +58,17 @@ class Game(Base):
     players_count = Column(Integer, nullable=False)
     state = Column(Enum('not_started', 'started', 'finished'), default='not_started')
     start_time = utcDT()
+    total_cost = Column(Integer, nullable=False)
+    map_id = fkey('maps.id')
+    faction_id = fkey('factions.id')
+    map = relationship(Map, backref=backref('games'))
+    faction = relationship(Faction, backref=backref('games'))
 
     @copy_args
     def __init__(self, name, players_count): pass
 
     def __repr__(self):
         return '<Game({0},{1})>'.format(self.name, self.gameState)
-
 
 class Player(Base):
     __tablename__ = 'players'
@@ -74,6 +97,48 @@ class Message(Base):
 
     @copy_args
     def __init__(self, user_id, game_id, text): pass
+    
+class Unit(Base):
+    __tablename__ = 'units'
+    
+    id = pkey()
+    name = requiredString()
+    HP = Column(Integer, nullable=False)
+    MP = Column(Integer, nullable=False)
+    defence = Column(Integer, nullable=False)
+    attack = Column(Integer, nullable=False)
+    range = Column(Integer, nullable=False)
+    damage = Column(Integer, nullable=False)
+    cost = Column(Integer, nullable=False)
+    faction_id = fkey('factions.id')
+    faction = relationship(Faction, backref=backref('units'))
+    
+    @copy_args
+    def __init__(self, name): pass 
+    
+class Army(Base):
+    __tablename__ = 'armies'
+    
+    id = pkey()
+    name = requiredString()
+    player_id = fkey('players.id')
+    player = relationship(Player, backref=backref('armies')) 
+    
+    @copy_args
+    def __init__(self, name): pass 
+    
+class Unit_Army(Base):
+    __tablename__ = 'unitArmy'
+
+    id = pkey()
+    unit_id = fkey('units.id')
+    army_id = fkey('armies.id')
+    unit = relationship(Unit, backref=backref('unitArmy'))
+    army = relationship(Army, backref=backref('unitArmy'))
+
+    @copy_args
+    def __init__(self, unit_id, army_id): pass             
+                               
 
 class Database:
     instance = None
