@@ -29,26 +29,26 @@ class User(Base):
         self.sid = db_instance().generate_sid(username, password)
 
     def __repr__(self):
-        return '<User({0}, {1}, {2})>'.format(self.username, self.password, self.sid)   
-        
+        return '<User({0}, {1}, {2})>'.format(self.username, self.password, self.sid)
+
 class Map(Base):
-    __tablename__ = 'maps'  
-    
+    __tablename__ = 'maps'
+
     id = pkey()
     name = requiredString()
     construction = requiredString()
-    
+
     @copy_args
     def __init__(self, name, construction): pass
-    
+
 class Faction(Base):
     __tablename__ = 'factions'
-    
+
     id = pkey()
     name = requiredString() 
     
     @copy_args
-    def __init__(self, name): pass                
+    def __init__(self, name): pass
 
 class Game(Base):
     __tablename__ = 'games'
@@ -97,10 +97,10 @@ class Message(Base):
 
     @copy_args
     def __init__(self, user_id, game_id, text): pass
-    
+
 class Unit(Base):
     __tablename__ = 'units'
-    
+
     id = pkey()
     name = requiredString()
     HP = Column(Integer, nullable=False)
@@ -112,21 +112,21 @@ class Unit(Base):
     cost = Column(Integer, nullable=False)
     faction_id = fkey('factions.id')
     faction = relationship(Faction, backref=backref('units'))
-    
+
     @copy_args
-    def __init__(self, name): pass 
-    
+    def __init__(self, name): pass
+
 class Army(Base):
     __tablename__ = 'armies'
-    
+
     id = pkey()
     name = requiredString()
     player_id = fkey('players.id')
-    player = relationship(Player, backref=backref('armies')) 
-    
+    player = relationship(Player, backref=backref('armies'))
+
     @copy_args
-    def __init__(self, name): pass 
-    
+    def __init__(self, name): pass
+
 class UnitArmy(Base):
     __tablename__ = 'unitArmy'
 
@@ -137,8 +137,8 @@ class UnitArmy(Base):
     army = relationship(Army, backref=backref('unitArmy'))
 
     @copy_args
-    def __init__(self, unit_id, army_id): pass             
-                               
+    def __init__(self, unit_id, army_id): pass
+
 
 class Database:
     instance = None

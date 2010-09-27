@@ -198,7 +198,7 @@ def setPlayerStatus(sid, status):
         player.game.status = "started"
     dbi().session.commit()
     return response_ok()
-        
+
 def process_request(request):
     if 'cmd' not in request:
         raise BadRequest('Field \'cmd\' required')
