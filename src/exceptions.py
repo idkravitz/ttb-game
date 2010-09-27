@@ -4,7 +4,7 @@
 import json
 from common import JSON_DUMPS_FORMAT
 
-class JSONBasedException(Exception):
+class RequestError(Exception):
     status = None
     def __init__(self, message):
         self.message = message
@@ -27,7 +27,7 @@ exceptions = (
 )
 
 def generate_exception(name, status):
-    return type(name, (JSONBasedException,), { 'status': status })
+    return type(name, (RequestError,), { 'status': status })
 
 for status in exceptions:
     name = status[0].upper() + status[1:]
