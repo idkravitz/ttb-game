@@ -3,15 +3,37 @@
 
 import re
 import json
+import functools
 import sqlalchemy.orm.exc
 from sqlalchemy import or_
 from common import *
 from exceptions import *
 from db import db_instance as dbi, User, Map, Game, Player, Message, Faction, Unit, Army, UnitArmy
 
-def command(function):
-    function.iscommand = True
-    return function
+class command(object):
+    def __init__(self, *args):
+        self.types = args
+
+    def __call__(self, f):
+        f.iscommand = True
+        argspec = inspect.getargspec(f)
+        @functools.wraps(f)
+        def wraps(*args, **kwargs):
+            kwargs.update(zip(argspec.args, args))
+            if len(kwargs) < len(argspec.args):
+                raise BadCommand('Not enough fields')
+            if len(kwargs) > len(argspec.args):
+                raise BadCommand('Too many fields')
+            for name in argspec.args:
+                if name not in kwargs:
+                    raise BadCommand('Unknown field {0}'.format(name))
+            if self.types:
+                for t, name in zip(self.types, argspec.args):
+                    if not isinstance(kwargs[name], t):
+                        raise BadCommand("Field '{0}' must have type '{1}'"\
+                            .format(name, t.__name__))
+            return f(**kwargs)
+        return wraps
 
 def debug_only(function):
     if not DEBUG:
@@ -30,7 +52,7 @@ def check_emptiness(obj, descr):
     if not len(obj):
         raise BadCommand(descr)
 
-@command
+@command(str, str)
 def register(username, password):
     if not username.replace('_', '').isalnum():
         raise BadCommand('Incorrect username')
@@ -45,7 +67,7 @@ def register(username, password):
         dbi().add(user)
     return response_ok(sid=user.sid)
 
-@command
+@command(str)
 def unregister(sid):
     user = dbi().get_user(sid)
     try:
@@ -60,12 +82,12 @@ def unregister(sid):
     return response_ok()
 
 @debug_only
-@command
+@command()
 def clear():
     dbi().clear()
     return response_ok()
 
-@command
+@command(str, str, int)
 def createGame(sid, gameName, playersCount): # check the validity of symbols
     user = dbi().get_user(sid)
     if playersCount < 2:
@@ -102,7 +124,7 @@ def get_player(user_id, game_id):
     except sqlalchemy.orm.exc.NoResultFound:
         return None
 
-@command
+@command(str, str)
 def joinGame(sid, gameName):
     user_id = dbi().get_user(sid).id
     game = dbi().get_game(gameName)
@@ -118,7 +140,7 @@ def joinGame(sid, gameName):
     dbi().add(player)
     return response_ok()
 
-@command
+@command(str, str)
 def leaveGame(sid, gameName):
     user_id = dbi().get_user(sid).id
     game = dbi().get_game(gameName)
@@ -134,7 +156,7 @@ def leaveGame(sid, gameName):
     dbi().session.commit()
     return response_ok()
 
-@command
+@command(str, str, str)
 def sendMessage(sid, text, gameName):
     user_id = dbi().get_user(sid).id
     game_id = dbi().get_game(gameName).id
@@ -145,7 +167,7 @@ def sendMessage(sid, text, gameName):
     dbi().add(message)
     return response_ok()
 
-@command
+@command(str, str)
 def getChatHistory(sid, gameName):
     user = dbi().get_user(sid)
     game = dbi().get_game(gameName)
@@ -157,19 +179,19 @@ def getChatHistory(sid, gameName):
         for msg in game.messages]
     return response_ok(chat=chat)
 
-@command
+@command(str)
 def getGamesList(sid):
     user = dbi().get_user(sid)
     games = [{"gameName": name} for name in dbi().query(Game.name).all()]
     return response_ok(games=games)
 
-@command
+@command(str)
 def getPlayersList(sid):
     user = dbi().get_user(sid)
     players = [{"username": name} for name in dbi().query(User.username).all()]
     return response_ok(players=players)
 
-@command
+@command(str, str)
 def getPlayersListForGame(sid, gameName):
     user = dbi().get_user(sid)
     game = dbi().get_game(gameName)
@@ -177,7 +199,7 @@ def getPlayersListForGame(sid, gameName):
         dbi().query(Player).join(Game).filter(Game.id==game.id).all()]
     return response_ok(players=players)
 
-@command
+@command(str, str)
 def setPlayerStatus(sid, status):
     user = dbi().get_user(sid)
     if status not in ('ready', 'not_ready'):
@@ -222,30 +244,4 @@ def process_request(request):
     command = globals().get(request.pop('cmd'))
     if not hasattr(command, 'iscommand'):
         raise BadCommand('Unknown command')
-    try:
-        return command(**request)
-    except TypeError as e:
-        message = e.args[0]
-
-        # wrong number of arguments
-        pattern = '''
-            \w+\(\)\stakes\sexactly\s(\d+)\s
-            non-keyword\spositional\sarguments\s
-            \((\d+)\sgiven\)
-        '''
-        match = re.match(pattern, message, re.VERBOSE)
-        if match:
-            expected, given = map(int, match.groups())
-            if expected > given:
-                raise BadCommand('Not enough fields')
-            else:
-                raise BadCommand('Too many fields')
-
-        # unknown argument
-        pattern = "\w+\(\)\sgot\san\sunexpected\skeyword\sargument\s(\'\w+\')"
-        match = re.match(pattern, message, re.VERBOSE)
-        if match:
-            raise BadCommand('Unknown field {0}'.format(match.groups()[0]))
-
-        # other exceptions
-        raise e
+    return command(**request)
