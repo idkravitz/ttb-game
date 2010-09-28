@@ -1,0 +1,11 @@
+{
+    "sid": "GordonFreeman", 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "message": "Faction already exists", 
+    "status": "badFactionName"
+}

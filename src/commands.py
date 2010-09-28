@@ -198,6 +198,24 @@ def setPlayerStatus(sid, status):
         player.game.status = "started"
     dbi().session.commit()
     return response_ok()
+    
+@command
+def uploadFaction(sid,factionName,units):
+    user = dbi().get_user(sid)  
+    check_len(factionName, MAX_FACTIONNAME_LENGTH, 'Too long faction name')
+    check_emptiness(factionName, 'Empty faction name')      
+    try:
+        faction = dbi().query(Faction).filter(Faction.name==factionName).one()
+        raise BadFactionName('Faction already exists')
+    except sqlalchemy.orm.exc.NoResultFound:   
+        faction = Faction(factionName)
+        dbi().add(faction)
+        faction = dbi().query(Faction).filter(Faction.name==factionName).one() 
+        for unit in units:
+            param = Unit(**unit)
+            param.faction_id = faction.id
+            dbi().add(param)              
+    return response_ok()           
 
 def process_request(request):
     if 'cmd' not in request:

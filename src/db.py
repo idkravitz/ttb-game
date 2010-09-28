@@ -115,7 +115,7 @@ class Unit(Base):
     faction = relationship(Faction, backref=backref('units'))
 
     @copy_args
-    def __init__(self, name): pass
+    def __init__(self, name, HP, MP, defence, attack, range, damage, cost): pass
 
 class Army(Base):
     __tablename__ = 'armies'
@@ -183,7 +183,13 @@ class Database:
         try:
             return self.session.query(Game).filter_by(name=name).filter(Game.state!='finished').one()
         except NoResultFound:
-            raise BadCommand('No unfinished game with that name')
+            raise BadCommand('No unfinished game with that name') 
+              
+    def get_faction(self, name):
+        try:
+            return self.session.query(Faction).filter_by(name=name).one()
+        except NoResultFound:
+            raise BadCommand('No faction with that name')                     
 
 def db_instance():
     if Database.instance is None:

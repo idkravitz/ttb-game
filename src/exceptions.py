@@ -27,6 +27,7 @@ exceptions = (
     'alreadyInGame',
     'alreadyExists',
     'playersNotReady',
+    'badFactionName',
 )
 
 def generate_exception(name, status):
