@@ -58,3 +58,6 @@ def copy_args(func):
             setattr(self, key, value)
         func(self, *args, **kwargs)
     return __init__
+
+def type_checks(*argv):
+   pass 

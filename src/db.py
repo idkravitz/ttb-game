@@ -41,6 +41,9 @@ class Map(Base):
 
     @copy_args
     def __init__(self, name, construction): pass
+    
+    def __repr__(self):
+        return "<Map({0},{1})>".format(self.name, self.construction)
 
 class Faction(Base):
     __tablename__ = 'factions'

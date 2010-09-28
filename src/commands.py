@@ -200,16 +200,21 @@ def setPlayerStatus(sid, status):
     return response_ok()
 
 @command
-def uploadMap(sid, name, map):
+def uploadMap(sid, name, construction):
     user = dbi().get_user(sid)
-    if dbi().query(Map).filter(name=name).count():
+    if dbi().query(Map).filter_by(name=name).count():
         raise alreadyExists("Map with such name already exists")
-    if not map is Array:
+    if not type(construction) is list:
         raise BadMap("Field map must contain list of strings")
-    if len(set(__builtins__.map(len, map))) != 1:
+    if len(set(map(len, construction))) != 1:
         raise BadMap("Lines in map must have the same width")
-    if len(map[0]) <= 0 or len(map[0]) >= MAX_MAP_LINE_WIDTH:
+    if len(construction[0]) <= 0 or len(construction[0]) >= MAX_MAP_LINE_WIDTH:
         raise BadMap("Line width in map must be in range 1..{0}".format(MAX_MAP_LINE_WIDTH))
+    construction = "\n".join(construction)
+    new_map = Map(name, construction)
+    dbi().add(new_map)
+    return response_ok()
+
         
 def process_request(request):
     if 'cmd' not in request:
