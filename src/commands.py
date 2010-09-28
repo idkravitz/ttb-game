@@ -227,30 +227,4 @@ def process_request(request):
     command = globals().get(request.pop('cmd'))
     if not hasattr(command, 'iscommand'):
         raise BadCommand('Unknown command')
-    try:
-        return command(**request)
-    except TypeError as e:
-        message = e.args[0]
-
-        # wrong number of arguments
-        pattern = '''
-            \w+\(\)\stakes\sexactly\s(\d+)\s
-            non-keyword\spositional\sarguments\s
-            \((\d+)\sgiven\)
-        '''
-        match = re.match(pattern, message, re.VERBOSE)
-        if match:
-            expected, given = map(int, match.groups())
-            if expected > given:
-                raise BadCommand('Not enough fields')
-            else:
-                raise BadCommand('Too many fields')
-
-        # unknown argument
-        pattern = "\w+\(\)\sgot\san\sunexpected\skeyword\sargument\s(\'\w+\')"
-        match = re.match(pattern, message, re.VERBOSE)
-        if match:
-            raise BadCommand('Unknown field {0}'.format(match.groups()[0]))
-
-        # other exceptions
-        raise e
+    return command(**request)
