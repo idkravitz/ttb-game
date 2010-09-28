@@ -246,3 +246,26 @@ def uploadFaction(sid, factionName, units):
         unit.faction_id = faction.id
         dbi().add(unit)
     return response_ok()
+
+@Command(str, str)
+def deleteFaction(sid, factionName):
+    user = dbi().get_user(sid)
+    dbi().delete(dbi().get_faction(factionName))
+    return response_ok()
+
+@Command(str, str)
+def getFaction(sid, factionName):
+    user = dbi().get_user(sid)
+    faction = dbi().get_faction(factionName)
+    unitList = [{
+                    "name": u.name,
+                    "HP": u.HP,
+                    "MP": u.MP,
+                    "defence": u.defence,
+                    "attack": u.attack,
+                    "range": u.range,
+                    "damage": u.damage,
+                    "cost": u.cost,
+                }
+        for u in faction.units]
+    return response_ok(unitList=unitList)
