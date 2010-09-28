@@ -244,7 +244,24 @@ def deleteFaction(sid,factionName):
     user = dbi().get_user(sid)
     faction = dbi().get_faction(factionName)
     dbi().delete(faction) 
-    return response_ok()              
+    return response_ok() 
+    
+@command(str, str)
+def getFaction(sid,factionName):
+    user = dbi().get_user(sid)
+    faction = dbi().get_faction(factionName)  
+    unitList = [{
+                    "name": u.name,
+                    "HP": u.HP,
+                    "MP": u.MP,
+                    "defence": u.defence,
+                    "attack": u.attack,
+                    "range": u.range,
+                    "damage": u.damage,
+                    "cost": u.cost,                              
+                }
+        for u in faction.units]    
+    return response_ok(unitList=unitList)                  
 
 def process_request(request):
     if 'cmd' not in request:
