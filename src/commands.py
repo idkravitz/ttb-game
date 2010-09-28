@@ -232,12 +232,19 @@ def uploadFaction(sid, factionName, units):
     except sqlalchemy.orm.exc.NoResultFound:   
         faction = Faction(factionName)
         dbi().add(faction)
-        faction = dbi().query(Faction).filter(Faction.name==factionName).one() 
+        faction = dbi().get_faction(factionName)
         for unit in units:
             param = Unit(**unit)
             param.faction_id = faction.id
             dbi().add(param)              
-    return response_ok()           
+    return response_ok()  
+    
+@command(str, str)
+def deleteFaction(sid,factionName):
+    user = dbi().get_user(sid)
+    faction = dbi().get_faction(factionName)
+    dbi().delete(faction) 
+    return response_ok()              
 
 def process_request(request):
     if 'cmd' not in request:
