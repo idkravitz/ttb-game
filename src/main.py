@@ -12,7 +12,7 @@ def parse_request(request):
             request = json.loads(request)
         except ValueError:
             raise BadRequest('Error in JSON syntax')
-        if not isinstance(request, dict) or not len(request):
+        if not isinstance(request, dict) or not request:
             raise BadRequest('The request must be an object')
         return commands.process_request(request)
     except RequestError as e:

@@ -10,14 +10,14 @@ from common import *
 from exceptions import *
 from db import db_instance as dbi, User, Map, Game, Player, Message, Faction, Unit, Army, UnitArmy
 
-class command(object):
+class Command(object):
     def __init__(self, *args):
         self.types = args
 
-    def __call__(self, f):
-        f.iscommand = True
-        argspec = inspect.getargspec(f)
-        @functools.wraps(f)
+    def __call__(self, function):
+        function.iscommand = True
+        argspec = inspect.getargspec(function)
+        @functools.wraps(function)
         def wraps(*args, **kwargs):
             kwargs.update(zip(argspec.args, args))
             if len(kwargs) < len(argspec.args):
@@ -44,6 +44,14 @@ def debug_only(function):
         return function(**kwargs)
     return wraps
 
+def process_request(request):
+    if 'cmd' not in request:
+        raise BadRequest('Field \'cmd\' required')
+    command = globals().get(request.pop('cmd'))
+    if not hasattr(command, 'iscommand'):
+        raise BadCommand('Unknown command')
+    return command(**request)
+
 def response_ok(**kwargs):
     kwargs.update({'status': 'ok'})
     return json.dumps(kwargs, **JSON_DUMPS_FORMAT)
@@ -56,7 +64,7 @@ def check_emptiness(obj, descr):
     if not len(obj):
         raise BadCommand(descr)
 
-@command(str, str)
+@Command(str, str)
 def register(username, password):
     if not username.replace('_', '').isalnum():
         raise BadCommand('Incorrect username')
@@ -71,7 +79,7 @@ def register(username, password):
         dbi().add(user)
     return response_ok(sid=user.sid)
 
-@command(str)
+@Command(str)
 def unregister(sid):
     user = dbi().get_user(sid)
     try:
@@ -82,16 +90,17 @@ def unregister(sid):
     except sqlalchemy.orm.exc.NoResultFound:
         player = None
     if player:
-        leaveGame(sid, dbi().query(Game).filter(Game.id == player.game_id).one().name)
+        leaveGame(sid, dbi().query(Game)\
+            .filter(Game.id == player.game_id).one().name)
     return response_ok()
 
 @debug_only
-@command()
+@Command()
 def clear():
     dbi().clear()
     return response_ok()
 
-@command(str, str, int)
+@Command(str, str, int)
 def createGame(sid, gameName, playersCount): # check the validity of symbols
     user = dbi().get_user(sid)
     if playersCount < 2:
@@ -128,7 +137,7 @@ def get_player(user_id, game_id):
     except sqlalchemy.orm.exc.NoResultFound:
         return None
 
-@command(str, str)
+@Command(str, str)
 def joinGame(sid, gameName):
     user_id = dbi().get_user(sid).id
     game = dbi().get_game(gameName)
@@ -140,11 +149,10 @@ def joinGame(sid, gameName):
         raise BadGame('Game already started')
     if get_player(user_id, game.id):
         raise AlreadyInGame('User is already playing')
-    player = Player(user_id, game.id)
-    dbi().add(player)
+    dbi().add(Player(user_id, game.id))
     return response_ok()
 
-@command(str, str)
+@Command(str, str)
 def leaveGame(sid, gameName):
     user_id = dbi().get_user(sid).id
     game = dbi().get_game(gameName)
@@ -160,18 +168,17 @@ def leaveGame(sid, gameName):
     dbi().session.commit()
     return response_ok()
 
-@command(str, str, str)
+@Command(str, str, str)
 def sendMessage(sid, text, gameName):
     user_id = dbi().get_user(sid).id
     game_id = dbi().get_game(gameName).id
     check_len(text, MAX_MESSAGE_LENGTH, 'Too long message')
     if not get_player(user_id, game_id):
         raise BadCommand('User is not in this game')
-    message = Message(user_id, game_id, text)
-    dbi().add(message)
+    dbi().add(Message(user_id, game_id, text))
     return response_ok()
 
-@command(str, str)
+@Command(str, str)
 def getChatHistory(sid, gameName):
     user = dbi().get_user(sid)
     game = dbi().get_game(gameName)
@@ -183,19 +190,19 @@ def getChatHistory(sid, gameName):
         for msg in game.messages]
     return response_ok(chat=chat)
 
-@command(str)
+@Command(str)
 def getGamesList(sid):
     user = dbi().get_user(sid)
     games = [{"gameName": name} for name in dbi().query(Game.name).all()]
     return response_ok(games=games)
 
-@command(str)
+@Command(str)
 def getPlayersList(sid):
     user = dbi().get_user(sid)
     players = [{"username": name} for name in dbi().query(User.username).all()]
     return response_ok(players=players)
 
-@command(str, str)
+@Command(str, str)
 def getPlayersListForGame(sid, gameName):
     user = dbi().get_user(sid)
     game = dbi().get_game(gameName)
@@ -203,7 +210,7 @@ def getPlayersListForGame(sid, gameName):
         dbi().query(Player).join(Game).filter(Game.id==game.id).all()]
     return response_ok(players=players)
 
-@command(str, str)
+@Command(str, str)
 def setPlayerStatus(sid, status):
     user = dbi().get_user(sid)
     if status not in ('ready', 'not_ready'):
@@ -224,29 +231,18 @@ def setPlayerStatus(sid, status):
         player.game.status = "started"
     dbi().session.commit()
     return response_ok()
-    
-@command(str, str, list)
-def uploadFaction(sid, factionName, units):
-    user = dbi().get_user(sid)  
-    check_len(factionName, MAX_FACTIONNAME_LENGTH, 'Too long faction name')
-    check_emptiness(factionName, 'Empty faction name')      
-    try:
-        faction = dbi().query(Faction).filter(Faction.name==factionName).one()
-        raise BadFactionName('Faction already exists')
-    except sqlalchemy.orm.exc.NoResultFound:   
-        faction = Faction(factionName)
-        dbi().add(faction)
-        faction = dbi().query(Faction).filter(Faction.name==factionName).one() 
-        for unit in units:
-            param = Unit(**unit)
-            param.faction_id = faction.id
-            dbi().add(param)              
-    return response_ok()           
 
-def process_request(request):
-    if 'cmd' not in request:
-        raise BadRequest('Field \'cmd\' required')
-    command = globals().get(request.pop('cmd'))
-    if not hasattr(command, 'iscommand'):
-        raise BadCommand('Unknown command')
-    return command(**request)
+@Command(str, str, list)
+def uploadFaction(sid, factionName, units):
+    user = dbi().get_user(sid)
+    check_len(factionName, MAX_FACTIONNAME_LENGTH, 'Too long faction name')
+    check_emptiness(factionName, 'Empty faction name')
+    if dbi().query(Faction).filter(Faction.name==factionName).count():
+        raise BadFactionName('Faction already exists')
+    faction = Faction(factionName)
+    dbi().add(faction)
+    unit_objects = (Unit(**unit) for unit in units)
+    for unit in unit_objects:
+        unit.faction_id = faction.id
+        dbi().add(unit)
+    return response_ok()
