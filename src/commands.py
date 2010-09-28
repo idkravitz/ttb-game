@@ -28,17 +28,21 @@ class command(object):
                 if name not in kwargs:
                     raise BadCommand('Unknown field {0}'.format(name))
             if self.types:
-                for t, name in zip(self.types, argspec.args):
-                    if not isinstance(kwargs[name], t):
-                        raise BadCommand("Field '{0}' must have type '{1}'"\
-                            .format(name, t.__name__))
-            return f(**kwargs)
+                for type_, name in zip(self.types, argspec.args):
+                    if not isinstance(kwargs[name], type_):
+                        raise BadCommand(
+                            "Field '{0}' must have type '{1}'".format(
+                                name, type_.__name__))
+            return function(**kwargs)
         return wraps
 
 def debug_only(function):
-    if not DEBUG:
-        raise BadCommand('Command allowed only in test mode')
-    return function
+    @functools.wraps(function)
+    def wraps(**kwargs):
+        if not DEBUG:
+            raise BadCommand('Command allowed only in test mode')
+        return function(**kwargs)
+    return wraps
 
 def response_ok(**kwargs):
     kwargs.update({'status': 'ok'})
