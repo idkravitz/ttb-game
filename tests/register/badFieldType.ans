@@ -1,0 +1,4 @@
+{
+    "message": "Field 'username' must have type 'str'", 
+    "status": "badCommand"
+}
