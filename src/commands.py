@@ -221,23 +221,25 @@ def setPlayerStatus(sid, status):
     dbi().session.commit()
     return response_ok()
 
-@command
-def uploadMap(sid, name, construction):
+@command(str, str, list)
+def uploadMap(sid, name, terrain):
     user = dbi().get_user(sid)
+    for line in terrain:
+        if not isinstance(line, str):
+            raise BadCommand("Field 'map' must consist of strings")
     if dbi().query(Map).filter_by(name=name).count():
         raise alreadyExists("Map with such name already exists")
-    if not type(construction) is list:
-        raise BadMap("Field map must contain list of strings")
-    if len(set(map(len, construction))) != 1:
+    if len(set(map(len, terrain))) != 1:
         raise BadMap("Lines in map must have the same width")
-    if len(construction[0]) <= 0 or len(construction[0]) >= MAX_MAP_LINE_WIDTH:
+    if not len(terrain[0]) or len(terrain[0]) >= MAX_MAP_LINE_WIDTH:
         raise BadMap("Line width in map must be in range 1..{0}".format(MAX_MAP_LINE_WIDTH))
-    construction = "\n".join(construction)
-    new_map = Map(name, construction)
+
+    # pushing
+    terrain = "\n".join(terrain)
+    new_map = Map(name, terrain)
     dbi().add(new_map)
     return response_ok()
 
-        
 def process_request(request):
     if 'cmd' not in request:
         raise BadRequest('Field \'cmd\' required')

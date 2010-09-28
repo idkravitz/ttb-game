@@ -8,5 +8,5 @@
     "cmd": "uploadMap",
     "sid": "Mikshinfish",
     "name": "de_dust",
-    "construction": ["...", ".X.", "..."]
+    "terrain": ["...", ".X.", "..."]
 }

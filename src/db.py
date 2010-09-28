@@ -37,13 +37,13 @@ class Map(Base):
 
     id = pkey()
     name = uniqueString()
-    construction = requiredString()
+    terrain = requiredString()
 
     @copy_args
-    def __init__(self, name, construction): pass
+    def __init__(self, name, terrain): pass
     
     def __repr__(self):
-        return "<Map({0},{1})>".format(self.name, self.construction)
+        return "<Map({0},{1})>".format(self.name, self.terrain)
 
 class Faction(Base):
     __tablename__ = 'factions'
