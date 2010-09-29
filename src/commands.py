@@ -260,6 +260,7 @@ def uploadMap(sid, name, terrain):
         raise BadMap("Map width must be in range 1..{0}".format(MAX_MAP_WIDTH))
     if not (0 < len(terrain) < MAX_MAP_HEIGHT):
         raise BadMap("Map height must be in range 1..{0}".format(MAX_MAP_HEIGHT))
+    width = len(terrain[0])
     terrain = ''.join(terrain)
     chars = set(char for char in terrain)
     if not chars < set(".x123456789"):
@@ -270,8 +271,16 @@ def uploadMap(sid, name, terrain):
         raise BadMap("There must be deploy spots at least for 2 players")
     if len(chars) != int(max(chars)):
         raise BadMap("The numbers must be consequetive")
-    dbi().add(Map(name, terrain, len(terrain[0]), len(terrain)))
+    dbi().add(Map(name, terrain, width))
     return response_ok()
+
+@Command(str, str)
+def getMap(sid, name):
+    dbi().get_user(sid)
+    map_ = dbi().get_map(name)
+    width = map_.width
+    terrain = map_.terrain
+    return response_ok(map=[terrain[i:i+width] for i in range(0, len(terrain), width)])
 
 @Command(str, str, list)
 def uploadFaction(sid, factionName, units):

@@ -39,10 +39,9 @@ class Map(Base):
     name = uniqueString()
     terrain = requiredString()
     width = requiredInteger()
-    height = requiredInteger()
 
     @copy_args
-    def __init__(self, name, terrain, width, height): pass
+    def __init__(self, name, terrain, width): pass
     
     def __repr__(self):
         return "<Map({0},{1})>".format(self.name, self.terrain)
