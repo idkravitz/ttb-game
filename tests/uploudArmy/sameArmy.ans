@@ -1,0 +1,14 @@
+{
+    "sid": "GordonFreeman", 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "message": "Army already exists", 
+    "status": "badFactionName"
+}

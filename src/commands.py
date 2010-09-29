@@ -68,7 +68,7 @@ def check_emptiness(obj, descr):
 def register(username, password):
     if not username.replace('_', '').isalnum():
         raise BadCommand('Incorrect username')
-    check_len(username, MAX_USERNAME_LENGTH, 'Too long username')
+    check_len(username, MAX_NAME_LENGTH, 'Too long username')
     check_emptiness(password, 'Empty password')
     try:
         user = dbi().query(User).filter(User.username==username).one()
@@ -107,7 +107,7 @@ def createGame(sid, gameName, playersCount): # check the validity of symbols
         raise BadCommand('Number of players must be 2 or more')
     if playersCount > MAX_PLAYERS:
         raise BadCommand('Too many players')
-    check_len(gameName, MAX_GAMENAME_LENGTH, 'Too long game name')
+    check_len(gameName, MAX_NAME_LENGTH, 'Too long game name')
     check_emptiness(gameName, 'Empty game name')
     if dbi().query(Player)\
         .join(Game)\
@@ -235,7 +235,7 @@ def setPlayerStatus(sid, status):
 @Command(str, str, list)
 def uploadFaction(sid, factionName, units):
     user = dbi().get_user(sid)
-    check_len(factionName, MAX_FACTIONNAME_LENGTH, 'Too long faction name')
+    check_len(factionName, MAX_NAME_LENGTH, 'Too long faction name')
     check_emptiness(factionName, 'Empty faction name')
     if dbi().query(Faction).filter(Faction.name==factionName).count():
         raise BadFactionName('Faction already exists')
@@ -269,3 +269,22 @@ def getFaction(sid, factionName):
                 }
         for u in faction.units]
     return response_ok(unitList=unitList)
+    
+@Command(str, str, list)
+def uploadArmy(sid, armyName, armyUnits):
+    user = dbi().get_user(sid)
+    check_len(armyName, MAX_NAME_LENGTH, 'Too long army name')
+    check_emptiness(armyName, 'Empty army name')
+    if dbi().query(Army).filter(Army.name==armyName).count():
+        raise BadFactionName('Army already exists')
+    army = Army(armyName)
+    dbi().add(army)
+    #check if such unit doesn't exist
+    #check that all units in one fraction    
+    #choose from unit unit.id, sent in list armyUnits and add unit.id, army.id and add to ArmyUnits
+    army = dbi().query(Army).filter(Army.name==armyName).one()      
+    #unit_objects = (Unit(**unit) for unit in armyUnits)
+    #for unit in unit_objects:
+    #    p = UnitArmy(unit.id,army.id,5)
+    #    dbi().add(p)        
+    return response_ok()       
