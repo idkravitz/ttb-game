@@ -30,24 +30,7 @@
             "cost": 1
         }
     ]
-} 
-
-{
-    "cmd": "uploadArmy",
-    "sid": "GordonFreeman",
-    "armyName": "People",
-    "factionName": "People",
-    "armyUnits": [
-        {
-            "name": "first", 
-            "count": 5
-        },
-        {
-            "name": "second",
-            "count": 3
-        }
-    ]
-}    
+}     
 
 {
     "cmd": "deleteArmy",
