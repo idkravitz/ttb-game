@@ -126,7 +126,7 @@ class Army(Base):
     player = relationship(Player, backref=backref('armies'))
 
     @copy_args
-    def __init__(self, name): pass
+    def __init__(self, name, player_id): pass
 
 class UnitArmy(Base):
     __tablename__ = 'unitArmy'
