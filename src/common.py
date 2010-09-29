@@ -12,7 +12,8 @@ MAX_USERNAME_LENGTH = 15
 MAX_GAMENAME_LENGTH = 20
 MAX_MESSAGE_LENGTH = 140
 MAX_PLAYERS = 16
-MAX_MAP_LINE_WIDTH = 600
+MAX_MAP_WIDTH = 600
+MAX_MAP_HEIGHT = 600
 
 import inspect
 import functools
@@ -58,6 +59,3 @@ def copy_args(func):
             setattr(self, key, value)
         func(self, *args, **kwargs)
     return __init__
-
-def type_checks(*argv):
-   pass 
