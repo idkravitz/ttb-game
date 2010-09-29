@@ -134,6 +134,7 @@ class UnitArmy(Base):
     id = pkey()
     unit_id = fkey('units.id')
     army_id = fkey('armies.id')
+    count = requiredInteger()
     unit = relationship(Unit, backref=backref('unitArmy'))
     army = relationship(Army, backref=backref('unitArmy'))
 
@@ -190,6 +191,12 @@ class Database:
             return self.session.query(Faction).filter_by(name=name).one()
         except NoResultFound:
             raise BadCommand('No faction with that name')
+            
+    def get_unit(self, name):
+        try:
+            return self.session.query(Unit).filter_by(name=name).one()
+        except NoResultFound:
+            raise BadCommand('No unit with that name')        
 
 def db_instance():
     if Database.instance is None:
