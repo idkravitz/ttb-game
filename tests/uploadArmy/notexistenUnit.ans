@@ -7,5 +7,5 @@
 }
 {
     "message": "No unit with that name", 
-    "status": "badCommand"
+    "status": "badUnit"
 }

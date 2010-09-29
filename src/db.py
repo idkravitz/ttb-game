@@ -193,26 +193,26 @@ class Database:
         try:
             return self.session.query(Game).filter_by(name=name).filter(Game.state!='finished').one()
         except NoResultFound:
-            raise BadCommand('No unfinished game with that name')
+            raise BadGame('No unfinished game with that name')
 
     def get_faction(self, name):
         try:
             return self.session.query(Faction).filter_by(name=name).one()
         except NoResultFound:
-            raise BadCommand('No faction with that name')
+            raise BadFaction('No faction with that name')
 
     def get_army(self, name):
         try:
             return self.session.query(Army).filter_by(name=name).one()
         except NoResultFound:
-            raise BadCommand('No army with that name')
+            raise BadArmy('No army with that name')
 
     def get_unit(self, name, factionName):
         try:
             return self.session.query(Unit).join(Faction).filter(Unit.name==name)\
                 .filter(Faction.name==factionName).one()
         except NoResultFound:
-            raise BadCommand('No unit with that name')
+            raise BadUnit('No unit with that name')
     def get_map(self, mapName):
         try:
             return self.session.query(Map).filter_by(name=mapName).one()

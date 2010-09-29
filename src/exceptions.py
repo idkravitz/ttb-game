@@ -23,14 +23,14 @@ exceptions = (
     'badPassword',
     'badSid',
     'badGame',
+    'badMap',
+    'badFaction',
+    'badArmy',
+    'badUnit',
     'notInGame',
     'alreadyInGame',
     'alreadyExists',
     'playersNotReady',
-    'badMap',
-    'badFactionName',
-    'badFaction',
-    'badArmy',
 )
 
 def generate_exception(name, status):

@@ -294,7 +294,7 @@ def uploadFaction(sid, factionName, units):
     check_len(factionName, MAX_NAME_LENGTH, 'Too long faction name')
     check_emptiness(factionName, 'Empty faction name')
     if dbi().query(Faction).filter(Faction.name==factionName).count():
-        raise BadFactionName('Faction already exists')
+        raise BadFaction('Faction already exists')
     faction = Faction(factionName)
     dbi().add(faction)
     unit_objects = (Unit(**unit) for unit in units)

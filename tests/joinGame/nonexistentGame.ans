@@ -17,5 +17,5 @@
 }
 {
     "message": "No unfinished game with that name", 
-    "status": "badCommand"
+    "status": "badGame"
 }

@@ -7,5 +7,5 @@
 }
 {
     "message": "Faction already exists", 
-    "status": "badFactionName"
+    "status": "badFaction"
 }
