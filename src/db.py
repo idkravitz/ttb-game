@@ -139,7 +139,7 @@ class UnitArmy(Base):
     army = relationship(Army, backref=backref('unitArmy'))
 
     @copy_args
-    def __init__(self, unit_id, army_id): pass
+    def __init__(self, unit_id, army_id, count): pass
 
 
 class Database:
@@ -198,9 +198,10 @@ class Database:
         except NoResultFound:
             raise BadCommand('No army with that name')            
             
-    def get_unit(self, name):
+    def get_unit(self, name, factionName):
         try:
-            return self.session.query(Unit).filter_by(name=name).one()
+            return self.session.query(Unit).join(Faction).filter(Unit.name==name)\
+                .filter(Faction.name==factionName).one()
         except NoResultFound:
             raise BadCommand('No unit with that name')        
 

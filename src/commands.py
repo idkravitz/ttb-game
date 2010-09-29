@@ -270,23 +270,26 @@ def getFaction(sid, factionName):
         for u in faction.units]
     return response_ok(unitList=unitList)
     
-@Command(str, str, list)
-def uploadArmy(sid, armyName, armyUnits):
+@Command(str, str, str, list)
+def uploadArmy(sid, armyName, factionName, armyUnits):
     user = dbi().get_user(sid)
     check_len(armyName, MAX_NAME_LENGTH, 'Too long army name')
     check_emptiness(armyName, 'Empty army name')
-    if dbi().query(Army).filter(Army.name==armyName).count():
-        raise BadFactionName('Army already exists')
+    if dbi().query(Army).filter_by(name=armyName).count():
+        raise BadArmy('Army already exists')
+    if not dbi().query(Faction).filter_by(name=factionName).count():
+        raise BadFaction('No faction with that name')
+    unit_packs = []
+    for unit in armyUnits:
+        if not isinstance(unit, dict) or len(unit) != 2 or\
+            'name' not in unit or 'count' not in unit:
+            raise BadArmy("Each element of armyUnits must have fields 'name' and 'count'")
+        name, count = unit['name'], unit['count']
+        unit_packs.append(dbi().get_unit(name, factionName))
+        unit_packs[-1].count = count
     army = Army(armyName)
     dbi().add(army)
-    #check if such unit doesn't exist
-    #check that all units in one fraction    
-    #choose from unit unit.id, sent in list armyUnits and add unit.id, army.id and add to ArmyUnits
-    army = dbi().query(Army).filter(Army.name==armyName).one()      
-    #unit_objects = (Unit(**unit) for unit in armyUnits)
-    #for unit in unit_objects:
-    #    p = UnitArmy(unit.id,army.id,5)
-    #    dbi().add(p)        
+    dbi().add(*(UnitArmy(unit.id, army.id, unit.count) for unit in unit_packs))
     return response_ok() 
     
 @Command(str, str)
