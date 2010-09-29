@@ -121,10 +121,10 @@ def createGame(sid, gameName, playersCount, mapName, factionName, totalCost): # 
         .filter(Game.state != 'finished')\
         .count():
         raise AlreadyExists('Game with the such name already exists')
-    map_id = dbi().get_map(mapName).id
-    faction_id = dbi().get_faction(factionName).id
     if totalCost <  MIN_TOTAL_COST:
         raise BadGame("totalCost must be more than or equal to {0}".format(MIN_TOTAL_COST))
+    map_id = dbi().get_map(mapName).id
+    faction_id = dbi().get_faction(factionName).id
     game = Game(gameName, playersCount, map_id, faction_id, totalCost)
     dbi().add(game)
     player = Player(user.id, game.id)
@@ -143,7 +143,7 @@ def get_player(user_id, game_id):
 
 @Command(str, str)
 def joinGame(sid, gameName):
-    user_id = dbi().get_user(sid).id
+    user = dbi().get_user(sid)
     game = dbi().get_game(gameName)
     if dbi().query(Player).join(Game)\
         .filter(Game.id == game.id)\
@@ -151,16 +151,16 @@ def joinGame(sid, gameName):
         raise BadGame('Game is full')
     if game.state == 'started':
         raise BadGame('Game already started')
-    if get_player(user_id, game.id):
+    if get_player(user.id, game.id):
         raise AlreadyInGame('User is already playing')
-    dbi().add(Player(user_id, game.id))
+    dbi().add(Player(user.id, game.id))
     return response_ok()
 
 @Command(str, str)
 def leaveGame(sid, gameName):
-    user_id = dbi().get_user(sid).id
+    user = dbi().get_user(sid)
     game = dbi().get_game(gameName)
-    player = get_player(user_id, game.id)
+    player = get_player(user.id, game.id)
     if not player:
         raise BadGame('User is not playing')
     if game.state == 'not_started':
@@ -174,17 +174,17 @@ def leaveGame(sid, gameName):
 
 @Command(str, str, str)
 def sendMessage(sid, text, gameName):
-    user_id = dbi().get_user(sid).id
-    game_id = dbi().get_game(gameName).id
+    user = dbi().get_user(sid)
+    game = dbi().get_game(gameName)
     check_len(text, MAX_MESSAGE_LENGTH, 'Too long message')
-    if not get_player(user_id, game_id):
+    if not get_player(user.id, game.id):
         raise BadCommand('User is not in this game')
-    dbi().add(Message(user_id, game_id, text))
+    dbi().add(Message(user.id, game.id, text))
     return response_ok()
 
 @Command(str, str)
 def getChatHistory(sid, gameName):
-    user = dbi().get_user(sid)
+    dbi().check_sid(sid)
     game = dbi().get_game(gameName)
     chat = [{
                 "username": msg.user.username,
@@ -197,28 +197,28 @@ def getChatHistory(sid, gameName):
 @Command(str)
 def getGamesList(sid):
     user = dbi().get_user(sid)
-    games = [\
-        {
-            "gameName": game.name,
-            "mapName": game.map.name,
-            "factionName": game.faction.name,
-            "gameStatus": game.state,
-            "playersCount": game.players_count,
-            "connectedPlayersCount": dbi().query(Player).filter_by(game_id=game.id).count(),
-            "totalCost": game.total_cost,
-        } \
+    games = [{
+                  "gameName": game.name,
+                  "mapName": game.map.name,
+                  "factionName": game.faction.name,
+                  "gameStatus": game.state,
+                  "playersCount": game.players_count,
+                  "connectedPlayersCount":
+                    dbi().query(Player).filter_by(game_id=game.id).count(),
+                  "totalCost": game.total_cost,
+             }
         for game in dbi().query(Game).all()]
     return response_ok(games=games)
 
 @Command(str)
 def getPlayersList(sid):
-    user = dbi().get_user(sid)
+    dbi().check_sid(sid)
     players = [{"username": name} for name in dbi().query(User.username).all()]
     return response_ok(players=players)
 
 @Command(str, str)
 def getPlayersListForGame(sid, gameName):
-    user = dbi().get_user(sid)
+    dbi().check_sid(sid)
     game = dbi().get_game(gameName)
     players = [{"username": player.user.username} for player in \
         dbi().query(Player).join(Game).filter(Game.id==game.id).all()]
@@ -248,7 +248,7 @@ def setPlayerStatus(sid, status):
 
 @Command(str, str, list)
 def uploadMap(sid, name, terrain):
-    user = dbi().get_user(sid)
+    dbi().check_sid(sid)
     for line in terrain:
         if not isinstance(line, str):
             raise BadCommand("Field 'terrain' must consist of strings")
@@ -276,21 +276,21 @@ def uploadMap(sid, name, terrain):
 
 @Command(str, str)
 def getMap(sid, name):
-    dbi().get_user(sid)
+    dbi().check_sid(sid)
     map_ = dbi().get_map(name)
-    width = map_.width
-    terrain = map_.terrain
-    return response_ok(map=[terrain[i:i+width] for i in range(0, len(terrain), width)])
+    width, terrain = map_.width, map_.terrain
+    return response_ok(
+        map=[terrain[i:i+width] for i in range(0, len(terrain), width)])
 
 @Command(str, str)
 def deleteMap(sid, name):
-    dbi().get_user(sid)
+    dbi().check_sid(sid)
     dbi().delete(dbi().get_map(name))
     return response_ok()
 
 @Command(str, str, list)
 def uploadFaction(sid, factionName, units):
-    user = dbi().get_user(sid)
+    dbi().check_sid(sid)
     check_len(factionName, MAX_NAME_LENGTH, 'Too long faction name')
     check_emptiness(factionName, 'Empty faction name')
     if dbi().query(Faction).filter(Faction.name==factionName).count():
@@ -305,7 +305,7 @@ def uploadFaction(sid, factionName, units):
 
 @Command(str, str)
 def deleteFaction(sid, factionName):
-    user = dbi().get_user(sid)
+    dbi().check_sid(sid)
     dbi().delete(dbi().get_faction(factionName))
     return response_ok()
 
@@ -329,15 +329,14 @@ def getFaction(sid, factionName):
 @Command(str, str, str, list)
 def uploadArmy(sid, armyName, factionName, armyUnits):
     user = dbi().get_user(sid)
+    dbi().check_faction(factionName)
     check_len(armyName, MAX_NAME_LENGTH, 'Too long army name')
     check_emptiness(armyName, 'Empty army name')
     if dbi().query(Army).filter_by(name=armyName).count():
         raise BadArmy('Army already exists')
-    if not dbi().query(Faction).filter_by(name=factionName).count():
-        raise BadFaction('No faction with that name')
     unit_packs = []
     for unit in armyUnits:
-        if not isinstance(unit, dict) or len(unit) != 2 or\
+        if not isinstance(unit, dict) or len(unit) != 2 or \
             'name' not in unit or 'count' not in unit:
             raise BadArmy("Each element of armyUnits must have fields 'name' and 'count'")
         name, count = unit['name'], unit['count']
@@ -345,19 +344,20 @@ def uploadArmy(sid, armyName, factionName, armyUnits):
         unit_packs[-1].count = count
     army = Army(armyName, user.id)
     dbi().add(army)
-    dbi().add(*(UnitArmy(unit.id, army.id, unit.count) for unit in unit_packs))
+    for unit in unit_packs:
+        dbi().add(UnitArmy(unit.id, army.id, unit.count))
     return response_ok()
 
 @Command(str, str)
 def getArmy(sid, armyName):
-    user = dbi().get_user(sid)
+    dbi().check_sid(sid)
     army = dbi().get_army(armyName)
     return response_ok(units=[dict(name=pack.unit.name, count=pack.count)
         for pack in army.unitArmy])
 
 @Command(str, str)
 def deleteArmy(sid, armyName):
-    user = dbi().get_user(sid)
+    dbi().check_sid(sid)
     dbi().delete(dbi().get_army(armyName))
     return response_ok()
 

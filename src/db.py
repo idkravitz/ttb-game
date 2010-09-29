@@ -183,6 +183,11 @@ class Database:
             sid = 0 # change it to a SHA-1 applied to a shuffled date+username+password-hash
         return sid
 
+    def check_sid(self, sid):
+        self.get_user(sid)
+    def check_faction(self, name):
+        self.get_faction(name)
+
     def get_user(self, sid):
         try:
             return self.session.query(User).filter_by(sid=sid).one()
@@ -213,6 +218,7 @@ class Database:
                 .filter(Faction.name==factionName).one()
         except NoResultFound:
             raise BadUnit('No unit with that name')
+
     def get_map(self, mapName):
         try:
             return self.session.query(Map).filter_by(name=mapName).one()

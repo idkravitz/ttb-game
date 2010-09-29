@@ -53,7 +53,7 @@ def copy_args(func):
                 value = kwargs[key]
             else:
                 try:
-                    value = args_it.__next__()
+                    value = next(args_it)
                 except StopIteration:
                     value = defaults[key]
             setattr(self, key, value)
