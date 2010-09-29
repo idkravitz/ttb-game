@@ -192,6 +192,12 @@ class Database:
         except NoResultFound:
             raise BadCommand('No faction with that name')
             
+    def get_army(self, name):
+        try:
+            return self.session.query(Army).filter_by(name=name).one()
+        except NoResultFound:
+            raise BadCommand('No army with that name')            
+            
     def get_unit(self, name):
         try:
             return self.session.query(Unit).filter_by(name=name).one()

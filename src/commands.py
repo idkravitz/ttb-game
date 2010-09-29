@@ -287,4 +287,10 @@ def uploadArmy(sid, armyName, armyUnits):
     #for unit in unit_objects:
     #    p = UnitArmy(unit.id,army.id,5)
     #    dbi().add(p)        
-    return response_ok()       
+    return response_ok() 
+    
+@Command(str, str)
+def deleteArmy(sid, armyName):
+    user = dbi().get_user(sid)
+    dbi().delete(dbi().get_army(armyName))
+    return response_ok()          
