@@ -197,7 +197,17 @@ def getChatHistory(sid, gameName):
 @Command(str)
 def getGamesList(sid):
     user = dbi().get_user(sid)
-    games = [{"gameName": name} for name in dbi().query(Game.name).all()]
+    games = [\
+        {
+            "gameName": game.name,
+            "mapName": game.map.name,
+            "factionName": game.faction.name,
+            "gameStatus": game.state,
+            "playersCount": game.players_count,
+            "connectedPlayersCount": dbi().query(Player).filter_by(game_id=game.id).count(),
+            "totalCost": game.total_cost,
+        } \
+        for game in dbi().query(Game).all()]
     return response_ok(games=games)
 
 @Command(str)

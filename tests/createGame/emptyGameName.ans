@@ -3,6 +3,12 @@
     "status": "ok"
 }
 {
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
     "message": "Empty game name", 
     "status": "badCommand"
 }

@@ -3,6 +3,12 @@
     "status": "ok"
 }
 {
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
     "message": "Too long game name", 
     "status": "badCommand"
 }

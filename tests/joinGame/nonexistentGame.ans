@@ -10,6 +10,12 @@
     "status": "ok"
 }
 {
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
     "message": "No unfinished game with that name", 
     "status": "badCommand"
 }
