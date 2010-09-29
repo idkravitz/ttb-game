@@ -76,16 +76,29 @@ class Game(Base):
     def __repr__(self):
         return '<Game({0},{1})>'.format(self.name, self.gameState)
 
+class Army(Base):
+    __tablename__ = 'armies'
+
+    id = pkey()
+    name = requiredString()
+    user_id = fkey('users.id')
+    user = relationship(User, backref=backref('armies'))
+
+    @copy_args
+    def __init__(self, name, player_id): pass
+
 class Player(Base):
     __tablename__ = 'players'
 
     id = pkey()
     user_id = fkey('users.id')
     game_id = fkey('games.id')
+    army_id = fkey('armies.id')
     is_creator = Column(Boolean, default=False)
     state = Column(Enum('in_game', 'in_lobby', 'ready', 'left'), default='in_lobby')
     user = relationship(User, backref=backref('players'))
     game = relationship(Game, backref=backref('players'))
+    army = relationship(Army, backref=backref('players'))
 
     @copy_args
     def __init__(self, user_id, game_id): pass
@@ -120,18 +133,7 @@ class Unit(Base):
     faction = relationship(Faction, backref=backref('units'))
 
     @copy_args
-    def __init__(self, name): pass
-
-class Army(Base):
-    __tablename__ = 'armies'
-
-    id = pkey()
-    name = requiredString()
-    player_id = fkey('players.id')
-    player = relationship(Player, backref=backref('armies'))
-
-    @copy_args
-    def __init__(self, name): pass
+    def __init__(self, name, HP, MP, defence, attack, range, damage, cost): pass
 
 class UnitArmy(Base):
     __tablename__ = 'unitArmy'
@@ -139,11 +141,12 @@ class UnitArmy(Base):
     id = pkey()
     unit_id = fkey('units.id')
     army_id = fkey('armies.id')
+    count = requiredInteger()
     unit = relationship(Unit, backref=backref('unitArmy'))
     army = relationship(Army, backref=backref('unitArmy'))
 
     @copy_args
-    def __init__(self, unit_id, army_id): pass
+    def __init__(self, unit_id, army_id, count): pass
 
 
 class Database:
@@ -154,6 +157,9 @@ class Database:
         Session = sessionmaker(bind=self.engine)
         self.session = Session()
         Base.metadata.create_all(bind=self.engine)
+
+    def commit(self):
+        self.session.commit()
 
     def add(self, *objs):
         for obj in objs:
@@ -189,6 +195,25 @@ class Database:
             return self.session.query(Game).filter_by(name=name).filter(Game.state!='finished').one()
         except NoResultFound:
             raise BadCommand('No unfinished game with that name')
+
+    def get_faction(self, name):
+        try:
+            return self.session.query(Faction).filter_by(name=name).one()
+        except NoResultFound:
+            raise BadCommand('No faction with that name')
+            
+    def get_army(self, name):
+        try:
+            return self.session.query(Army).filter_by(name=name).one()
+        except NoResultFound:
+            raise BadCommand('No army with that name')            
+            
+    def get_unit(self, name, factionName):
+        try:
+            return self.session.query(Unit).join(Faction).filter(Unit.name==name)\
+                .filter(Faction.name==factionName).one()
+        except NoResultFound:
+            raise BadCommand('No unit with that name')        
 
 def db_instance():
     if Database.instance is None:

@@ -1,0 +1,11 @@
+{
+    "sid": "GordonFreeman", 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "message": "No faction with that name", 
+    "status": "badFaction"
+}
