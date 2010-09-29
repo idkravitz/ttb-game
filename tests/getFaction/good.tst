@@ -10,7 +10,7 @@
     "factionName": "People",
     "units": [
         {
-            "name": "first", 
+            "name": "first",
             "HP": 1,
             "MP": 1,
             "defence": 1,
@@ -21,9 +21,9 @@
         }
     ]
 }
-    
+
 {
     "cmd": "getFaction",
     "sid": "GordonFreeman",
-    "factionName": "People"    
-}    
+    "factionName": "People"
+}

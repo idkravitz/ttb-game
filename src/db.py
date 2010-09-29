@@ -43,7 +43,7 @@ class Map(Base):
 
     @copy_args
     def __init__(self, name, terrain, width, height): pass
-    
+
     def __repr__(self):
         return "<Map({0},{1})>".format(self.name, self.terrain)
 
@@ -201,19 +201,19 @@ class Database:
             return self.session.query(Faction).filter_by(name=name).one()
         except NoResultFound:
             raise BadCommand('No faction with that name')
-            
+
     def get_army(self, name):
         try:
             return self.session.query(Army).filter_by(name=name).one()
         except NoResultFound:
-            raise BadCommand('No army with that name')            
-            
+            raise BadCommand('No army with that name')
+
     def get_unit(self, name, factionName):
         try:
             return self.session.query(Unit).join(Faction).filter(Unit.name==name)\
                 .filter(Faction.name==factionName).one()
         except NoResultFound:
-            raise BadCommand('No unit with that name')        
+            raise BadCommand('No unit with that name')
 
 def db_instance():
     if Database.instance is None:

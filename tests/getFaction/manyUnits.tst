@@ -10,7 +10,7 @@
     "factionName": "People",
     "units": [
         {
-            "name": "first", 
+            "name": "first",
             "HP": 1,
             "MP": 1,
             "defence": 1,
@@ -20,7 +20,7 @@
             "cost": 1
         },
         {
-            "name": "second", 
+            "name": "second",
             "HP": 2,
             "MP": 2,
             "defence": 2,
@@ -30,7 +30,7 @@
             "cost": 2
         },
         {
-            "name": "third", 
+            "name": "third",
             "HP": 3,
             "MP": 3,
             "defence": 3,
@@ -38,12 +38,12 @@
             "range": 3,
             "damage": 3,
             "cost": 3
-        }               
+        }
     ]
 }
-    
+
 {
     "cmd": "getFaction",
     "sid": "GordonFreeman",
-    "factionName": "People"    
+    "factionName": "People"
 }

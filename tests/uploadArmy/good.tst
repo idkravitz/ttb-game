@@ -10,7 +10,7 @@
     "factionName": "People",
     "units": [
         {
-            "name": "first", 
+            "name": "first",
             "HP": 1,
             "MP": 1,
             "defence": 1,
@@ -30,7 +30,7 @@
             "cost": 1
         }
     ]
-} 
+}
 
 {
     "cmd": "uploadArmy",
@@ -39,7 +39,7 @@
     "factionName": "People",
     "armyUnits": [
         {
-            "name": "first", 
+            "name": "first",
             "count": 5
         },
         {
@@ -47,7 +47,7 @@
             "count": 3
         }
     ]
-}    
+}
 
 {
     "cmd": "getArmy",

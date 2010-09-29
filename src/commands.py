@@ -296,7 +296,7 @@ def getFaction(sid, factionName):
                 }
         for u in faction.units]
     return response_ok(unitList=unitList)
-    
+
 @Command(str, str, str, list)
 def uploadArmy(sid, armyName, factionName, armyUnits):
     user = dbi().get_user(sid)
@@ -317,13 +317,13 @@ def uploadArmy(sid, armyName, factionName, armyUnits):
     army = Army(armyName, user.id)
     dbi().add(army)
     dbi().add(*(UnitArmy(unit.id, army.id, unit.count) for unit in unit_packs))
-    return response_ok() 
+    return response_ok()
 
 @Command(str, str)
 def getArmy(sid, armyName):
     user = dbi().get_user(sid)
     army = dbi().get_army(armyName)
-    return response_ok(units=[dict(name=pack.unit.name, count=pack.count)\
+    return response_ok(units=[dict(name=pack.unit.name, count=pack.count)
         for pack in army.unitArmy])
 
 @Command(str, str)
@@ -331,7 +331,7 @@ def deleteArmy(sid, armyName):
     user = dbi().get_user(sid)
     dbi().delete(dbi().get_army(armyName))
     return response_ok()
-    
+
 @Command(str,str)
 def chooseArmy(sid, armyName):
     user = dbi().get_user(sid)
@@ -346,4 +346,4 @@ def chooseArmy(sid, armyName):
         raise BadArmy("Your army is too expensive")
     player.army = army
     dbi().commit()
-    return response_ok()     
+    return response_ok()
