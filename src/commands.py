@@ -165,7 +165,7 @@ def leaveGame(sid, gameName):
         player.state = 'left'
     if not dbi().query(Player).filter(Player.game_id==game.id).count():
         game.state = 'finished'
-    dbi().session.commit()
+    dbi().commit()
     return response_ok()
 
 @Command(str, str, str)
@@ -229,7 +229,7 @@ def setPlayerStatus(sid, status):
         for p in player.game.players:
             p.state = "in_game"
         player.game.status = "started"
-    dbi().session.commit()
+    dbi().commit()
     return response_ok()
 
 @Command(str, str, list)
@@ -308,7 +308,15 @@ def deleteArmy(sid, armyName):
 @Command(str,str)
 def chooseArmy(sid, armyName):
     user = dbi().get_user(sid)
+    try:
+        player = dbi().query(Player).filter(Player.user_id==user.id).\
+            filter(Player.state=='in_lobby').one()
+    except sqlalchemy.orm.exc.NoResultFound:
+        raise NotInGame("Can't choose army, because you're not in game")
     army = dbi().get_army(armyName)
-    army = Army(armyName, user.id)
-    dbi().add(army)
+    total_cost = sum(squad.count * squad.unit.cost for squad in army.unitArmy)
+    if total_cost > player.game.total_cost:
+        raise BadArmy("Your army is too expensive")
+    player.army = army
+    dbi().commit()
     return response_ok()     

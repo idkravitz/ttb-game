@@ -71,16 +71,29 @@ class Game(Base):
     def __repr__(self):
         return '<Game({0},{1})>'.format(self.name, self.gameState)
 
+class Army(Base):
+    __tablename__ = 'armies'
+
+    id = pkey()
+    name = requiredString()
+    user_id = fkey('users.id')
+    user = relationship(User, backref=backref('armies'))
+
+    @copy_args
+    def __init__(self, name, player_id): pass
+
 class Player(Base):
     __tablename__ = 'players'
 
     id = pkey()
     user_id = fkey('users.id')
     game_id = fkey('games.id')
+    army_id = fkey('armies.id')
     is_creator = Column(Boolean, default=False)
     state = Column(Enum('in_game', 'in_lobby', 'ready', 'left'), default='in_lobby')
     user = relationship(User, backref=backref('players'))
     game = relationship(Game, backref=backref('players'))
+    army = relationship(Army, backref=backref('players'))
 
     @copy_args
     def __init__(self, user_id, game_id): pass
@@ -117,17 +130,6 @@ class Unit(Base):
     @copy_args
     def __init__(self, name, HP, MP, defence, attack, range, damage, cost): pass
 
-class Army(Base):
-    __tablename__ = 'armies'
-
-    id = pkey()
-    name = requiredString()
-    player_id = fkey('players.id')
-    player = relationship(Player, backref=backref('armies'))
-
-    @copy_args
-    def __init__(self, name, player_id): pass
-
 class UnitArmy(Base):
     __tablename__ = 'unitArmy'
 
@@ -150,6 +152,9 @@ class Database:
         Session = sessionmaker(bind=self.engine)
         self.session = Session()
         Base.metadata.create_all(bind=self.engine)
+
+    def commit(self):
+        self.session.commit()
 
     def add(self, *objs):
         for obj in objs:
