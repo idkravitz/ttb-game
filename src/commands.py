@@ -282,6 +282,12 @@ def getMap(sid, name):
     terrain = map_.terrain
     return response_ok(map=[terrain[i:i+width] for i in range(0, len(terrain), width)])
 
+@Command(str, str)
+def deleteMap(sid, name):
+    dbi().get_user(sid)
+    dbi().delete(dbi().get_map(name))
+    return response_ok()
+
 @Command(str, str, list)
 def uploadFaction(sid, factionName, units):
     user = dbi().get_user(sid)
