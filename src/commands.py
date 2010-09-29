@@ -287,7 +287,7 @@ def uploadArmy(sid, armyName, factionName, armyUnits):
         name, count = unit['name'], unit['count']
         unit_packs.append(dbi().get_unit(name, factionName))
         unit_packs[-1].count = count
-    army = Army(armyName)
+    army = Army(armyName, user.id)
     dbi().add(army)
     dbi().add(*(UnitArmy(unit.id, army.id, unit.count) for unit in unit_packs))
     return response_ok() 
@@ -304,3 +304,11 @@ def deleteArmy(sid, armyName):
     user = dbi().get_user(sid)
     dbi().delete(dbi().get_army(armyName))
     return response_ok()
+    
+@Command(str,str)
+def chooseArmy(sid, armyName):
+    user = dbi().get_user(sid)
+    army = dbi().get_army(armyName)
+    army = Army(armyName, user.id)
+    dbi().add(army)
+    return response_ok()     
