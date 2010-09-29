@@ -13,6 +13,7 @@ MAX_MESSAGE_LENGTH = 140
 MAX_PLAYERS = 16
 MAX_MAP_WIDTH = 600
 MAX_MAP_HEIGHT = 600
+MIN_TOTAL_COST = 1
 
 import inspect
 import functools

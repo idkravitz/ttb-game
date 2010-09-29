@@ -1,0 +1,14 @@
+{
+    "sid": "Mikshinfish", 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "message": "Map with such name doesn't exists", 
+    "status": "badMap"
+}

@@ -13,16 +13,30 @@
     "status": "ok"
 }
 {
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
     "games": [
         {
-            "gameName": [
-                "Half-life"
-            ]
+            "connectedPlayersCount": 1, 
+            "factionName": "People", 
+            "gameName": "Half-life", 
+            "gameStatus": "not_started", 
+            "mapName": "de_dust", 
+            "playersCount": 10, 
+            "totalCost": 100
         }, 
         {
-            "gameName": [
-                "Half-life 2"
-            ]
+            "connectedPlayersCount": 1, 
+            "factionName": "People", 
+            "gameName": "Half-life 2", 
+            "gameStatus": "not_started", 
+            "mapName": "de_dust", 
+            "playersCount": 10, 
+            "totalCost": 100
         }
     ], 
     "status": "ok"
@@ -30,14 +44,22 @@
 {
     "games": [
         {
-            "gameName": [
-                "Half-life"
-            ]
+            "connectedPlayersCount": 1, 
+            "factionName": "People", 
+            "gameName": "Half-life", 
+            "gameStatus": "not_started", 
+            "mapName": "de_dust", 
+            "playersCount": 10, 
+            "totalCost": 100
         }, 
         {
-            "gameName": [
-                "Half-life 2"
-            ]
+            "connectedPlayersCount": 1, 
+            "factionName": "People", 
+            "gameName": "Half-life 2", 
+            "gameStatus": "not_started", 
+            "mapName": "de_dust", 
+            "playersCount": 10, 
+            "totalCost": 100
         }
     ], 
     "status": "ok"

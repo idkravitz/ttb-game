@@ -5,6 +5,13 @@
 }
 
 {
+    "cmd": "uploadMap",
+    "sid": "GordonFreeman",
+    "name": "de_dust",
+    "terrain": ["1..", ".x.", "..2"]
+}
+
+{
     "cmd": "uploadFaction",
     "sid": "GordonFreeman",
     "factionName": "People",
@@ -50,7 +57,18 @@
 }
 
 {
+    "cmd": "createGame",
+    "sid": "GordonFreeman",
+    "gameName": "Half-life",
+    "mapName": "de_dust",
+    "factionName": "People",
+    "totalCost": 100,
+    "playersCount": 10
+}
+
+{
     "cmd": "chooseArmy",
     "sid": "GordonFreeman",
     "armyName": "People"
 }
+

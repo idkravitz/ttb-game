@@ -3,6 +3,12 @@
     "status": "ok"
 }
 {
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
     "message": "Number of players must be 2 or more", 
     "status": "badCommand"
 }

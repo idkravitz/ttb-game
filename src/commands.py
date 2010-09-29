@@ -100,8 +100,8 @@ def clear():
     dbi().clear()
     return response_ok()
 
-@Command(str, str, int)
-def createGame(sid, gameName, playersCount): # check the validity of symbols
+@Command(str, str, int, str, str, int)
+def createGame(sid, gameName, playersCount, mapName, factionName, totalCost): # check the validity of symbols
     user = dbi().get_user(sid)
     if playersCount < 2:
         raise BadCommand('Number of players must be 2 or more')
@@ -121,7 +121,11 @@ def createGame(sid, gameName, playersCount): # check the validity of symbols
         .filter(Game.state != 'finished')\
         .count():
         raise AlreadyExists('Game with the such name already exists')
-    game = Game(gameName, playersCount)
+    map_id = dbi().get_map(mapName).id
+    faction_id = dbi().get_faction(factionName).id
+    if totalCost <  MIN_TOTAL_COST:
+        raise BadGame("totalCost must be more than or equal to {0}".format(MIN_TOTAL_COST))
+    game = Game(gameName, playersCount, map_id, faction_id, totalCost)
     dbi().add(game)
     player = Player(user.id, game.id)
     player.is_creator = True
@@ -193,7 +197,17 @@ def getChatHistory(sid, gameName):
 @Command(str)
 def getGamesList(sid):
     user = dbi().get_user(sid)
-    games = [{"gameName": name} for name in dbi().query(Game.name).all()]
+    games = [\
+        {
+            "gameName": game.name,
+            "mapName": game.map.name,
+            "factionName": game.faction.name,
+            "gameStatus": game.state,
+            "playersCount": game.players_count,
+            "connectedPlayersCount": dbi().query(Player).filter_by(game_id=game.id).count(),
+            "totalCost": game.total_cost,
+        } \
+        for game in dbi().query(Game).all()]
     return response_ok(games=games)
 
 @Command(str)
@@ -246,6 +260,7 @@ def uploadMap(sid, name, terrain):
         raise BadMap("Map width must be in range 1..{0}".format(MAX_MAP_WIDTH))
     if not (0 < len(terrain) < MAX_MAP_HEIGHT):
         raise BadMap("Map height must be in range 1..{0}".format(MAX_MAP_HEIGHT))
+    width = len(terrain[0])
     terrain = ''.join(terrain)
     chars = set(char for char in terrain)
     if not chars < set(".x123456789"):
@@ -256,7 +271,21 @@ def uploadMap(sid, name, terrain):
         raise BadMap("There must be deploy spots at least for 2 players")
     if len(chars) != int(max(chars)):
         raise BadMap("The numbers must be consequetive")
-    dbi().add(Map(name, terrain, len(terrain[0]), len(terrain)))
+    dbi().add(Map(name, terrain, width))
+    return response_ok()
+
+@Command(str, str)
+def getMap(sid, name):
+    dbi().get_user(sid)
+    map_ = dbi().get_map(name)
+    width = map_.width
+    terrain = map_.terrain
+    return response_ok(map=[terrain[i:i+width] for i in range(0, len(terrain), width)])
+
+@Command(str, str)
+def deleteMap(sid, name):
+    dbi().get_user(sid)
+    dbi().delete(dbi().get_map(name))
     return response_ok()
 
 @Command(str, str, list)
