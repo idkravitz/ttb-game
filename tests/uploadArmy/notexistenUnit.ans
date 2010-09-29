@@ -6,5 +6,6 @@
     "status": "ok"
 }
 {
-    "status": "ok"
+    "message": "No unit with that name", 
+    "status": "badCommand"
 }

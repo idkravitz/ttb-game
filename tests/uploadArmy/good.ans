@@ -1,0 +1,23 @@
+{
+    "sid": "GordonFreeman", 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok", 
+    "units": [
+        {
+            "count": 5, 
+            "name": "first"
+        }, 
+        {
+            "count": 3, 
+            "name": "second"
+        }
+    ]
+}

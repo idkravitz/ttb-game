@@ -10,5 +10,5 @@
 }
 {
     "message": "Army already exists", 
-    "status": "badFactionName"
+    "status": "badArmy"
 }
