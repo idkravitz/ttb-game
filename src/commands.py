@@ -100,8 +100,8 @@ def clear():
     dbi().clear()
     return response_ok()
 
-@Command(str, str, int)
-def createGame(sid, gameName, playersCount): # check the validity of symbols
+@Command(str, str, int, str, str, int)
+def createGame(sid, gameName, playersCount, mapName, factionName, totalCost): # check the validity of symbols
     user = dbi().get_user(sid)
     if playersCount < 2:
         raise BadCommand('Number of players must be 2 or more')
@@ -121,7 +121,11 @@ def createGame(sid, gameName, playersCount): # check the validity of symbols
         .filter(Game.state != 'finished')\
         .count():
         raise AlreadyExists('Game with the such name already exists')
-    game = Game(gameName, playersCount)
+    map_id = dbi().get_map(mapName).id
+    faction_id = dbi().get_faction(factionName).id
+    if totalCost <  MIN_TOTAL_COST:
+        raise BadGame("totalCost must be more than or equal to {0}".format(MIN_TOTAL_COST))
+    game = Game(gameName, playersCount, map_id, faction_id, totalCost)
     dbi().add(game)
     player = Player(user.id, game.id)
     player.is_creator = True

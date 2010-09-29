@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker, relationship, backref
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.ext.declarative import declarative_base
 from common import copy_args, DEBUG, utcnow
-from exceptions import BadSid, BadCommand
+from exceptions import *
 
 Base = declarative_base()
 
@@ -71,7 +71,7 @@ class Game(Base):
     faction = relationship(Faction, backref=backref('games'))
 
     @copy_args
-    def __init__(self, name, players_count): pass
+    def __init__(self, name, players_count, map_id, faction_id, total_cost): pass
 
     def __repr__(self):
         return '<Game({0},{1})>'.format(self.name, self.gameState)
@@ -214,6 +214,11 @@ class Database:
                 .filter(Faction.name==factionName).one()
         except NoResultFound:
             raise BadCommand('No unit with that name')        
+    def get_map(self, mapName):
+        try:
+            return self.session.query(Map).filter_by(name=mapName).one()
+        except NoResultFound:
+            raise BadMap("Map with such name doesn't exists")
 
 def db_instance():
     if Database.instance is None:
