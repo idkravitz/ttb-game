@@ -71,7 +71,7 @@ def register(username, password):
     check_len(username, MAX_NAME_LENGTH, 'Too long username')
     check_emptiness(password, 'Empty password')
     try:
-        user = dbi().query(User).filter(User.username==username).one()
+        user = dbi().query(User).filter_by(username=username).one()
         if user.password != password:
             raise BadPassword('User already exists, but passwords don\'t match')
     except sqlalchemy.orm.exc.NoResultFound:
@@ -90,8 +90,8 @@ def unregister(sid):
     except sqlalchemy.orm.exc.NoResultFound:
         player = None
     if player:
-        leaveGame(sid, dbi().query(Game)\
-            .filter(Game.id == player.game_id).one().name)
+        leaveGame(sid,
+            dbi().query(Game).filter_by(id=player.game_id).one().name)
     return response_ok()
 
 @debug_only
@@ -117,7 +117,7 @@ def createGame(sid, gameName, playersCount, mapName, factionName, totalCost): # 
         .count():
         raise AlreadyInGame('User is already playing')
     if dbi().query(Game)\
-        .filter(Game.name == gameName)\
+        .filter_by(name=gameName)\
         .filter(Game.state != 'finished')\
         .count():
         raise AlreadyExists('Game with the such name already exists')
@@ -135,8 +135,8 @@ def createGame(sid, gameName, playersCount, mapName, factionName, totalCost): # 
 def get_player(user_id, game_id):
     try:
         return dbi().query(Player)\
-            .filter(Player.user_id == user_id)\
-            .filter(Player.game_id == game_id)\
+            .filter_by(user_id=user_id)\
+            .filter_by(game_id=game_id)\
             .one()
     except sqlalchemy.orm.exc.NoResultFound:
         return None
@@ -167,7 +167,7 @@ def leaveGame(sid, gameName):
         dbi().delete(player)
     else:
         player.state = 'left'
-    if not dbi().query(Player).filter(Player.game_id==game.id).count():
+    if not dbi().query(Player).filter_by(game_id=game.id).count():
         game.state = 'finished'
     dbi().commit()
     return response_ok()
@@ -230,10 +230,8 @@ def setPlayerStatus(sid, status):
     if status not in ('ready', 'not_ready'):
         raise BadCommand('Unknown player status')
     try:
-        player = dbi().query(Player)\
-            .filter(Player.user_id==user.id)\
-            .filter(or_(Player.state=='in_lobby',
-                        Player.state=='ready'))\
+        player = dbi().query(Player).filter_by(user_id=user.id)\
+            .filter(or_(Player.state=='in_lobby', Player.state=='ready'))\
             .one()
     except sqlalchemy.orm.exc.NoResultFound:
         raise BadCommand('User is not in lobby')
@@ -293,7 +291,7 @@ def uploadFaction(sid, factionName, units):
     dbi().check_sid(sid)
     check_len(factionName, MAX_NAME_LENGTH, 'Too long faction name')
     check_emptiness(factionName, 'Empty faction name')
-    if dbi().query(Faction).filter(Faction.name==factionName).count():
+    if dbi().query(Faction).filter_by(name=factionName).count():
         raise BadFaction('Faction already exists')
     faction = Faction(factionName)
     dbi().add(faction)
@@ -332,8 +330,8 @@ def uploadArmy(sid, armyName, factionName, armyUnits):
     dbi().check_faction(factionName)
     check_len(armyName, MAX_NAME_LENGTH, 'Too long army name')
     check_emptiness(armyName, 'Empty army name')
-    if dbi().query(Army).filter(Army.user_id==user.id).filter_by(name=armyName).count():
-        raise BadArmy('You have army with such name')  
+    if dbi().query(Army).filter_by(user_id=user.id, name=armyName).count():
+        raise BadArmy('You have army with such name')
     unit_packs = []
     for unit in armyUnits:
         if not isinstance(unit, dict) or len(unit) != 2 or \
@@ -369,8 +367,8 @@ def deleteArmy(sid, armyName):
 def chooseArmy(sid, armyName):
     user = dbi().get_user(sid)
     try:
-        player = dbi().query(Player).filter(Player.user_id==user.id).\
-            filter(Player.state=='in_lobby').one()
+        player = dbi().query(Player).filter_by(
+            user_id=user.id, state='in_lobby').one()
     except sqlalchemy.orm.exc.NoResultFound:
         raise NotInGame("Can't choose army, because you're not in game")
     army = dbi().get_army(armyName)
