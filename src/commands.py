@@ -242,16 +242,16 @@ def uploadMap(sid, name, terrain):
     dbi().check_sid(sid)
     for line in terrain:
         if not isinstance(line, str):
-            raise BadCommand("Field 'terrain' must consist of strings")
+            raise BadMap("Field 'terrain' must consist of strings")
     if dbi().query(Map).filter_by(name=name).count():
         raise BadMap('Map with such name already exists')
-    if len(set(map(len, terrain))) != 1:
-        raise BadMap('Lines in map must have the same width')
-    if not (0 < len(terrain[0]) < MAX_MAP_WIDTH):
-        raise BadMap('Map width must be in range 1..{0}'.format(MAX_MAP_WIDTH))
     if not (0 < len(terrain) < MAX_MAP_HEIGHT):
         raise BadMap('Map height must be in range 1..{0}'.format(MAX_MAP_HEIGHT))
+    if len(set(map(len, terrain))) != 1:
+        raise BadMap('Lines in map must have the same width')
     width = len(terrain[0])
+    if not (0 < width < MAX_MAP_WIDTH):
+        raise BadMap('Map width must be in range 1..{0}'.format(MAX_MAP_WIDTH))
     terrain = ''.join(terrain)
     chars = set(char for char in terrain)
     if not chars < set('.x123456789'):
@@ -260,7 +260,7 @@ def uploadMap(sid, name, terrain):
     if len(chars) < 2:
         raise BadMap('There must be deploy spots at least for 2 players')
     if len(chars) != int(max(chars)):
-        raise BadMap('The numbers must be consequetive')
+        raise BadMap('Player numbers must be consequetive')
     dbi().add(Map(name, terrain, width))
     return response_ok()
 

@@ -1,0 +1,8 @@
+{
+    "sid": "foobar", 
+    "status": "ok"
+}
+{
+    "message": "Bad character in map description", 
+    "status": "badMap"
+}

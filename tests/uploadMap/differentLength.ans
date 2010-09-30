@@ -1,0 +1,8 @@
+{
+    "sid": "foobar", 
+    "status": "ok"
+}
+{
+    "message": "Lines in map must have the same width", 
+    "status": "badMap"
+}

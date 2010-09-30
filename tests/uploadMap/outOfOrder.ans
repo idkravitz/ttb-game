@@ -1,0 +1,8 @@
+{
+    "sid": "foobar", 
+    "status": "ok"
+}
+{
+    "message": "Player numbers must be consequetive", 
+    "status": "badMap"
+}

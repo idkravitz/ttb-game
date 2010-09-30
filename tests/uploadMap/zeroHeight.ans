@@ -1,0 +1,8 @@
+{
+    "sid": "foobar", 
+    "status": "ok"
+}
+{
+    "message": "Map height must be in range 1..100", 
+    "status": "badMap"
+}

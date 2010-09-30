@@ -1,0 +1,8 @@
+{
+    "sid": "foobar", 
+    "status": "ok"
+}
+{
+    "message": "Field 'terrain' must consist of strings", 
+    "status": "badMap"
+}
