@@ -6,6 +6,7 @@ import os
 import glob
 import json
 import optparse
+
 import common
 
 common.DEBUG = True

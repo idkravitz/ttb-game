@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+
 from common import copy_args, JSON_DUMPS_FORMAT
 
 class RequestError(Exception):

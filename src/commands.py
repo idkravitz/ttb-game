@@ -4,8 +4,10 @@
 import re
 import json
 import functools
+
 import sqlalchemy.orm.exc
 from sqlalchemy import or_
+
 from common import *
 from exceptions import *
 from db import db_instance as dbi, User, Map, Game, Player, Message, Faction, Unit, Army, UnitArmy
