@@ -10,7 +10,9 @@ from sqlalchemy import or_
 
 from common import *
 from exceptions import *
-from db import db_instance as dbi, User, Map, Game, Player, Message, Faction, Unit, Army, UnitArmy
+from db import db_instance as dbi
+from db import User, Map, Game, Player, Message, Faction, Unit, Army, UnitArmy
+from db import UNIT_ATTRS
 
 class Command(object):
     def __init__(self, *args):
@@ -306,18 +308,9 @@ def deleteFaction(sid, factionName):
 def getFaction(sid, factionName):
     dbi().check_sid(sid)
     faction = dbi().get_faction(factionName)
-    unitList = [{
-                    "name": u.name,
-                    "HP": u.HP,
-                    "MP": u.MP,
-                    "defence": u.defence,
-                    "attack": u.attack,
-                    "range": u.range,
-                    "damage": u.damage,
-                    "cost": u.cost,
-                }
-        for u in faction.units]
-    return response_ok(unitList=unitList)
+    units = [dict(((attr, getattr(unit, attr)) for attr in UNIT_ATTRS))
+        for unit in faction.units]
+    return response_ok(unitList=units)
 
 @Command(str, str, str, list)
 def uploadArmy(sid, armyName, factionName, armyUnits):

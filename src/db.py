@@ -121,19 +121,31 @@ class Unit(Base):
     __tablename__ = 'units'
 
     id = pkey()
-    name = requiredString()
-    HP = requiredInteger()
-    MP = requiredInteger()
-    defence = requiredInteger()
-    attack = requiredInteger()
-    range = requiredInteger()
-    damage = requiredInteger()
-    cost = requiredInteger()
     faction_id = fkey('factions.id')
     faction = relationship(Faction, backref=backref('units'))
 
     @copy_args
-    def __init__(self, name, HP, MP, defence, attack, range, damage, cost): pass
+    def __init__(self, name, HP, MP, defence, attack, range, damage, cost):
+        pass
+
+TYPES = {
+    int: requiredInteger,
+    str: requiredString,
+}
+
+UNIT_ATTRS = {
+    'name': str,
+    'HP': int,
+    'attack': int,
+    'defence': int,
+    'range': int,
+    'damage': int,
+    'MP': int,
+    'cost': int,
+}
+for attr, type_ in UNIT_ATTRS.items():
+    setattr(Unit, attr, TYPES[type_]())
+
 
 class UnitArmy(Base):
     __tablename__ = 'unitArmy'
