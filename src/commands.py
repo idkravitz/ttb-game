@@ -332,8 +332,8 @@ def uploadArmy(sid, armyName, factionName, armyUnits):
     dbi().check_faction(factionName)
     check_len(armyName, MAX_NAME_LENGTH, 'Too long army name')
     check_emptiness(armyName, 'Empty army name')
-    if dbi().query(Army).filter_by(name=armyName).count():
-        raise BadArmy('Army already exists')
+    if dbi().query(Army).filter(Army.user_id==user.id).filter_by(name=armyName).count():
+        raise BadArmy('You have army with such name')  
     unit_packs = []
     for unit in armyUnits:
         if not isinstance(unit, dict) or len(unit) != 2 or \

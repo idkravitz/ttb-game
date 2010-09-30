@@ -9,6 +9,6 @@
     "status": "ok"
 }
 {
-    "message": "Army already exists", 
+    "message": "You have army with such name", 
     "status": "badArmy"
 }
