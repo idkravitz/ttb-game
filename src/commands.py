@@ -253,7 +253,7 @@ def uploadMap(sid, name, terrain):
         if not isinstance(line, str):
             raise BadCommand("Field 'terrain' must consist of strings")
     if dbi().query(Map).filter_by(name=name).count():
-        raise alreadyExists("Map with such name already exists")
+        raise BadMap("Map with such name already exists")
     if len(set(map(len, terrain))) != 1:
         raise BadMap("Lines in map must have the same width")
     if not (0 < len(terrain[0]) < MAX_MAP_WIDTH):
