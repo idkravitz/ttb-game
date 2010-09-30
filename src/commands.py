@@ -132,15 +132,6 @@ def createGame(sid, gameName, playersCount, mapName, factionName, totalCost): # 
     dbi().add(player)
     return response_ok()
 
-def get_player(user_id, game_id):
-    try:
-        return dbi().query(Player)\
-            .filter_by(user_id=user_id)\
-            .filter_by(game_id=game_id)\
-            .one()
-    except sqlalchemy.orm.exc.NoResultFound:
-        return None
-
 @Command(str, str)
 def joinGame(sid, gameName):
     user = dbi().get_user(sid)
@@ -151,7 +142,7 @@ def joinGame(sid, gameName):
         raise BadGame('Game is full')
     if game.state == 'started':
         raise BadGame('Game already started')
-    if get_player(user.id, game.id):
+    if dbi().get_player(user.id, game.id):
         raise AlreadyInGame('User is already playing')
     dbi().add(Player(user.id, game.id))
     return response_ok()
@@ -160,7 +151,7 @@ def joinGame(sid, gameName):
 def leaveGame(sid, gameName):
     user = dbi().get_user(sid)
     game = dbi().get_game(gameName)
-    player = get_player(user.id, game.id)
+    player = dbi().get_player(user.id, game.id)
     if not player:
         raise BadGame('User is not playing')
     if game.state == 'not_started':
@@ -177,7 +168,7 @@ def sendMessage(sid, text, gameName):
     user = dbi().get_user(sid)
     game = dbi().get_game(gameName)
     check_len(text, MAX_MESSAGE_LENGTH, 'Too long message')
-    if not get_player(user.id, game.id):
+    if not dbi().get_player(user.id, game.id):
         raise BadCommand('User is not in this game')
     dbi().add(Message(user.id, game.id, text))
     return response_ok()
