@@ -1,0 +1,8 @@
+{
+    "sid": "GordonFreeman", 
+    "status": "ok"
+}
+{
+    "message": "Field 'defence' must be an integer", 
+    "status": "badUnit"
+}

@@ -133,6 +133,11 @@ TYPES = {
     str: requiredString,
 }
 
+HUMAN_READABLE_TYPES = {
+    int: 'an integer',
+    str: 'a string',
+}
+
 UNIT_ATTRS = {
     'name': str,
     'HP': int,

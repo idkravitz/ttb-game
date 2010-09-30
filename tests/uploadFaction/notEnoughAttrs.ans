@@ -1,0 +1,8 @@
+{
+    "sid": "GordonFreeman", 
+    "status": "ok"
+}
+{
+    "message": "Unit description must contain field 'HP'", 
+    "status": "badUnit"
+}

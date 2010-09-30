@@ -12,7 +12,7 @@ from common import *
 from exceptions import *
 from db import db_instance as dbi
 from db import User, Map, Game, Player, Message, Faction, Unit, Army, UnitArmy
-from db import UNIT_ATTRS
+from db import UNIT_ATTRS, HUMAN_READABLE_TYPES
 
 class Command(object):
     def __init__(self, *args):
@@ -292,6 +292,19 @@ def uploadFaction(sid, factionName, units):
         raise BadFaction('Faction already exists')
     faction = Faction(factionName)
     dbi().add(faction)
+    if not units:
+        raise BadFaction('Empty faction')
+    for unit in units:
+        if len(unit) > len(UNIT_ATTRS):
+            raise BadUnit('Too many unit attributes')
+        for attr in UNIT_ATTRS:
+            if attr not in unit:
+                raise BadUnit(
+                    "Unit description must contain field '{0}'".format(attr))
+            attr_type = UNIT_ATTRS[attr]
+            if not isinstance(unit[attr], attr_type):
+                raise BadUnit("Field '{0}' must be {1}".format(
+                    attr, HUMAN_READABLE_TYPES[attr_type]))
     unit_objects = (Unit(**unit) for unit in units)
     for unit in unit_objects:
         unit.faction_id = faction.id
