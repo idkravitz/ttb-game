@@ -75,7 +75,8 @@ def register(username, password):
     try:
         user = dbi().query(User).filter_by(username=username).one()
         if user.password != password:
-            raise BadPassword('User already exists, but passwords don\'t match')
+            raise BadPassword(
+                'User already exists, but passwords don\'t match')
     except sqlalchemy.orm.exc.NoResultFound:
         user = User(username, password)
         dbi().add(user)
@@ -124,7 +125,9 @@ def createGame(sid, gameName, playersCount, mapName, factionName, totalCost):
         .count():
         raise AlreadyExists('Game with the such name already exists')
     if totalCost < MIN_TOTAL_COST:
-        raise BadGame('totalCost must be greater than or equal to {0}'.format(MIN_TOTAL_COST))
+        raise BadGame(
+            'totalCost must be greater than or equal to {0}'.format(
+                MIN_TOTAL_COST))
     map_id = dbi().get_map(mapName).id
     faction_id = dbi().get_faction(factionName).id
     game = Game(gameName, playersCount, map_id, faction_id, totalCost)
@@ -328,7 +331,8 @@ def uploadArmy(sid, armyName, factionName, armyUnits):
     for unit in armyUnits:
         if not isinstance(unit, dict) or len(unit) != 2 or \
             'name' not in unit or 'count' not in unit:
-            raise BadArmy("Each element of armyUnits must have fields 'name' and 'count'")
+            raise BadArmy(
+                "Each element of armyUnits must have fields 'name' and 'count'")
         name, count = unit['name'], unit['count']
         unit_packs.append(dbi().get_unit(name, factionName))
         unit_packs[-1].count = count
