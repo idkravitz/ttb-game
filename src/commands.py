@@ -358,7 +358,11 @@ def getArmy(sid, armyName):
 @Command(str, str)
 def deleteArmy(sid, armyName):
     dbi().check_sid(sid)
-    dbi().delete(dbi().get_army(armyName))
+    army = dbi().get_army(armyName)
+    user = dbi().get_user(sid) 
+    if not dbi().query(Army).filter(Army.user_id==user.id).filter(Army.name==armyName).count():
+       raise BadArmy("It isn't your army")
+    dbi().delete(army)
     return response_ok()
 
 @Command(str,str)
