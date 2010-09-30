@@ -197,7 +197,7 @@ class Database:
 
     def get_player(self, user_id, game_id):
         try:
-            return dbi().query(Player)\
+            return self.session.query(Player)\
                 .filter_by(user_id=user_id)\
                 .filter_by(game_id=game_id)\
                 .one()
@@ -207,7 +207,8 @@ class Database:
 
     def get_game(self, name):
         try:
-            return self.session.query(Game).filter_by(name=name).filter(Game.state!='finished').one()
+            return self.session.query(Game).filter_by(name=name)\
+                .filter(Game.state!='finished').one()
         except NoResultFound:
             raise BadGame('No unfinished game with that name')
 
@@ -225,7 +226,8 @@ class Database:
 
     def get_unit(self, name, factionName):
         try:
-            return self.session.query(Unit).join(Faction).filter(Unit.name==name)\
+            return self.session.query(Unit).join(Faction)\
+                .filter(Unit.name==name)\
                 .filter(Faction.name==factionName).one()
         except NoResultFound:
             raise BadUnit('No unit with that name')

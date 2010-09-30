@@ -103,7 +103,7 @@ def clear():
     return response_ok()
 
 @Command(str, str, int, str, str, int)
-def createGame(sid, gameName, playersCount, mapName, factionName, totalCost): # check the validity of symbols
+def createGame(sid, gameName, playersCount, mapName, factionName, totalCost):
     user = dbi().get_user(sid)
     if playersCount < 2:
         raise BadCommand('Number of players must be 2 or more')
@@ -123,8 +123,8 @@ def createGame(sid, gameName, playersCount, mapName, factionName, totalCost): # 
         .filter(Game.state != 'finished')\
         .count():
         raise AlreadyExists('Game with the such name already exists')
-    if totalCost <  MIN_TOTAL_COST:
-        raise BadGame("totalCost must be more than or equal to {0}".format(MIN_TOTAL_COST))
+    if totalCost < MIN_TOTAL_COST:
+        raise BadGame('totalCost must be greater than or equal to {0}'.format(MIN_TOTAL_COST))
     map_id = dbi().get_map(mapName).id
     faction_id = dbi().get_faction(factionName).id
     game = Game(gameName, playersCount, map_id, faction_id, totalCost)
@@ -232,8 +232,8 @@ def setPlayerStatus(sid, status):
     query = dbi().query(Player).join(Game).filter(Game.id==player.game_id)
     if player.game.players_count == query.filter(Player.state=='ready').count():
         for p in player.game.players:
-            p.state = "in_game"
-        player.game.status = "started"
+            p.state = 'in_game'
+        player.game.status = 'started'
     dbi().commit()
     return response_ok()
 
@@ -244,24 +244,23 @@ def uploadMap(sid, name, terrain):
         if not isinstance(line, str):
             raise BadCommand("Field 'terrain' must consist of strings")
     if dbi().query(Map).filter_by(name=name).count():
-        raise BadMap("Map with such name already exists")
+        raise BadMap('Map with such name already exists')
     if len(set(map(len, terrain))) != 1:
-        raise BadMap("Lines in map must have the same width")
+        raise BadMap('Lines in map must have the same width')
     if not (0 < len(terrain[0]) < MAX_MAP_WIDTH):
-        raise BadMap("Map width must be in range 1..{0}".format(MAX_MAP_WIDTH))
+        raise BadMap('Map width must be in range 1..{0}'.format(MAX_MAP_WIDTH))
     if not (0 < len(terrain) < MAX_MAP_HEIGHT):
-        raise BadMap("Map height must be in range 1..{0}".format(MAX_MAP_HEIGHT))
+        raise BadMap('Map height must be in range 1..{0}'.format(MAX_MAP_HEIGHT))
     width = len(terrain[0])
     terrain = ''.join(terrain)
     chars = set(char for char in terrain)
-    if not chars < set(".x123456789"):
-        raise BadMap("Bad character in map description")
-    chars.discard(".")
-    chars.discard("x")
+    if not chars < set('.x123456789'):
+        raise BadMap('Bad character in map description')
+    chars -= set('.x')
     if len(chars) < 2:
-        raise BadMap("There must be deploy spots at least for 2 players")
+        raise BadMap('There must be deploy spots at least for 2 players')
     if len(chars) != int(max(chars)):
-        raise BadMap("The numbers must be consequetive")
+        raise BadMap('The numbers must be consequetive')
     dbi().add(Map(name, terrain, width))
     return response_ok()
 
@@ -302,7 +301,7 @@ def deleteFaction(sid, factionName):
 
 @Command(str, str)
 def getFaction(sid, factionName):
-    user = dbi().get_user(sid)
+    dbi().check_sid(sid)
     faction = dbi().get_faction(factionName)
     unitList = [{
                     "name": u.name,
@@ -355,18 +354,18 @@ def deleteArmy(sid, armyName):
     dbi().delete(army)
     return response_ok()
 
-@Command(str,str)
+@Command(str, str)
 def chooseArmy(sid, armyName):
     user = dbi().get_user(sid)
     try:
         player = dbi().query(Player).filter_by(
             user_id=user.id, state='in_lobby').one()
     except sqlalchemy.orm.exc.NoResultFound:
-        raise NotInGame("Can't choose army, because you're not in game")
+        raise NotInGame('Can\'t choose army, because you\'re not in game')
     army = dbi().get_army(armyName)
     total_cost = sum(squad.count * squad.unit.cost for squad in army.unitArmy)
     if total_cost > player.game.total_cost:
-        raise BadArmy("Your army is too expensive")
+        raise BadArmy('Your army is too expensive')
     player.army = army
     dbi().commit()
     return response_ok()
