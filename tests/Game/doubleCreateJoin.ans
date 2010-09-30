@@ -1,0 +1,21 @@
+{
+    "sid": "redhourse", 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "message": "User is already playing", 
+    "status": "alreadyInGame"
+}
+{
+    "message": "User is already playing", 
+    "status": "alreadyInGame"
+}

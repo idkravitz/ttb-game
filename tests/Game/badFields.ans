@@ -1,0 +1,26 @@
+{
+    "sid": "GordonFreeman", 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "message": "Empty game name", 
+    "status": "badCommand"
+}
+{
+    "message": "Too long game name", 
+    "status": "badCommand"
+}
+{
+    "message": "Too many players", 
+    "status": "badCommand"
+}
+{
+    "message": "Number of players must be 2 or more", 
+    "status": "badCommand"
+}

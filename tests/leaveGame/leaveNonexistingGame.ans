@@ -1,8 +1,0 @@
-{
-    "sid": "banana123456", 
-    "status": "ok"
-}
-{
-    "message": "No unfinished game with that name", 
-    "status": "badGame"
-}
