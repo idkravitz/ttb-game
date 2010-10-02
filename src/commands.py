@@ -358,9 +358,10 @@ def getArmy(sid, armyName):
 @Command(str, str)
 def deleteArmy(sid, armyName):
     user = dbi().get_user(sid)
-    army = dbi().get_army(armyName)
-    if army.user_id != user.id:
-       raise BadArmy('It isn\'t your army')
+    try:
+        army = dbi().query(Army).filter_by(name=armyName, user_id=user.id).one()
+    except sqlalchemy.orm.exc.NoResultFound:
+       raise BadArmy('No army with that name')
     dbi().delete(army)
     return response_ok()
 
