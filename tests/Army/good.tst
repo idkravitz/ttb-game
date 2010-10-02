@@ -81,7 +81,7 @@
 {
     "cmd": "leaveGame",
     "sid": "GordonFreeman",
-    "gameName": "Half-life"	
+    "gameName": "Half-life"
 }
 {
     "cmd": "deleteArmy",

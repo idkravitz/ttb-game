@@ -1,9 +1,9 @@
 {
-    "sid": "GordonFreeman", 
+    "sid": "GordonFreeman",
     "status": "ok"
 }
 {
-    "sid": "headcrabarrgh", 
+    "sid": "headcrabarrgh",
     "status": "ok"
 }
 {
@@ -24,13 +24,13 @@
             "username": [
                 "Gordon"
             ]
-        }, 
+        },
         {
             "username": [
                 "headcrab"
             ]
         }
-    ], 
+    ],
     "status": "ok"
 }
 {
@@ -38,6 +38,6 @@
         {
             "username": "Gordon"
         }
-    ], 
+    ],
     "status": "ok"
 }

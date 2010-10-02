@@ -1,4 +1,4 @@
 {
-    "message": "Error in JSON syntax", 
+    "message": "Error in JSON syntax",
     "status": "badRequest"
 }

@@ -1,21 +1,21 @@
 {
-    "sid": "GordonFreeman", 
+    "sid": "GordonFreeman",
     "status": "ok"
 }
 {
-    "sid": "NotHe", 
-    "status": "ok"
-}
-{
-    "status": "ok"
-}
-{
+    "sid": "NotHe",
     "status": "ok"
 }
 {
     "status": "ok"
 }
 {
-    "message": "It isn't your army", 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "message": "No army with that name",
     "status": "badArmy"
 }
