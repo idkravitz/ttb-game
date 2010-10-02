@@ -60,20 +60,20 @@ def response_ok(**kwargs):
     kwargs.update({'status': 'ok'})
     return json.dumps(kwargs, **JSON_DUMPS_FORMAT)
 
-def check_len(obj, max_len, descr):
+def check_len(obj, max_len, descr, cls):
     if len(obj) > max_len:
-        raise BadCommand(descr)
+        raise cls(descr)
 
-def check_emptiness(obj, descr):
+def check_emptiness(obj, descr, cls):
     if not len(obj):
-        raise BadCommand(descr)
+        raise cls(descr)
 
 @Command(str, str)
 def register(username, password):
     if not username.replace('_', '').isalnum():
         raise BadUsername('Incorrect username')
-    check_len(username, MAX_NAME_LENGTH, 'Too long username')
-    check_emptiness(password, 'Empty password')
+    check_len(username, MAX_NAME_LENGTH, 'Too long username', BadUsername)
+    check_emptiness(password, 'Empty password', BadPassword)
     try:
         user = dbi().query(User).filter_by(username=username).one()
         if user.password != password:
@@ -112,8 +112,8 @@ def createGame(sid, gameName, playersCount, mapName, factionName, totalCost):
         raise BadGame('Number of players must be 2 or more')
     if playersCount > MAX_PLAYERS:
         raise BadGame('Too many players')
-    check_len(gameName, MAX_NAME_LENGTH, 'Too long game name')
-    check_emptiness(gameName, 'Empty game name')
+    check_len(gameName, MAX_NAME_LENGTH, 'Too long game name', BadGame)
+    check_emptiness(gameName, 'Empty game name', BadGame)
     if dbi().query(Player)\
         .join(Game)\
         .filter(Player.user_id == user.id)\
@@ -174,7 +174,7 @@ def leaveGame(sid, gameName):
 def sendMessage(sid, text, gameName):
     user = dbi().get_user(sid)
     game = dbi().get_game(gameName)
-    check_len(text, MAX_MESSAGE_LENGTH, 'Too long message')
+    check_len(text, MAX_MESSAGE_LENGTH, 'Too long message', BadMessage)
     if not dbi().get_player(user.id, game.id):
         raise BadGame('User is not in this game')
     dbi().add(Message(user.id, game.id, text))
@@ -286,8 +286,8 @@ def deleteMap(sid, name):
 @Command(str, str, list)
 def uploadFaction(sid, factionName, units):
     dbi().check_sid(sid)
-    check_len(factionName, MAX_NAME_LENGTH, 'Too long faction name')
-    check_emptiness(factionName, 'Empty faction name')
+    check_len(factionName, MAX_NAME_LENGTH, 'Too long faction name', BadFaction)
+    check_emptiness(factionName, 'Empty faction name', BadFaction)
     if dbi().query(Faction).filter_by(name=factionName).count():
         raise BadFaction('Faction already exists')
     faction = Faction(factionName)
@@ -329,8 +329,8 @@ def getFaction(sid, factionName):
 def uploadArmy(sid, armyName, factionName, armyUnits):
     user = dbi().get_user(sid)
     dbi().check_faction(factionName)
-    check_len(armyName, MAX_NAME_LENGTH, 'Too long army name')
-    check_emptiness(armyName, 'Empty army name')
+    check_len(armyName, MAX_NAME_LENGTH, 'Too long army name', BadArmy)
+    check_emptiness(armyName, 'Empty army name', BadArmy)
     if dbi().query(Army).filter_by(user_id=user.id, name=armyName).count():
         raise BadArmy('You have army with such name')
     unit_packs = []

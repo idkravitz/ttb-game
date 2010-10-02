@@ -1,5 +1,5 @@
 {
-    "sid": "GordonFreeman", 
+    "sid": "GordonFreeman",
     "status": "ok"
 }
 {
@@ -9,18 +9,18 @@
     "status": "ok"
 }
 {
-    "message": "Empty game name", 
-    "status": "badCommand"
-}
-{
-    "message": "Too long game name", 
-    "status": "badCommand"
-}
-{
-    "message": "Too many players", 
+    "message": "Empty game name",
     "status": "badGame"
 }
 {
-    "message": "Number of players must be 2 or more", 
+    "message": "Too long game name",
+    "status": "badGame"
+}
+{
+    "message": "Too many players",
+    "status": "badGame"
+}
+{
+    "message": "Number of players must be 2 or more",
     "status": "badGame"
 }

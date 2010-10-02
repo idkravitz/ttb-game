@@ -31,6 +31,7 @@ exceptions = (
     'badFaction',
     'badArmy',
     'badUnit',
+    'badMessage',
     'notInGame',
     'alreadyInGame',
     'alreadyExists',
