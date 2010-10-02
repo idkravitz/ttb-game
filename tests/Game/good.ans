@@ -1,9 +1,9 @@
 {
-    "sid": "testtest", 
+    "sid": "testtest",
     "status": "ok"
 }
 {
-    "sid": "firstsecond", 
+    "sid": "firstsecond",
     "status": "ok"
 }
 {
@@ -18,15 +18,15 @@
 {
     "games": [
         {
-            "connectedPlayersCount": 1, 
-            "factionName": "People", 
-            "gameName": "chess", 
-            "gameStatus": "not_started", 
-            "mapName": "de_dust", 
-            "playersCount": 2, 
+            "connectedPlayersCount": 1,
+            "factionName": "People",
+            "gameName": "chess",
+            "gameStatus": "not_started",
+            "mapName": "de_dust",
+            "playersCount": 2,
             "totalCost": 300
         }
-    ], 
+    ],
     "status": "ok"
 }
 {

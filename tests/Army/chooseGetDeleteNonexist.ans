@@ -1,16 +1,16 @@
 {
-    "sid": "GordonFreeman", 
+    "sid": "GordonFreeman",
     "status": "ok"
 }
 {
-    "message": "Can't choose army, because you're not in game", 
+    "message": "Can't choose army, because you're not in game",
     "status": "notInGame"
 }
 {
-    "message": "No army with that name", 
+    "message": "No army with that name",
     "status": "badArmy"
 }
 {
-    "message": "No army with that name", 
+    "message": "No army with that name",
     "status": "badArmy"
 }

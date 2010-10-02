@@ -1,21 +1,21 @@
 {
-    "sid": "GordonFreeman", 
+    "sid": "GordonFreeman",
     "status": "ok"
 }
 {
     "status": "ok"
 }
 {
-    "status": "ok", 
+    "status": "ok",
     "unitList": [
         {
-            "HP": 1, 
-            "MP": 1, 
-            "attack": 1, 
-            "cost": 1, 
-            "damage": 1, 
-            "defence": 1, 
-            "name": "first", 
+            "HP": 1,
+            "MP": 1,
+            "attack": 1,
+            "cost": 1,
+            "damage": 1,
+            "defence": 1,
+            "name": "first",
             "range": 1
         }
     ]

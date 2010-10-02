@@ -1,5 +1,5 @@
 {
-    "sid": "GordonFreeman", 
+    "sid": "GordonFreeman",
     "status": "ok"
 }
 {
@@ -12,7 +12,7 @@
     "status": "ok"
 }
 {
-    "sid": "BarneyCalhoun", 
+    "sid": "BarneyCalhoun",
     "status": "ok"
 }
 {
@@ -22,11 +22,11 @@
     "players": [
         {
             "username": "Gordon"
-        }, 
+        },
         {
             "username": "Barney"
         }
-    ], 
+    ],
     "status": "ok"
 }
 {
@@ -37,6 +37,6 @@
         {
             "username": "Gordon"
         }
-    ], 
+    ],
     "status": "ok"
 }

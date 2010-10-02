@@ -1,5 +1,5 @@
 {
-    "sid": "GordonFreeman", 
+    "sid": "GordonFreeman",
     "status": "ok"
 }
 {
@@ -9,13 +9,13 @@
     "status": "ok"
 }
 {
-    "sid": "HeadcrabYummy", 
+    "sid": "HeadcrabYummy",
     "status": "ok"
 }
 {
     "status": "ok"
 }
 {
-    "message": "Game with the such name already exists", 
+    "message": "Game with the such name already exists",
     "status": "alreadyExists"
 }

@@ -71,7 +71,7 @@
 	"sid": "GordonFreeman",
     "gameName": "Half-life"
 }
-    
+
 {
     "cmd": "chooseArmy",
     "sid": "GordonFreeman",

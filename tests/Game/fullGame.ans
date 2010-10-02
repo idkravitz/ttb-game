@@ -1,19 +1,13 @@
 {
-    "sid": "catmeow", 
+    "sid": "catmeow",
     "status": "ok"
 }
 {
-    "sid": "dogbark", 
+    "sid": "dogbark",
     "status": "ok"
 }
 {
-    "sid": "redhourse", 
-    "status": "ok"
-}
-{
-    "status": "ok"
-}
-{
+    "sid": "redhourse",
     "status": "ok"
 }
 {
@@ -23,6 +17,12 @@
     "status": "ok"
 }
 {
-    "message": "Game is full", 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "message": "Game is full",
     "status": "badGame"
 }

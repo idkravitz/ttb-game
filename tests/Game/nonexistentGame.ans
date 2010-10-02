@@ -1,16 +1,16 @@
 {
-    "sid": "banana123456", 
+    "sid": "banana123456",
     "status": "ok"
 }
 {
-    "message": "No unfinished game with that name", 
+    "message": "No unfinished game with that name",
     "status": "badGame"
 }
 {
-    "message": "No unfinished game with that name", 
+    "message": "No unfinished game with that name",
     "status": "badGame"
 }
 {
-    "games": [], 
+    "games": [],
     "status": "ok"
 }

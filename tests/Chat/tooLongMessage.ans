@@ -1,5 +1,5 @@
 {
-    "sid": "GordonFreeman", 
+    "sid": "GordonFreeman",
     "status": "ok"
 }
 {
@@ -12,6 +12,6 @@
     "status": "ok"
 }
 {
-    "message": "Too long message", 
+    "message": "Too long message",
     "status": "badCommand"
 }

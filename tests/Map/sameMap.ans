@@ -1,11 +1,11 @@
 {
-    "sid": "Mikshinfish", 
+    "sid": "Mikshinfish",
     "status": "ok"
 }
 {
     "status": "ok"
 }
 {
-    "message": "Map with such name already exists", 
+    "message": "Map with such name already exists",
     "status": "badMap"
 }
