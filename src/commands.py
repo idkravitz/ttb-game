@@ -71,7 +71,7 @@ def check_emptiness(obj, descr):
 @Command(str, str)
 def register(username, password):
     if not username.replace('_', '').isalnum():
-        raise BadCommand('Incorrect username')
+        raise BadUsername('Incorrect username')
     check_len(username, MAX_NAME_LENGTH, 'Too long username')
     check_emptiness(password, 'Empty password')
     try:
@@ -109,9 +109,9 @@ def clear():
 def createGame(sid, gameName, playersCount, mapName, factionName, totalCost):
     user = dbi().get_user(sid)
     if playersCount < 2:
-        raise BadCommand('Number of players must be 2 or more')
+        raise BadGame('Number of players must be 2 or more')
     if playersCount > MAX_PLAYERS:
-        raise BadCommand('Too many players')
+        raise BadGame('Too many players')
     check_len(gameName, MAX_NAME_LENGTH, 'Too long game name')
     check_emptiness(gameName, 'Empty game name')
     if dbi().query(Player)\
@@ -176,7 +176,7 @@ def sendMessage(sid, text, gameName):
     game = dbi().get_game(gameName)
     check_len(text, MAX_MESSAGE_LENGTH, 'Too long message')
     if not dbi().get_player(user.id, game.id):
-        raise BadCommand('User is not in this game')
+        raise BadGame('User is not in this game')
     dbi().add(Message(user.id, game.id, text))
     return response_ok()
 
@@ -226,13 +226,13 @@ def getPlayersListForGame(sid, gameName):
 def setPlayerStatus(sid, status):
     user = dbi().get_user(sid)
     if status not in ('ready', 'not_ready'):
-        raise BadCommand('Unknown player status')
+        raise BadPlayerStatus('Unknown player status')
     try:
         player = dbi().query(Player).filter_by(user_id=user.id)\
             .filter(or_(Player.state=='in_lobby', Player.state=='ready'))\
             .one()
     except sqlalchemy.orm.exc.NoResultFound:
-        raise BadCommand('User is not in lobby')
+        raise BadUser('User is not in lobby')
     player.state = status
     query = dbi().query(Player).join(Game).filter(Game.id==player.game_id)
     if player.game.players_count == query.filter(Player.state=='ready').count():

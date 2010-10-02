@@ -18,9 +18,9 @@
 }
 {
     "message": "Too many players", 
-    "status": "badCommand"
+    "status": "badGame"
 }
 {
     "message": "Number of players must be 2 or more", 
-    "status": "badCommand"
+    "status": "badGame"
 }
