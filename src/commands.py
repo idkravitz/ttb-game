@@ -305,10 +305,7 @@ def uploadFaction(sid, factionName, units):
             if not isinstance(unit[attr], attr_type):
                 raise BadUnit("Field '{0}' must be {1}".format(
                     attr, HUMAN_READABLE_TYPES[attr_type]))
-    unit_objects = (Unit(**unit) for unit in units)
-    for unit in unit_objects:
-        unit.faction_id = faction.id
-        dbi().add(unit)
+    dbi().add(*[Unit(faction_id=faction.id, **unit) for unit in units])
     return response_ok()
 
 @Command(str, str)
@@ -321,7 +318,7 @@ def deleteFaction(sid, factionName):
 def getFaction(sid, factionName):
     dbi().check_sid(sid)
     faction = dbi().get_faction(factionName)
-    units = [dict(((attr, getattr(unit, attr)) for attr in UNIT_ATTRS))
+    units = [dict((attr, getattr(unit, attr)) for attr in UNIT_ATTRS)
         for unit in faction.units]
     return response_ok(unitList=units)
 
@@ -333,27 +330,26 @@ def uploadArmy(sid, armyName, factionName, armyUnits):
     check_emptiness(armyName, 'Empty army name', BadArmy)
     if dbi().query(Army).filter_by(user_id=user.id, name=armyName).count():
         raise BadArmy('You have army with such name')
-    unit_packs = []
+    squads = []
     for unit in armyUnits:
         if not isinstance(unit, dict) or len(unit) != 2 or \
             'name' not in unit or 'count' not in unit:
             raise BadArmy(
                 "Each element of armyUnits must have fields 'name' and 'count'")
         name, count = unit['name'], unit['count']
-        unit_packs.append(dbi().get_unit(name, factionName))
-        unit_packs[-1].count = count
+        squads.append(dbi().get_unit(name, factionName))
+        squads[-1].count = count
     army = Army(armyName, user.id)
     dbi().add(army)
-    for unit in unit_packs:
-        dbi().add(UnitArmy(unit.id, army.id, unit.count))
+    dbi().add(*[UnitArmy(squad.id, army.id, squad.count) for squad in squads])
     return response_ok()
 
 @Command(str, str)
 def getArmy(sid, armyName):
     dbi().check_sid(sid)
     army = dbi().get_army(armyName)
-    return response_ok(units=[dict(name=pack.unit.name, count=pack.count)
-        for pack in army.unitArmy])
+    return response_ok(units=[dict(name=squad.unit.name, count=squad.count)
+        for squad in army.unitArmy])
 
 @Command(str, str)
 def deleteArmy(sid, armyName):

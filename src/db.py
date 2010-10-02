@@ -125,7 +125,7 @@ class Unit(Base):
     faction = relationship(Faction, backref=backref('units'))
 
     @copy_args
-    def __init__(self, name, HP, MP, defence, attack, range, damage, cost):
+    def __init__(self, name, HP, MP, defence, attack, range, damage, cost, faction_id):
         pass
 
 TYPES = {
