@@ -9,13 +9,15 @@
     "status": "ok",
     "unitList": [
         {
-            "HP": 1,
-            "MP": 1,
-            "attack": 1,
-            "cost": 1,
-            "damage": 1,
-            "defence": 1,
-            "name": "first",
+            "HP": 1, 
+            "MP": 1, 
+            "attack": 1, 
+            "cost": 1, 
+            "damage": 1, 
+            "defence": 1, 
+            "initiative": 1, 
+            "name": "first", 
+            "protection": 1, 
             "range": 1
         }
     ]

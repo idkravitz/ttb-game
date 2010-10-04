@@ -3,6 +3,6 @@
     "status": "ok"
 }
 {
-    "message": "Unit description must contain field 'attack'", 
+    "message": "Unit description must contain field 'cost'", 
     "status": "badUnit"
 }

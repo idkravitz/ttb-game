@@ -30,6 +30,8 @@
             "attack": 1,
             "range": 1,
             "damage": 1,
+            "protection": 1,
+            "initiative": 1, 
             "cost": 1
         },
         {
@@ -40,6 +42,8 @@
             "attack": 1,
             "range": 1,
             "damage": 1,
+            "protection": 1,
+            "initiative": 1,
             "cost": 1
         }
     ]
