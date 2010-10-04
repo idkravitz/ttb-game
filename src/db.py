@@ -150,8 +150,28 @@ UNIT_ATTRS = {
 }
 for attr, type_ in UNIT_ATTRS.items():
     setattr(Unit, attr, TYPES[type_]())
+            
+class Ability(Base):
+    __tablename__ = 'abilities'
+    
+    id = pkey()
+    name = requiredString()
 
+    @copy_args
+    def __init__(self, name): pass
+    
+class UnitAbility(Base):
+    __tablename__ = 'unitAbility'
 
+    id = pkey()
+    unit_id = fkey('units.id')
+    ability_id = fkey('abilities.id')
+    unit = relationship(Unit, backref=backref('unitAbility'))
+    ability = relationship(Ability, backref=backref('unitAbility'))
+
+    @copy_args
+    def __init__(self, unit_id, ability_id): pass    
+        
 class UnitArmy(Base):
     __tablename__ = 'unitArmy'
 
