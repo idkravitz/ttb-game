@@ -349,15 +349,14 @@ def uploadArmy(sid, armyName, factionName, armyUnits):
 def getArmy(sid, armyName):
     dbi().check_sid(sid)
     army = dbi().get_army(armyName)
-    names = [unit_army.unit.name for unit_army in army.unitArmy]
-    res = []
-    while names:
-        name = names[0]
-        count = names.count(name)
-        res.append(dict(name=name,count=count))
-        for i in range(count):
-            names.remove(name)
-    return response_ok(units=res)
+    names = {}
+    for unit_army in army.unitArmy:
+        name = unit_army.unit.name
+        if name in names:
+            names[name] += 1
+        else:
+            names.update({name: 1})
+    return response_ok(units=[dict(name=i[0], count=i[1]) for i in names.items()])
 
 @Command(str, str)
 def deleteArmy(sid, armyName):
