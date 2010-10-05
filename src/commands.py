@@ -239,6 +239,7 @@ def setPlayerStatus(sid, status):
         for p in player.game.players:
             p.state = 'in_game'
         player.game.status = 'started'
+        dbi.add(GameProcess(player.game.id, 0)) # Zero turn is when players place their units on terrain
     dbi().commit()
     return response_ok()
 

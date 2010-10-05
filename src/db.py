@@ -152,16 +152,16 @@ UNIT_ATTRS = {
 }
 for attr, type_ in UNIT_ATTRS.items():
     setattr(Unit, attr, TYPES[type_]())
-            
+
 class Ability(Base):
     __tablename__ = 'abilities'
-    
+
     id = pkey()
     name = requiredString()
 
     @copy_args
     def __init__(self, name): pass
-    
+
 class UnitAbility(Base):
     __tablename__ = 'unitAbility'
 
@@ -172,8 +172,8 @@ class UnitAbility(Base):
     ability = relationship(Ability, backref=backref('unitAbility'))
 
     @copy_args
-    def __init__(self, unit_id, ability_id): pass    
-        
+    def __init__(self, unit_id, ability_id): pass
+
 class UnitArmy(Base):
     __tablename__ = 'unitArmy'
 
@@ -186,7 +186,7 @@ class UnitArmy(Base):
 
     @copy_args
     def __init__(self, unit_id, army_id, count): pass
-    
+
 class GameProcess(Base):
     __tablename__ = 'gameProcess'
 
@@ -196,8 +196,8 @@ class GameProcess(Base):
     game = relationship(Game, backref=backref('gameProcess'))
 
     @copy_args
-    def __init__(self, game_id, turnNumber): pass  
-    
+    def __init__(self, game_id, turnNumber): pass
+
 class Turn(Base):
     __tablename__ = 'turns'
 
@@ -209,12 +209,12 @@ class Turn(Base):
     destX = requiredInteger()
     destY = requiredInteger()
     attackX = requiredInteger()
-    attackY = requiredInteger()    
+    attackY = requiredInteger()
     unitArmy = relationship(UnitArmy, backref=backref('turns'))
     gameProcess = relationship(GameProcess, backref=backref('turns'))
 
     @copy_args
-    def __init__(self, unitArmy_id, gameProcess_id, posX, posY, destX, destY, attackX, attackY): pass        
+    def __init__(self, unitArmy_id, gameProcess_id, posX, posY, destX, destY, attackX, attackY): pass
 
 
 class Database:
