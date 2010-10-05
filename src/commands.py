@@ -333,23 +333,22 @@ def uploadArmy(sid, armyName, factionName, armyUnits):
         raise BadArmy('You have army with such name')
     squads = []
     for unit in armyUnits:
-        if not isinstance(unit, dict) or len(unit) != 2 or \
-            'name' not in unit or 'count' not in unit:
+        if not isinstance(unit, dict) or len(unit) != 1 or \
+            'name' not in unit:
             raise BadArmy(
-                "Each element of armyUnits must have fields 'name' and 'count'")
-        name, count = unit['name'], unit['count']
+                "Each element of armyUnits must have fields 'name'")
+        name = unit['name']
         squads.append(dbi().get_unit(name, factionName))
-        squads[-1].count = count
     army = Army(armyName, user.id)
     dbi().add(army)
-    dbi().add(*[UnitArmy(squad.id, army.id, squad.count) for squad in squads])
+    dbi().add(*[UnitArmy(squad.id, army.id) for squad in squads])
     return response_ok()
 
 @Command(str, str)
 def getArmy(sid, armyName):
     dbi().check_sid(sid)
     army = dbi().get_army(armyName)
-    return response_ok(units=[dict(name=squad.unit.name, count=squad.count)
+    return response_ok(units=[dict(name=squad.unit.name)
         for squad in army.unitArmy])
 
 @Command(str, str)
@@ -371,7 +370,7 @@ def chooseArmy(sid, armyName):
     except sqlalchemy.orm.exc.NoResultFound:
         raise NotInGame('Can\'t choose army, because you\'re not in game')
     army = dbi().get_army(armyName)
-    total_cost = sum(squad.count * squad.unit.cost for squad in army.unitArmy)
+    total_cost = sum(squad.unit.cost for squad in army.unitArmy)
     if total_cost > player.game.total_cost:
         raise BadArmy('Your army is too expensive')
     player.army = army

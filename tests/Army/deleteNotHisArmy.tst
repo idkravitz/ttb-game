@@ -56,12 +56,10 @@
     "factionName": "People",
     "armyUnits": [
         {
-            "name": "first",
-            "count": 5
+            "name": "first"
         },
         {
-            "name": "second",
-            "count": 3
+            "name": "second"
         }
     ]
 }
