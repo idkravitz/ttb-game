@@ -11,7 +11,7 @@ of the following:
     $ sudo easy_install SQLAlchemy
     $ sudo pip install SQLAlchemy
 
-Or if you can't or don't want to have none of this nice tools you can download SQLAlchemy directly from here <a href="http://www.sqlalchemy.org/download.html">http://www.sqlalchemy.org/download.html</a>
+Or if you can't or don't want to have none of this nice tools you can download SQLAlchemy directly from <a href="http://www.sqlalchemy.org/download.html">http://www.sqlalchemy.org/download.html</a>
 and execute:
     $ sudo python setup.py install
 
