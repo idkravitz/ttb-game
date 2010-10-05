@@ -187,13 +187,13 @@ class UnitArmy(Base):
     @copy_args
     def __init__(self, unit_id, army_id, count): pass
     
-class GameProccess(Base):
-    __tablename__ = 'gameProccess'
+class GameProcess(Base):
+    __tablename__ = 'gameProcess'
 
     id = pkey()
     game_id = fkey('games.id')
     turnNumber = requiredInteger()
-    game = relationship(Game, backref=backref('gameProccess'))
+    game = relationship(Game, backref=backref('gameProcess'))
 
     @copy_args
     def __init__(self, game_id, turnNumber): pass  
@@ -203,7 +203,7 @@ class Turn(Base):
 
     id = pkey()
     unitArmy_id = fkey('unitArmy.id')
-    gameProccess_id = fkey('gameProccess.id')
+    gameProcess_id = fkey('gameProcess.id')
     posX = requiredInteger()
     posY = requiredInteger()
     destX = requiredInteger()
@@ -211,10 +211,10 @@ class Turn(Base):
     attackX = requiredInteger()
     attackY = requiredInteger()    
     unitArmy = relationship(UnitArmy, backref=backref('turns'))
-    gameProccess = relationship(GameProccess, backref=backref('turns'))
+    gameProcess = relationship(GameProcess, backref=backref('turns'))
 
     @copy_args
-    def __init__(self, unitArmy_id, gameProccess_id, posX, posY, destX, destY, attackX, attackY): pass        
+    def __init__(self, unitArmy_id, gameProcess_id, posX, posY, destX, destY, attackX, attackY): pass        
 
 
 class Database:
