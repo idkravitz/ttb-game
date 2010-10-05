@@ -37,7 +37,8 @@
     "factionName": "People",
     "armyUnits": [
         {
-            "name": "first"
+            "name": "first",
+            "count": 5
         }
     ]
 }
@@ -49,7 +50,8 @@
     "factionName": "People",
     "armyUnits": [
         {
-            "name": "first"
+            "name": "first",
+            "count": 5
         }
     ]
 }

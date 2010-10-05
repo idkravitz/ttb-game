@@ -333,12 +333,13 @@ def uploadArmy(sid, armyName, factionName, armyUnits):
         raise BadArmy('You have army with such name')
     squads = []
     for unit in armyUnits:
-        if not isinstance(unit, dict) or len(unit) != 1 or \
-            'name' not in unit:
+        if not isinstance(unit, dict) or len(unit) != 2 or \
+            'name' not in unit or 'count' not in unit:
             raise BadArmy(
-                "Each element of armyUnits must have fields 'name'")
-        name = unit['name']
-        squads.append(dbi().get_unit(name, factionName))
+                "Each element of armyUnits must have fields 'name' and 'count'")
+        name, count = unit['name'], unit['count']
+        unit = dbi().get_unit(name, factionName)
+        squads += [unit] * count
     army = Army(armyName, user.id)
     dbi().add(army)
     dbi().add(*[UnitArmy(squad.id, army.id) for squad in squads])
@@ -348,8 +349,15 @@ def uploadArmy(sid, armyName, factionName, armyUnits):
 def getArmy(sid, armyName):
     dbi().check_sid(sid)
     army = dbi().get_army(armyName)
-    return response_ok(units=[dict(name=squad.unit.name)
-        for squad in army.unitArmy])
+    names = [unit_army.unit.name for unit_army in army.unitArmy]
+    res = []
+    while names:
+        name = names[0]
+        count = names.count(name)
+        res.append(dict(name=name,count=count))
+        for i in range(count):
+            names.remove(name)
+    return response_ok(units=res)
 
 @Command(str, str)
 def deleteArmy(sid, armyName):
