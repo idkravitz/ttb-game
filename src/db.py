@@ -180,12 +180,11 @@ class UnitArmy(Base):
     id = pkey()
     unit_id = fkey('units.id')
     army_id = fkey('armies.id')
-    count = requiredInteger()
     unit = relationship(Unit, backref=backref('unitArmy'))
     army = relationship(Army, backref=backref('unitArmy'))
 
     @copy_args
-    def __init__(self, unit_id, army_id, count): pass
+    def __init__(self, unit_id, army_id): pass
 
 class GameProcess(Base):
     __tablename__ = 'gameProcess'
