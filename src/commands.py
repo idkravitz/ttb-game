@@ -225,7 +225,7 @@ def getPlayersListForGame(sid, gameName):
 @Command(str, str)
 def setPlayerStatus(sid, status):
     user = dbi().get_user(sid)
-    if status not in ('ready', 'not_ready'):
+    if status not in ('ready', 'in_lobby'):
         raise BadPlayerStatus('Unknown player status')
     try:
         player = dbi().query(Player).filter_by(user_id=user.id)\
@@ -238,7 +238,7 @@ def setPlayerStatus(sid, status):
     if player.game.players_count == query.filter(Player.state=='ready').count():
         for p in player.game.players:
             p.state = 'in_game'
-        player.game.status = 'started'
+        player.game.state = 'started'
         dbi().add(GameProcess(player.game.id, 0)) # Zero turn is when players place their units on terrain
     dbi().commit()
     return response_ok()
