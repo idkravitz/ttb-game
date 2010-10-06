@@ -386,7 +386,21 @@ def chooseArmy(sid, armyName):
 
 @Command(str, list)
 def placeUnits(sid, units):
-    pass # Implement initial unit placing
+    user = dbi().get_user(sid)
+    try:
+        player = dbi().query(Player)\
+            .filter_by(user_id=user.id,state='in_game').one()
+    except sqlalchemy.orm.exc.NoResultFound:
+        raise BadGame('User is not playing game')
+    game = player.game
+    map_ = game.map
+    for u in units:
+        fields = ["name", "posX", "posY"]
+        if not(isinstance(u, dict) and
+            functools.reduce(lambda x,y: x and y, map(lambda f: f in u, fields))
+        ):
+            raise BadCommand("Bad objects in units")                   
+    return response_ok()
 
 @Command(str, int, list)
 def move(sid, turn, units):
@@ -397,7 +411,7 @@ def move(sid, turn, units):
     except sqlalchemy.orm.exc.NoResultFound:
         raise BadGame('User is not playing game')
     game = player.game
-    map = game.map
+    map_ = game.map
     # We have at least two process, because we know that game started
     processes = dbi().query(GameProcess).filter_by(game_id=game.id).order_by(GameProcess.turnNumber).all()
     if turn != processes[-1].turnNumber:
@@ -405,7 +419,7 @@ def move(sid, turn, units):
     for u in units:
         fields = ["posX", "posY", "destX", "destY", "attackX", "attackY"]
         if not(isinstance(u, dict) and
-            reduce(lambda x,y: x and y, map(lambda f: f in u, fields))
+            functools.reduce(lambda x,y: x and y, map(lambda f: f in u, fields))
         ):
             raise BadCommand("Bad objects in units") # Or something more verbose
         proc = processes[-2] # Need a better way, than fetch all

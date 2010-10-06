@@ -1,0 +1,43 @@
+{
+    "sid": "GordonFreeman", 
+    "status": "ok"
+}
+{
+    "sid": "headcrabarrgh", 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "message": "User is not playing game", 
+    "status": "badGame"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "message": "Bad objects in units", 
+    "status": "badCommand"
+}
