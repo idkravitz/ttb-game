@@ -5,12 +5,6 @@
 }
 
 {
-    "cmd": "register",
-    "username": "headcrab",
-    "password": "arrgh"
-}
-
-{
     "cmd": "uploadMap",
     "sid": "GordonFreeman",
     "name": "de_dust",
@@ -75,39 +69,11 @@
 {
 	"cmd": "setPlayerStatus",
 	"sid": "GordonFreeman",
-	"status": "in_lobby"
-}
-
-{
-    "cmd": "joinGame",
-    "sid": "headcrabarrgh",
-    "gameName": "Half-life"
-}
-
-{
-    "cmd": "chooseArmy",
-    "sid": "headcrabarrgh",
-    "armyName": "People"
-}
-
-{
-	"cmd": "setPlayerStatus",
-	"sid": "headcrabarrgh",
 	"status": "ready"
-}
-
-{
-    "cmd": "getGamesList",
-    "sid": "headcrabarrgh"
 }
 
 {
 	"cmd": "setPlayerStatus",
 	"sid": "GordonFreeman",
-	"status": "ready"
-}
-
-{
-    "cmd": "getGamesList",
-    "sid": "headcrabarrgh"
+	"status": "in_lobby"
 }

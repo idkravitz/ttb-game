@@ -34,6 +34,26 @@
     "status": "ok"
 }
 {
+    "status": "ok"
+}
+{
+    "games": [
+        {
+            "connectedPlayersCount": 2, 
+            "factionName": "People", 
+            "gameName": "Half-life", 
+            "gameStatus": "not_started", 
+            "mapName": "de_dust", 
+            "playersCount": 2, 
+            "totalCost": 100
+        }
+    ], 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
     "games": [
         {
             "connectedPlayersCount": 2, 

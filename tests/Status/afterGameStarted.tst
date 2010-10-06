@@ -73,12 +73,6 @@
 }
 
 {
-	"cmd": "setPlayerStatus",
-	"sid": "GordonFreeman",
-	"status": "in_lobby"
-}
-
-{
     "cmd": "joinGame",
     "sid": "headcrabarrgh",
     "gameName": "Half-life"
@@ -97,17 +91,7 @@
 }
 
 {
-    "cmd": "getGamesList",
-    "sid": "headcrabarrgh"
-}
-
-{
 	"cmd": "setPlayerStatus",
-	"sid": "GordonFreeman",
-	"status": "ready"
-}
-
-{
-    "cmd": "getGamesList",
-    "sid": "headcrabarrgh"
+	"sid": "headcrabarrgh",
+	"status": "in_lobby"
 }
