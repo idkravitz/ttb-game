@@ -38,6 +38,7 @@ exceptions = (
     'playersNotReady',
     'badTurn',
     'badAbility',
+    'breakRules',
 )
 
 def generate_exception(name, status):

@@ -11,7 +11,7 @@ from sqlalchemy import or_
 from common import *
 from exceptions import *
 from db import db_instance as dbi
-from db import User, Map, Game, Player, Message, Faction, Unit, Army, UnitArmy, GameProcess
+from db import User, Map, Game, Player, Message, Faction, Unit, Army, UnitArmy, GameProcess, Turn
 from db import UNIT_ATTRS, HUMAN_READABLE_TYPES
 
 class Command(object):
@@ -383,3 +383,37 @@ def chooseArmy(sid, armyName):
     player.army = army
     dbi().commit()
     return response_ok()
+
+@Command(str, list)
+def placeUnits(sid, units):
+    pass # Implement initial unit placing
+
+@Command(str, int, list)
+def move(sid, turn, units):
+    user = dbi().get_user(sid)
+    try:
+        player = dbi().query(Player)\
+            .filter_by(user_id=user.id,state='in_game').one()
+    except sqlalchemy.orm.exc.NoResultFound:
+        raise BadGame('User is not playing game')
+    game = player.game
+    map = game.map
+    # We have at least two process, because we know that game started
+    processes = dbi().query(GameProcess).filter_by(game_id=game.id).order_by(GameProcess.turnNumber).all()
+    if turn != processes[-1].turnNumber:
+        raise BadTurn("Not actual turn number")
+    for u in units:
+        fields = ["posX", "posY", "destX", "destY", "attackX", "attackY"]
+        if not(isinstance(u, dict) and
+            reduce(lambda x,y: x and y, map(lambda f: f in u, fields))
+        ):
+            raise BadCommand("Bad objects in units") # Or something more verbose
+        proc = processes[-2] # Need a better way, than fetch all
+        try:
+            unitArmy = dbi().query(Turn).filter_by(gameProcess_id=proc.id).one().unitArmy
+        except sqlalchemy.orm.exc.NoResultFound:
+            raise BreakRules('No unit in that cell')
+        #Check that owner of unit is valid 
+        # Call to deikstra algorithm
+        #locate unit
+# Handle end of turn
