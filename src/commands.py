@@ -11,7 +11,7 @@ from sqlalchemy import or_
 from common import *
 from exceptions import *
 from db import db_instance as dbi
-from db import User, Map, Game, Player, Message, Faction, Unit, Army, UnitArmy
+from db import User, Map, Game, Player, Message, Faction, Unit, Army, UnitArmy, GameProcess
 from db import UNIT_ATTRS, HUMAN_READABLE_TYPES
 
 class Command(object):
@@ -239,7 +239,7 @@ def setPlayerStatus(sid, status):
         for p in player.game.players:
             p.state = 'in_game'
         player.game.status = 'started'
-        dbi.add(GameProcess(player.game.id, 0)) # Zero turn is when players place their units on terrain
+        dbi().add(GameProcess(player.game.id, 0)) # Zero turn is when players place their units on terrain
     dbi().commit()
     return response_ok()
 
