@@ -36,6 +36,8 @@ exceptions = (
     'alreadyInGame',
     'alreadyExists',
     'playersNotReady',
+    'badTurn',
+    'badAbility',
 )
 
 def generate_exception(name, status):
