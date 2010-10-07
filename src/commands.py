@@ -403,7 +403,7 @@ def placeUnits(sid, units):
     map_ = game.map
     map_ = split_str(map_.terrain, map_.width)
     if dbi().query(GameProcess).filter_by(game_id=game.id).count() != 1:
-        BadTurn("Unit placing allowed only on zero turn")
+        raise BadTurn("Unit placing allowed only on zero turn")
     process = dbi().query(GameProcess).filter_by(game_id=game.id).one()
     store = {}
     for ua in player.army.unitArmy:
@@ -426,13 +426,10 @@ def placeUnits(sid, units):
         map_[y][x] = "0"
         ua = store[name].pop(0)
         placements.append(Turn(ua.id, process.id, x, y, x, y, 0, 0, ua.unit.HP))
-    # Yeah, the baby is now ready
     dbi().add(*placements)
-    # Now check -- if everyone are ready
     q = readyPlayersQuery(process).count()
     if game.players_count == q:
         dbi().add(GameProcess(game.id, 1))
-        # Do a next turn
     return response_ok()
 
 def readyPlayersQuery(process):
@@ -467,6 +464,9 @@ def getGameState(sid, name):
         res[username]["units"].append(dict(name=unit.name, HP=t.HP))
     return response_ok(players=res)
 
+def construct_turn_from_previous(turn, posX, posY, destX, destY, attackX, attackY):
+    return Turn(turn.unitArmy_id, turn.gameProcess_id, posX, posY, destX, destY, attackX, attackY, turn.HP)
+
 @Command(str, int, list)
 def move(sid, turn, units):
     user = dbi().get_user(sid)
@@ -482,20 +482,34 @@ def move(sid, turn, units):
     processes = dbi().query(GameProcess).filter_by(game_id=game.id).order_by(GameProcess.turnNumber).all()
     if turn != processes[-1].turnNumber:
         raise BadTurn("Not actual turn number")
+    moves = []
     for u in units:
         fields = ["posX", "posY", "destX", "destY", "attackX", "attackY"]
         if not(isinstance(u, dict) and all(f in u for f in fields)):
             raise BadCommand("Bad objects in units") # Or something more verbose
+        for f in fields:
+            locals()[f] = u[f]
         proc = processes[-2] # Need a better way, than fetch all
         try:
-            unitArmy = dbi().query(Turn).filter_by(gameProcess_id=proc.id).one().unitArmy
+            prevTurn = dbi().query(Turn).filter_by(gameProcess_id=proc.id, destX=proc.posX, destY=proc.posY).one()
         except sqlalchemy.orm.exc.NoResultFound:
             raise BreakRules('No unit in that cell')
         #Need to find shortest path
-        #Check that owner of unit is valid 
-        # Call to deikstra algorithm
-        #locate unit
-# Handle end of turn
+        if not find_shortest_path():
+            raise BreakRules("You'r unit can't move there, MP is not enough")
+        moves.append(construct_turn_from_previous(prevTurn, *(locals()[f] for f in fields)))
+    dbi().add(moves)
+    q = readyPlayersQuery(processes[-1]).count()
+    if game.players_count == q:
+        # DO PHASE 1 (move in query)
+        # ????
+        # DO PHASE 2 ( attack )
+        # PROFIT
+        dbi().add(GameProcess(game.id, 1))
+    return response_ok()
+
+def find_shortest_path():
+    return True
 
 def create_initiative_query():
     pass
