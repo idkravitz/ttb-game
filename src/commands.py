@@ -69,7 +69,35 @@ def check_len(obj, max_len, descr, cls):
 
 def check_emptiness(obj, descr, cls):
     if not len(obj):
-        raise cls(descr)
+        raise cls(descr)  
+        
+def checkInGame(obj, Table):
+    try:
+        player = dbi().query(Table)\
+            .filter_by(user_id=obj.id,state='in_game').one()
+    except sqlalchemy.orm.exc.NoResultFound:
+        raise BadGame('User is not playing game') 
+    return player  
+    
+def checkFields(fields, u):
+    if not(isinstance(u, dict) and all(f in u for f in fields)):
+        raise BadCommand("Bad objects in units")                    
+       
+def readyPlayersQuery(process):
+    return (dbi().query(User.id).select_from(reduce(join, [Turn, UnitArmy, Army, User]))
+        .filter(Turn.gameProcess_id==process.id).distinct())
+
+def lastGameProcessQuery(game, obj):
+    return dbi().query(obj).filter_by(game_id=game.id).order_by(desc(GameProcess.turnNumber)).first()
+
+def getLastGameProcess(game):
+    return lastGameProcessQuery(game, GameProcess)
+
+def getCurrentTurnNumber(game):
+    return lastGameProcessQuery(game, GameProcess.turnNumber)[0] 
+    
+def construct_turn_from_previous(turn, posX, posY, destX, destY, attackX, attackY):
+    return Turn(turn.unitArmy_id, turn.gameProcess_id, posX, posY, destX, destY, attackX, attackY, turn.HP)           
 
 @Command(str, str)
 def register(username, password):
@@ -395,11 +423,7 @@ def split_str(text, width):
 @Command(str, list)
 def placeUnits(sid, units):
     user = dbi().get_user(sid)
-    try:
-        player = dbi().query(Player)\
-            .filter_by(user_id=user.id,state='in_game').one()
-    except sqlalchemy.orm.exc.NoResultFound:
-        raise BadGame('User is not playing game')
+    player = checkInGame(user, Player)
     game = player.game
     map_ = game.map
     map_ = split_str(map_.terrain, map_.width)
@@ -416,8 +440,7 @@ def placeUnits(sid, units):
     placements = []
     for u in units:
         fields = ["name", "posX", "posY"]
-        if not(isinstance(u, dict) and all(f in u for f in fields)):
-            raise BadCommand("Bad objects in units")
+        checkFields(fields, u)
         y, x = u["posY"], u["posX"]
         name = u["name"]
         if not(name in store and store[name]):
@@ -432,21 +455,46 @@ def placeUnits(sid, units):
     q = readyPlayersQuery(process).count()
     if game.players_count == q:
         dbi().add(GameProcess(game.id, 1))
+    return response_ok()                    
+
+@Command(str, int, list)
+def move(sid, turn, units):
+    user = dbi().get_user(sid)
+    player = checkInGame(user, Player)
+    game = player.game
+    map_ = game.map
+    map_ = split_str(map_.terrain, map_.width)
+    # We have at least two process, because we know that game started
+    processes = dbi().query(GameProcess).filter_by(game_id=game.id).order_by(GameProcess.turnNumber).all()
+    if turn != processes[-1].turnNumber:
+        raise BadTurn("Not actual turn number")
+    moves = []
+    for u in units:
+        fields = ["posX", "posY", "destX", "destY", "attackX", "attackY"]
+        checkFields(fields, u)
+        for f in fields:
+            locals()[f] = u[f]
+        proc = processes[-2] # Need a better way, than fetch all
+        try:
+            prevTurn = dbi().query(Turn).filter_by(gameProcess_id=proc.id, destX=proc.posX, destY=proc.posY).one()
+        except sqlalchemy.orm.exc.NoResultFound:
+            raise BreakRules('No unit in that cell')
+        path = find_shortest_path()
+        if path is None:
+            raise BreakRules("Target cell is unreachable")
+        if len(path) > prevTurn.unitArmy.unit.MP:
+            raise BreakRules("Not enough MP")
+        moves.append(construct_turn_from_previous(prevTurn, *(locals()[f] for f in fields)))
+    dbi().add(moves)
+    q = readyPlayersQuery(processes[-1]).count()
+    if game.players_count == q:
+        # DO PHASE 1 (move in query)
+        # ????
+        # DO PHASE 2 ( attack )
+        # PROFIT
+        dbi().add(GameProcess(game.id, 1))
     return response_ok()
-
-def readyPlayersQuery(process):
-    return (dbi().query(User.id).select_from(reduce(join, [Turn, UnitArmy, Army, User]))
-        .filter(Turn.gameProcess_id==process.id).distinct())
-
-def lastGameProcessQuery(game, obj):
-    return dbi().query(obj).filter_by(game_id=game.id).order_by(desc(GameProcess.turnNumber)).first()
-
-def getLastGameProcess(game):
-    return lastGameProcessQuery(game, GameProcess)
-
-def getCurrentTurnNumber(game):
-    return lastGameProcessQuery(game, GameProcess.turnNumber)[0]
-
+    
 @Command(str)
 def getGameState(name):
     game = dbi().get_game(name)
@@ -463,53 +511,7 @@ def getGameState(name):
         army = ua.army
         username = army.user.username
         res[username]["units"].append(dict(name=unit.name, HP=t.HP))
-    return response_ok(players=res)
-
-def construct_turn_from_previous(turn, posX, posY, destX, destY, attackX, attackY):
-    return Turn(turn.unitArmy_id, turn.gameProcess_id, posX, posY, destX, destY, attackX, attackY, turn.HP)
-
-@Command(str, int, list)
-def move(sid, turn, units):
-    user = dbi().get_user(sid)
-    try:
-        player = dbi().query(Player)\
-            .filter_by(user_id=user.id,state='in_game').one()
-    except sqlalchemy.orm.exc.NoResultFound:
-        raise BadGame('User is not playing game')
-    game = player.game
-    map_ = game.map
-    map_ = split_str(map_.terrain, map_.width)
-    # We have at least two process, because we know that game started
-    processes = dbi().query(GameProcess).filter_by(game_id=game.id).order_by(GameProcess.turnNumber).all()
-    if turn != processes[-1].turnNumber:
-        raise BadTurn("Not actual turn number")
-    moves = []
-    for u in units:
-        fields = ["posX", "posY", "destX", "destY", "attackX", "attackY"]
-        if not(isinstance(u, dict) and all(f in u for f in fields)):
-            raise BadCommand("Bad objects in units") # Or something more verbose
-        for f in fields:
-            locals()[f] = u[f]
-        proc = processes[-2] # Need a better way, than fetch all
-        try:
-            prevTurn = dbi().query(Turn).filter_by(gameProcess_id=proc.id, destX=proc.posX, destY=proc.posY).one()
-        except sqlalchemy.orm.exc.NoResultFound:
-            raise BreakRules('No unit in that cell')
-        path = find_shortest_path()
-        if path is None
-            raise BreakRules("Target cell is unreachable")
-        if len(path) > prevTurn.unitArmy.unit.MP:
-            raise BreakRules("Not enough MP")
-        moves.append(construct_turn_from_previous(prevTurn, *(locals()[f] for f in fields)))
-    dbi().add(moves)
-    q = readyPlayersQuery(processes[-1]).count()
-    if game.players_count == q:
-        # DO PHASE 1 (move in query)
-        # ????
-        # DO PHASE 2 ( attack )
-        # PROFIT
-        dbi().add(GameProcess(game.id, 1))
-    return response_ok()
+    return response_ok(players=res)    
 
 def create_initiative_query():
     pass
