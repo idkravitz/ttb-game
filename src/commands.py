@@ -236,8 +236,9 @@ def setPlayerStatus(sid, status):
     player.state = status
     query = dbi().query(Player).join(Game).filter(Game.id==player.game_id)
     if player.game.players_count == query.filter(Player.state=='ready').count():
-        for p in player.game.players:
+        for index, p in enumerate(player.game.players):
             p.state = 'in_game'
+            p.player_number = index + 1
         player.game.state = 'started'
         dbi().add(GameProcess(player.game.id, 0)) # Zero turn is when players place their units on terrain
     dbi().commit()
@@ -417,7 +418,7 @@ def move(sid, turn, units):
     if turn != processes[-1].turnNumber:
         raise BadTurn("Not actual turn number")
     for u in units:
-        fields = ["posX", "posY", "destX", "destY", "attackX", "attackY"]
+        fields = ["posX", "posY", "destX", "destY", "attackX", "attackY", "hp"]
         if not(isinstance(u, dict) and
             functools.reduce(lambda x,y: x and y, map(lambda f: f in u, fields))
         ):
