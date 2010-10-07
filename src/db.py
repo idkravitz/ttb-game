@@ -181,6 +181,7 @@ class UnitArmy(Base):
     id = pkey()
     unit_id = fkey('units.id')
     army_id = fkey('armies.id')
+    count = Column(Integer)
     unit = relationship(Unit, backref=backref('unitArmy'))
     army = relationship(Army, backref=backref('unitArmy'))
 
