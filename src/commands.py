@@ -333,8 +333,9 @@ def uploadArmy(sid, armyName, factionName, armyUnits):
         raise BadArmy('You have army with such name')
     squads = []
     for unit in armyUnits:
-        if not isinstance(unit, dict) or len(unit) != 2 or \
-            'name' not in unit or 'count' not in unit:
+        if not(isinstance(unit, dict) and len(unit) == 2 and
+            'name' in unit and 'count'  in unit
+        ):
             raise BadArmy(
                 "Each element of armyUnits must have fields 'name' and 'count'")
         name, count = unit['name'], unit['count']
@@ -396,10 +397,8 @@ def placeUnits(sid, units):
     map_ = game.map
     for u in units:
         fields = ["name", "posX", "posY"]
-        if not(isinstance(u, dict) and
-            functools.reduce(lambda x,y: x and y, map(lambda f: f in u, fields))
-        ):
-            raise BadCommand("Bad objects in units")                   
+        if not(isinstance(u, dict) and all(f in u for f in fields)):
+            raise BadCommand("Bad objects in units")
     return response_ok()
 
 @Command(str, int, list)
@@ -418,9 +417,7 @@ def move(sid, turn, units):
         raise BadTurn("Not actual turn number")
     for u in units:
         fields = ["posX", "posY", "destX", "destY", "attackX", "attackY"]
-        if not(isinstance(u, dict) and
-            functools.reduce(lambda x,y: x and y, map(lambda f: f in u, fields))
-        ):
+        if not(isinstance(u, dict) and all(f in u for f in fields)):
             raise BadCommand("Bad objects in units") # Or something more verbose
         proc = processes[-2] # Need a better way, than fetch all
         try:
