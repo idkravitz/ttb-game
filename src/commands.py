@@ -4,6 +4,7 @@
 import re
 import json
 import functools
+from functools import reduce
 
 import sqlalchemy.orm.exc
 from sqlalchemy import or_, desc
@@ -428,12 +429,15 @@ def placeUnits(sid, units):
     # Yeah, the baby is now ready
     dbi().add(*placements)
     # Now check -- if everyone are ready
-    q = (dbi().query(User.id).select_from(
-        join(join(join(Turn, UnitArmy), Army), User)).filter(Turn.gameProcess_id==process.id).distinct().count())
+    q = readyPlayersQuery(process).count()
     if game.players_count == q:
         dbi().add(GameProcess(game.id, 1))
         # Do a next turn
     return response_ok()
+
+def readyPlayersQuery(process):
+    return (dbi().query(User.id).select_from(reduce(join, [Turn, UnitArmy, Army, User]))
+        .filter(Turn.gameProcess_id==process.id).distinct())
 
 def lastGameProcessQuery(game, obj):
     return dbi().query(obj).filter_by(game_id=game.id).order_by(desc(GameProcess.turnNumber)).first()
@@ -487,7 +491,11 @@ def move(sid, turn, units):
             unitArmy = dbi().query(Turn).filter_by(gameProcess_id=proc.id).one().unitArmy
         except sqlalchemy.orm.exc.NoResultFound:
             raise BreakRules('No unit in that cell')
+        #Need to find shortest path
         #Check that owner of unit is valid 
         # Call to deikstra algorithm
         #locate unit
 # Handle end of turn
+
+def create_initiative_query():
+    pass
