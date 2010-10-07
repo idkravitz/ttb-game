@@ -103,6 +103,11 @@
 }
 
 {
+    "cmd": "getGameState",
+    "name": "Half-life"
+}
+
+{
 	"cmd": "placeUnits",
 	"sid": "GordonFreeman",
 	"units": [
@@ -111,4 +116,17 @@
             "posX": "1"
         }
     ]
-}    
+} 
+
+{
+	"cmd": "placeUnits",
+	"sid": "GordonFreeman",
+	"units": [
+        {
+            "name": "xxx",
+            "posX": "1",
+            "posY": "1"
+        }
+    ]
+}
+  

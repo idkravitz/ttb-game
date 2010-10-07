@@ -1,0 +1,65 @@
+{
+    "sid": "GordonFreeman", 
+    "status": "ok"
+}
+{
+    "sid": "BarneyColhoun", 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "players": {
+        "Barney": {
+            "units": [
+                {
+                    "HP": 1, 
+                    "name": "brown"
+                }
+            ]
+        }, 
+        "Gordon": {
+            "units": [
+                {
+                    "HP": 1, 
+                    "name": "white"
+                }
+            ]
+        }
+    }, 
+    "status": "ok"
+}
