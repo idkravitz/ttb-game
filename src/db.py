@@ -96,6 +96,7 @@ class Player(Base):
     army_id = fkey('armies.id')
     is_creator = Column(Boolean, default=False)
     state = Column(Enum('in_game', 'in_lobby', 'ready', 'left'), default='in_lobby')
+    playerNumber = Column(Integer)
     user = relationship(User, backref=backref('players'))
     game = relationship(Game, backref=backref('players'))
     army = relationship(Army, backref=backref('players'))
@@ -180,6 +181,7 @@ class UnitArmy(Base):
     id = pkey()
     unit_id = fkey('units.id')
     army_id = fkey('armies.id')
+    count = Column(Integer)
     unit = relationship(Unit, backref=backref('unitArmy'))
     army = relationship(Army, backref=backref('unitArmy'))
 
@@ -209,11 +211,12 @@ class Turn(Base):
     destY = requiredInteger()
     attackX = requiredInteger()
     attackY = requiredInteger()
+    hp = requiredInteger()
     unitArmy = relationship(UnitArmy, backref=backref('turns'))
     gameProcess = relationship(GameProcess, backref=backref('turns'))
 
     @copy_args
-    def __init__(self, unitArmy_id, gameProcess_id, posX, posY, destX, destY, attackX, attackY): pass
+    def __init__(self, unitArmy_id, gameProcess_id, posX, posY, destX, destY, attackX, attackY, hp): pass
 
 
 class Database:
