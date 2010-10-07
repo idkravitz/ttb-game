@@ -5,6 +5,7 @@ import re
 import json
 import functools
 from functools import reduce
+from logics import find_shortest_path
 
 import sqlalchemy.orm.exc
 from sqlalchemy import or_, desc
@@ -494,9 +495,11 @@ def move(sid, turn, units):
             prevTurn = dbi().query(Turn).filter_by(gameProcess_id=proc.id, destX=proc.posX, destY=proc.posY).one()
         except sqlalchemy.orm.exc.NoResultFound:
             raise BreakRules('No unit in that cell')
-        #Need to find shortest path
-        if not find_shortest_path():
-            raise BreakRules("You'r unit can't move there, MP is not enough")
+        path = find_shortest_path()
+        if path is None
+            raise BreakRules("Target cell is unreachable")
+        if len(path) > prevTurn.unitArmy.unit.MP:
+            raise BreakRules("Not enough MP")
         moves.append(construct_turn_from_previous(prevTurn, *(locals()[f] for f in fields)))
     dbi().add(moves)
     q = readyPlayersQuery(processes[-1]).count()
@@ -507,9 +510,6 @@ def move(sid, turn, units):
         # PROFIT
         dbi().add(GameProcess(game.id, 1))
     return response_ok()
-
-def find_shortest_path():
-    return True
 
 def create_initiative_query():
     pass
