@@ -6,7 +6,8 @@ import json
 import functools
 
 import sqlalchemy.orm.exc
-from sqlalchemy import or_
+from sqlalchemy import or_, desc
+from sqlalchemy.orm import join
 
 from common import *
 from exceptions import *
@@ -236,8 +237,9 @@ def setPlayerStatus(sid, status):
     player.state = status
     query = dbi().query(Player).join(Game).filter(Game.id==player.game_id)
     if player.game.players_count == query.filter(Player.state=='ready').count():
-        for p in player.game.players:
+        for index, p in enumerate(player.game.players):
             p.state = 'in_game'
+            p.player_number = index + 1
         player.game.state = 'started'
         dbi().add(GameProcess(player.game.id, 0)) # Zero turn is when players place their units on terrain
     dbi().commit()
@@ -385,6 +387,9 @@ def chooseArmy(sid, armyName):
     dbi().commit()
     return response_ok()
 
+def split_str(text, width):
+    return [list(text[i:i+width]) for i in range(0, len(text), width)]
+
 @Command(str, list)
 def placeUnits(sid, units):
     user = dbi().get_user(sid)
@@ -395,11 +400,68 @@ def placeUnits(sid, units):
         raise BadGame('User is not playing game')
     game = player.game
     map_ = game.map
+    map_ = split_str(map_.terrain, map_.width)
+    if dbi().query(GameProcess).filter_by(game_id=game.id).count() != 1:
+        BadTurn("Unit placing allowed only on zero turn")
+    process = dbi().query(GameProcess).filter_by(game_id=game.id).one()
+    store = {}
+    for ua in player.army.unitArmy:
+        name = ua.unit.name
+        if name in store:
+            store[name].append(ua)
+        else:
+            store[name] = [ua]
+    placements = []
     for u in units:
         fields = ["name", "posX", "posY"]
         if not(isinstance(u, dict) and all(f in u for f in fields)):
             raise BadCommand("Bad objects in units")
+        y, x = u["posY"], u["posX"]
+        cell, name = map_[y][x], u["name"]
+        if cell != str(player.player_number):
+            raise BreakRules("Wrong cell")
+        if not(name in store and store[name]):
+            raise BadUnit("No more such units in army")
+        map_[y][x] = "0"
+        ua = store[name].pop(0)
+        placements.append(Turn(ua.id, process.id, x, y, x, y, 0, 0, ua.unit.HP))
+    # Yeah, the baby is now ready
+    dbi().add(*placements)
+    # Now check -- if everyone are ready
+    q = (dbi().query(User.id).select_from(
+        join(join(join(Turn, UnitArmy), Army), User)).filter(Turn.gameProcess_id==process.id).distinct().count())
+    if game.players_count == q:
+        dbi().add(GameProcess(game.id, 1))
+        # Do a next turn
     return response_ok()
+
+def lastGameProcessQuery(game, obj):
+    return dbi().query(obj).filter_by(game_id=game.id).order_by(desc(GameProcess.turnNumber)).first()
+
+def getLastGameProcess(game):
+    return lastGameProcessQuery(game, GameProcess)
+
+def getCurrentTurnNumber(game):
+    return lastGameProcessQuery(game, GameProcess.turnNumber)[0]
+
+@Command(str, str)
+def getGameState(sid, name):
+    # Why this checks again, really need it? write by yourself
+    game = dbi().get_game(name)
+    turnNumber = getCurrentTurnNumber(game)
+    if turnNumber == 0:
+        BadTurn("You can't request game status before everyone place their units")
+    proc = dbi().query(GameProcess).filter_by(turnNumber=turnNumber-1, game_id=game.id).one()
+    res = {}
+    for p in game.players:
+        res[p.user.username] = dict(units=[])
+    for t in proc.turns:
+        ua = t.unitArmy
+        unit = ua.unit
+        army = ua.army
+        username = army.user.username
+        res[username]["units"].append(dict(name=unit.name, HP=t.HP))
+    return response_ok(players=res)
 
 @Command(str, int, list)
 def move(sid, turn, units):
@@ -411,6 +473,7 @@ def move(sid, turn, units):
         raise BadGame('User is not playing game')
     game = player.game
     map_ = game.map
+    map_ = split_str(map_.terrain, map_.width)
     # We have at least two process, because we know that game started
     processes = dbi().query(GameProcess).filter_by(game_id=game.id).order_by(GameProcess.turnNumber).all()
     if turn != processes[-1].turnNumber:

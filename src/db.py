@@ -94,6 +94,7 @@ class Player(Base):
     user_id = fkey('users.id')
     game_id = fkey('games.id')
     army_id = fkey('armies.id')
+    player_number = Column(Integer)
     is_creator = Column(Boolean, default=False)
     state = Column(Enum('in_game', 'in_lobby', 'ready', 'left'), default='in_lobby')
     user = relationship(User, backref=backref('players'))
@@ -211,9 +212,13 @@ class Turn(Base):
     attackY = requiredInteger()
     unitArmy = relationship(UnitArmy, backref=backref('turns'))
     gameProcess = relationship(GameProcess, backref=backref('turns'))
+    HP = Column(Integer)
 
     @copy_args
-    def __init__(self, unitArmy_id, gameProcess_id, posX, posY, destX, destY, attackX, attackY): pass
+    def __init__(self, unitArmy_id, gameProcess_id, posX, posY, destX, destY, attackX, attackY, HP): pass
+
+    def __repr__(self):
+        return "<Turn {0}>".format(self.id)
 
 
 class Database:
