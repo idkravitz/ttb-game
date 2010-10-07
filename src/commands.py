@@ -403,8 +403,8 @@ def placeUnits(sid, units):
     map_ = game.map
     map_ = split_str(map_.terrain, map_.width)
     if dbi().query(GameProcess).filter_by(game_id=game.id).count() != 1:
-        BadTurn("Unit placing allowed only on zero turn")
-    process = dbi().query(GameProcess).filter_by(game_id=game.id).one()
+        raise BadTurn("Unit placing allowed only on zero turn")
+    process = dbi().query(GameProcess).filter_by(game_id=game.id).first()
     store = {}
     for ua in player.army.unitArmy:
         name = ua.unit.name
@@ -418,11 +418,12 @@ def placeUnits(sid, units):
         if not(isinstance(u, dict) and all(f in u for f in fields)):
             raise BadCommand("Bad objects in units")
         y, x = u["posY"], u["posX"]
-        cell, name = map_[y][x], u["name"]
-        if cell != str(player.player_number):
-            raise BreakRules("Wrong cell")
+        name = u["name"]
         if not(name in store and store[name]):
             raise BadUnit("No more such units in army")
+        cell = map_[y][x]
+        if cell != str(player.player_number):
+            raise BreakRules("Wrong cell")
         map_[y][x] = "0"
         ua = store[name].pop(0)
         placements.append(Turn(ua.id, process.id, x, y, x, y, 0, 0, ua.unit.HP))
@@ -448,13 +449,12 @@ def getLastGameProcess(game):
 def getCurrentTurnNumber(game):
     return lastGameProcessQuery(game, GameProcess.turnNumber)[0]
 
-@Command(str, str)
-def getGameState(sid, name):
-    # Why this checks again, really need it? write by yourself
+@Command(str)
+def getGameState(name):
     game = dbi().get_game(name)
     turnNumber = getCurrentTurnNumber(game)
     if turnNumber == 0:
-        BadTurn("You can't request game status before everyone place their units")
+        raise BadTurn("You can't request game status before everyone place their units")
     proc = dbi().query(GameProcess).filter_by(turnNumber=turnNumber-1, game_id=game.id).one()
     res = {}
     for p in game.players:

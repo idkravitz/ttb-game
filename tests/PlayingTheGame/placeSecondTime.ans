@@ -1,0 +1,73 @@
+{
+    "sid": "GordonFreeman", 
+    "status": "ok"
+}
+{
+    "sid": "BarneyColhoun", 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "players": {
+        "Barney": {
+            "units": [
+                {
+                    "HP": 1, 
+                    "name": "brown"
+                }
+            ]
+        }, 
+        "Gordon": {
+            "units": [
+                {
+                    "HP": 1, 
+                    "name": "white"
+                }
+            ]
+        }
+    }, 
+    "status": "ok"
+}
+{
+    "message": "Unit placing allowed only on zero turn", 
+    "status": "badTurn"
+}
+{
+    "message": "Unit placing allowed only on zero turn", 
+    "status": "badTurn"
+}

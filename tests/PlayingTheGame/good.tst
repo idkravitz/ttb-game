@@ -141,6 +141,5 @@
 
 {
     "cmd": "getGameState",
-    "sid": "GordonFreeman",
     "name": "BlackMesa"
 }

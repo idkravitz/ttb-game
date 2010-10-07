@@ -38,6 +38,14 @@
     "status": "ok"
 }
 {
+    "message": "You can't request game status before everyone place their units", 
+    "status": "badTurn"
+}
+{
     "message": "Bad objects in units", 
     "status": "badCommand"
+}
+{
+    "message": "No more such units in army", 
+    "status": "badUnit"
 }
