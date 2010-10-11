@@ -100,6 +100,19 @@ def getCurrentTurnNumber(game):
 def construct_turn_from_previous(turn, newProcess, posX, posY, destX, destY, attackX, attackY):
     return Turn(turn.unitArmy_id, newProcess.id, posX, posY, destX, destY, attackX, attackY, turn.HP)
 
+def makeStore(st, obj):
+    for ua in obj.army.unitArmy:
+        name = ua.unit.name
+        if name in st:
+            st[name].append(ua)
+        else:
+            st[name] = [ua]
+
+def checkUnit(n, st):
+    if not(n in st and st[n]):
+        raise BadUnit("No such units in army")
+
+
 @Command(str, str)
 def register(username, password):
     if not username.replace('_', '').isalnum():
@@ -431,20 +444,14 @@ def placeUnits(sid, units):
         raise BadTurn("Unit placing allowed only on zero turn")
     process = dbi().query(GameProcess).filter_by(game_id=game.id).one()
     store = {}
-    for ua in player.army.unitArmy:
-        name = ua.unit.name
-        if name in store:
-            store[name].append(ua)
-        else:
-            store[name] = [ua]
+    makeStore(store, player)
     placements = []
     for u in units:
         fields = ["name", "posX", "posY"]
         checkFields(fields, u)
         y, x = u["posY"], u["posX"]
         name = u["name"]
-        if not(name in store and store[name]):
-            raise BadUnit("No more such units in army")
+        checkUnit(name, store)
         cell = map_[y][x]
         if cell != str(player.player_number):
             raise BreakRules("Wrong cell")
@@ -470,9 +477,14 @@ def move(sid, turn, units):
     if turn != latest_process.turnNumber or not turn:
         raise BadTurn("Not actual turn number")
     prev_process = processes[-2] # Need a better way, than fetch all
+    store = {}
+    makeStore(store, player)
     moves = []
     for u in units:
-        fields = ["posX", "posY", "destX", "destY", "attackX", "attackY"]
+        fields = ["name", "posX", "posY", "destX", "destY", "attackX", "attackY"]
+        checkFields(fields, u)
+        name = u["name"]
+        checkUnit(name, store)
         try:
             prevTurn = dbi().query(Turn).filter_by(gameProcess_id=prev_process.id, destX=u["posX"], destY=u["posY"]).one()
         except sqlalchemy.orm.exc.NoResultFound:
