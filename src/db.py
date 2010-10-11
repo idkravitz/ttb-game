@@ -218,6 +218,9 @@ class Turn(Base):
     @copy_args
     def __init__(self, unitArmy_id, gameProcess_id, posX, posY, destX, destY, attackX, attackY, HP): pass
 
+    def __lt__(self, turn):
+        return self.unitArmy.unit.initiative < turn.unitArmy.unit.initiative
+
     def __repr__(self):
         return "<Turn {0}>".format(self.id)
 

@@ -466,17 +466,18 @@ def move(sid, turn, units):
     map_ = split_str(map_.terrain, map_.width)
     # We have at least two process, because we know that game started
     processes = dbi().query(GameProcess).filter_by(game_id=game.id).order_by(GameProcess.turnNumber).all()
-    if turn != processes[-1].turnNumber:
+    latest_process = processes[-1]
+    if turn != latest_proces.turnNumber or not turn:
         raise BadTurn("Not actual turn number")
+    prev_process = processes[-2] # Need a better way, than fetch all
     moves = []
     for u in units:
         fields = ["posX", "posY", "destX", "destY", "attackX", "attackY"]
         checkFields(fields, u)
         for f in fields:
             locals()[f] = u[f]
-        proc = processes[-2] # Need a better way, than fetch all
         try:
-            prevTurn = dbi().query(Turn).filter_by(gameProcess_id=proc.id, destX=proc.posX, destY=proc.posY).one()
+            prevTurn = dbi().query(Turn).filter_by(gameProcess_id=prev_process.id, destX=prev_process.posX, destY=prev_process.posY).one()
         except sqlalchemy.orm.exc.NoResultFound:
             raise BreakRules('No unit in that cell')
         path = find_shortest_path(map_, (posX, posY), (destX, destY))
@@ -486,13 +487,13 @@ def move(sid, turn, units):
             raise BreakRules("Not enough MP")
         moves.append(construct_turn_from_previous(prevTurn, *(locals()[f] for f in fields)))
     dbi().add(moves)
-    q = readyPlayersQuery(processes[-1]).count()
+    q = readyPlayersQuery(latest_process).count()
     if game.players_count == q:
-        # DO PHASE 1 (move in query)
-        # ????
+        # DO PHASE 1 ( move in query )
+        que = dbi().query(Turn).filter_by(gameProcess_id=latest_process.id).all()
+        que.sort()
         # DO PHASE 2 ( attack )
         # PROFIT
-        dbi().add(GameProcess(game.id, 1))
     return response_ok()
 
 @Command(str)
