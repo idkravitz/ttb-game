@@ -124,10 +124,9 @@ def unregister(sid):
             .filter(Game.state != 'finished')\
             .one()
     except sqlalchemy.orm.exc.NoResultFound:
-        player = None
-    if player:
-        leaveGame(sid,
-            dbi().query(Game).filter_by(id=player.game_id).one().name)
+        pass
+    else:
+        leaveGame(sid, player.game.name)
     return response_ok()
 
 @debug_only
@@ -249,7 +248,7 @@ def getPlayersList(sid):
 def getPlayersListForGame(sid, gameName):
     dbi().check_sid(sid)
     game = dbi().get_game(gameName)
-    players = [{"username": player.user.username} for player in \
+    players = [{"username": player.user.username} for player in\
         dbi().query(Player).join(Game).filter(Game.id==game.id).all()]
     return response_ok(players=players)
 
@@ -267,9 +266,9 @@ def setPlayerStatus(sid, status):
     player.state = status
     query = dbi().query(Player).join(Game).filter(Game.id==player.game_id)
     if player.game.players_count == query.filter(Player.state=='ready').count():
-        for index, p in enumerate(player.game.players):
+        for index, p in enumerate(player.game.players, start=1):
             p.state = 'in_game'
-            p.player_number = index + 1
+            p.player_number = index
         player.game.state = 'started'
         dbi().add(GameProcess(player.game.id, 0)) # Zero turn is when players place their units on terrain
     dbi().commit()
@@ -389,7 +388,7 @@ def getArmy(sid, armyName):
             names[name] += 1
         else:
             names.update({name: 1})
-    return response_ok(units=[dict(name=i[0], count=i[1]) for i in names.items()])
+    return response_ok(units=[dict(name=name, count=count) for name, count in names.items()])
 
 @Command(str, str)
 def deleteArmy(sid, armyName):
@@ -467,7 +466,7 @@ def move(sid, turn, units):
     # We have at least two process, because we know that game started
     processes = dbi().query(GameProcess).filter_by(game_id=game.id).order_by(GameProcess.turnNumber).all()
     latest_process = processes[-1]
-    if turn != latest_proces.turnNumber or not turn:
+    if turn != latest_process.turnNumber or not turn:
         raise BadTurn("Not actual turn number")
     prev_process = processes[-2] # Need a better way, than fetch all
     moves = []
@@ -477,7 +476,7 @@ def move(sid, turn, units):
         for f in fields:
             locals()[f] = u[f]
         try:
-            prevTurn = dbi().query(Turn).filter_by(gameProcess_id=prev_process.id, destX=prev_process.posX, destY=prev_process.posY).one()
+            prevTurn = dbi().query(Turn).filter_by(gameProcess_id=prev_process.id, destX=posX, destY=posY).one()
         except sqlalchemy.orm.exc.NoResultFound:
             raise BreakRules('No unit in that cell')
         path = find_shortest_path(map_, (posX, posY), (destX, destY))
