@@ -55,10 +55,6 @@
     "status": "ok"
 }
 {
-    "message": "No such units in army", 
-    "status": "badUnit"
-}
-{
     "message": "No unit in that cell", 
     "status": "breakRules"
 }

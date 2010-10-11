@@ -477,14 +477,10 @@ def move(sid, turn, units):
     if turn != latest_process.turnNumber or not turn:
         raise BadTurn("Not actual turn number")
     prev_process = processes[-2] # Need a better way, than fetch all
-    store = {}
-    makeStore(store, player)
     moves = []
     for u in units:
-        fields = ["name", "posX", "posY", "destX", "destY", "attackX", "attackY"]
+        fields = ["posX", "posY", "destX", "destY", "attackX", "attackY"]
         checkFields(fields, u)
-        name = u["name"]
-        checkUnit(name, store)
         try:
             prevTurn = dbi().query(Turn).filter_by(gameProcess_id=prev_process.id, destX=u["posX"], destY=u["posY"]).one()
         except sqlalchemy.orm.exc.NoResultFound:

@@ -167,7 +167,6 @@
     "turn": 1,
     "units": [
         { 
-            "name": "brown",
             "posX": "1",
             "posY": "1",
             "destX": "1",
@@ -196,24 +195,6 @@
     "turn": 1,
     "units": [
         { 
-            "name": "white",
-            "posX": "1",
-            "posY": "1",
-            "destX": "1",
-            "destY": "1",
-            "attackX": "1",
-            "attackY": "1"
-        }
-    ]               
-}
-
-{
-    "cmd": "move",
-    "sid": "BarneyColhoun",
-    "turn": 1,
-    "units": [
-        { 
-            "name": "brown",
             "posX": "1",
             "posY": "1",
             "destX": "1",
@@ -231,7 +212,6 @@
     "units": [
         { 
             "posX": "1",
-            "posY": "1",
             "destX": "1",
             "destY": "1",
             "attackX": "1",
