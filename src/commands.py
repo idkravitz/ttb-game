@@ -4,6 +4,7 @@
 import re
 import json
 import functools
+import random
 from functools import reduce
 from logics import find_shortest_path
 
@@ -96,8 +97,8 @@ def getLastGameProcess(game):
 def getCurrentTurnNumber(game):
     return lastGameProcessQuery(game, GameProcess.turnNumber)[0]
 
-def construct_turn_from_previous(turn, posX, posY, destX, destY, attackX, attackY):
-    return Turn(turn.unitArmy_id, turn.gameProcess_id, posX, posY, destX, destY, attackX, attackY, turn.HP)
+def construct_turn_from_previous(turn, newProcess, posX, posY, destX, destY, attackX, attackY):
+    return Turn(turn.unitArmy_id, newProcess.id, posX, posY, destX, destY, attackX, attackY, turn.HP)
 
 @Command(str, str)
 def register(username, password):
@@ -109,7 +110,7 @@ def register(username, password):
         user = dbi().query(User).filter_by(username=username).one()
         if user.password != password:
             raise BadPassword(
-                'User already exists, but passwords don\'t match')
+                "User already exists, but passwords don't match")
     except sqlalchemy.orm.exc.NoResultFound:
         user = User(username, password)
         dbi().add(user)
@@ -472,25 +473,24 @@ def move(sid, turn, units):
     moves = []
     for u in units:
         fields = ["posX", "posY", "destX", "destY", "attackX", "attackY"]
-        checkFields(fields, u)
-        for f in fields:
-            locals()[f] = u[f]
         try:
-            prevTurn = dbi().query(Turn).filter_by(gameProcess_id=prev_process.id, destX=posX, destY=posY).one()
+            prevTurn = dbi().query(Turn).filter_by(gameProcess_id=prev_process.id, destX=u["posX"], destY=u["posY"]).one()
         except sqlalchemy.orm.exc.NoResultFound:
             raise BreakRules('No unit in that cell')
-        path = find_shortest_path(map_, (posX, posY), (destX, destY))
+        path = find_shortest_path(map_, (u["posX"], u["posY"]), (u["destX"], u["destY"]))
         if path is None:
             raise BreakRules("Target cell is unreachable")
-        if len(path) > prevTurn.unitArmy.unit.MP:
+        if len(list(path)) > prevTurn.unitArmy.unit.MP:
             raise BreakRules("Not enough MP")
-        moves.append(construct_turn_from_previous(prevTurn, *(locals()[f] for f in fields)))
-    dbi().add(moves)
+        moves.append(construct_turn_from_previous(prevTurn, latest_process, *[u[f] for f in fields]))
+    dbi().add(*moves)
     q = readyPlayersQuery(latest_process).count()
     if game.players_count == q:
         # DO PHASE 1 ( move in query )
         que = dbi().query(Turn).filter_by(gameProcess_id=latest_process.id).all()
+        random.shuffle(que)
         que.sort()
+# now moves
         # DO PHASE 2 ( attack )
         # PROFIT
     return response_ok()
