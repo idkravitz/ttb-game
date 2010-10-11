@@ -3,7 +3,7 @@
     "status": "ok"
 }
 {
-    "sid": "headcrabarrgh", 
+    "sid": "BarneyColhoun", 
     "status": "ok"
 }
 {
@@ -23,6 +23,16 @@
 }
 {
     "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "message": "Field 'turn' must have type 'int'", 
+    "status": "badCommand"
 }
 {
     "message": "User is not playing game", 
@@ -38,18 +48,21 @@
     "status": "ok"
 }
 {
-    "message": "You can't request game status before everyone place their units", 
+    "message": "Not actual turn number", 
     "status": "badTurn"
 }
 {
-    "message": "Bad objects in units", 
-    "status": "badCommand"
+    "status": "ok"
 }
 {
     "message": "No such units in army", 
     "status": "badUnit"
 }
 {
-    "message": "Wrong cell", 
+    "message": "No unit in that cell", 
     "status": "breakRules"
+}
+{
+    "message": "Bad objects in units", 
+    "status": "badCommand"
 }

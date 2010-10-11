@@ -107,13 +107,14 @@
     "name": "Half-life"
 }
 
+
 {
 	"cmd": "placeUnits",
 	"sid": "GordonFreeman",
 	"units": [
         {
             "name": "first",
-            "posX": "1"
+            "posX": 1
         }
     ]
 } 
@@ -124,8 +125,20 @@
 	"units": [
         {
             "name": "xxx",
-            "posX": "1",
-            "posY": "1"
+            "posX": 1,
+            "posY": 1
+        }
+    ]
+}
+
+{
+	"cmd": "placeUnits",
+	"sid": "GordonFreeman",
+	"units": [
+        {
+            "name": "first",
+            "posX": 2,
+            "posY": 2
         }
     ]
 }
