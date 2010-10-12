@@ -351,7 +351,7 @@ def uploadFaction(sid, factionName, units):
             if not isinstance(unit[attr], attr_type):
                 raise BadUnit("Field '{0}' must be {1}".format(
                     attr, HUMAN_READABLE_TYPES[attr_type]))
-    dbi().add(*[Unit(faction_id=faction.id, **unit) for unit in units])
+    dbi().add_all(Unit(faction_id=faction.id, **unit) for unit in units)
     return response_ok()
 
 @Command(str, str)
@@ -388,7 +388,7 @@ def uploadArmy(sid, armyName, factionName, armyUnits):
         squads += [unit] * count
     army = Army(armyName, user.id)
     dbi().add(army)
-    dbi().add(*[UnitArmy(squad.id, army.id) for squad in squads])
+    dbi().add_all(UnitArmy(squad.id, army.id) for squad in squads)
     return response_ok()
 
 @Command(str, str)
@@ -458,7 +458,7 @@ def placeUnits(sid, units):
         map_[y][x] = "0"
         ua = store[name].pop(0)
         placements.append(Turn(ua.id, process.id, x, y, x, y, 0, 0, ua.unit.HP))
-    dbi().add(*placements)
+    dbi().add_all(placements)
     q = readyPlayersQuery(process).count()
     if game.players_count == q:
         dbi().add(GameProcess(game.id, 1))
@@ -491,14 +491,12 @@ def move(sid, turn, units):
         if len(list(path)) > prevTurn.unitArmy.unit.MP:
             raise BreakRules("Not enough MP")
         moves.append(construct_turn_from_previous(prevTurn, latest_process, *[u[f] for f in fields]))
-    dbi().add(*moves)
+    dbi().add_all(moves)
     q = readyPlayersQuery(latest_process).count()
     if game.players_count == q:
-        # DO PHASE 1 ( move in query )
         que = dbi().query(Turn).filter_by(gameProcess_id=latest_process.id).all()
         random.shuffle(que)
         que.sort()
-# now moves
         # DO PHASE 2 ( attack )
         # PROFIT
     return response_ok()

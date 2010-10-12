@@ -237,9 +237,12 @@ class Database:
     def commit(self):
         self.session.commit()
 
-    def add(self, *objs):
-        for obj in objs:
-            self.session.add(obj)
+    def add(self, obj):
+        self.session.add(obj)
+        self.session.commit()
+
+    def add_all(self, objs):
+        self.session.add_all(objs)
         self.session.commit()
 
     def delete(self, *args, **kwargs):
