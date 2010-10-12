@@ -469,8 +469,8 @@ def move(sid, turn, units):
     user = dbi().get_user(sid)
     player = checkInGame(user, Player)
     game = player.game
-    map_ = game.map
-    map_ = split_str(map_.terrain, map_.width)
+    land = game.map
+    land = split_str(land.terrain, land.width)
     # We have at least two process, because we know that game started
     processes = dbi().query(GameProcess).filter_by(game_id=game.id).order_by(GameProcess.turnNumber).all()
     latest_process = processes[-1]
@@ -485,7 +485,7 @@ def move(sid, turn, units):
             prevTurn = dbi().query(Turn).filter_by(gameProcess_id=prev_process.id, destX=u["posX"], destY=u["posY"]).one()
         except sqlalchemy.orm.exc.NoResultFound:
             raise BreakRules('No unit in that cell')
-        path = find_shortest_path(map_, (u["posX"], u["posY"]), (u["destX"], u["destY"]))
+        path = find_shortest_path(land, (u["posX"], u["posY"]), (u["destX"], u["destY"]))
         if path is None:
             raise BreakRules("Target cell is unreachable")
         if len(list(path)) > prevTurn.unitArmy.unit.MP:
