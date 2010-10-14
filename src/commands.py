@@ -84,10 +84,6 @@ def checkFields(fields, u):
     if not(isinstance(u, dict) and all(f in u for f in fields)):
         raise BadCommand("Bad objects in units")
 
-def alive_players(process):
-    return (dbi().query(User.id, User.username).select_from(reduce(join, [Turn, UnitArmy, Army, User]))
-        .filter(Turn.gameProcess_id==process.id).filter(Turn.HP!=0).distinct().all())
-
 def alive_units(process, user_id):
     return (dbi().query(Turn).filter_by(gameProcess_id=process.id).join(UnitArmy).join(Army).join(User).filter(Turn.HP!=0)
         .filter(User.id==user_id).all())
@@ -560,7 +556,7 @@ def move(sid, turn, units):
                     their_tgt.HP -= our_unit.damage - their_unit.protection + gen3d6()
                     their_tgt.HP = 0 if their_tgt.HP < 0 else their_tgt.HP
         dbi().add(GameProcess(game.id, latest_process.turnNumber + 1))
-        if len(alive_players(latest_process)) <= 1:
+        if len(latest_process.alive_players()) <= 1:
             game.state = 'finished'
             dbi().commit()
     return response_ok()
@@ -573,7 +569,7 @@ def getGameState(name):
         raise BadTurn("You can't request game status before everyone place their units")
     proc = dbi().query(GameProcess).filter_by(turnNumber=turn_number - 1, game_id=game.id).one()
     res = {}
-    for id, name in alive_players(proc):
+    for id, name in proc.alive_players():
         res[name] = dict(units=[])
         for t in alive_units(proc, id):
             ua = t.unitArmy

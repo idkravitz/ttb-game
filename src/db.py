@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 
 from sqlalchemy import create_engine, Table, Boolean, Enum, Column, Integer, String, MetaData, Date, ForeignKey, DateTime
-from sqlalchemy.orm import sessionmaker, relationship, backref
+from sqlalchemy.orm import sessionmaker, relationship, backref, join
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.ext.declarative import declarative_base
 
 from common import copy_args, DEBUG, utcnow
 from exceptions import *
+from functools import reduce
 
 Base = declarative_base()
 
@@ -198,6 +199,10 @@ class GameProcess(Base):
 
     @copy_args
     def __init__(self, game_id, turnNumber): pass
+
+    def alive_players(self):
+        return (db_instance().query(User.id, User.username).select_from(reduce(join, [Turn, UnitArmy, Army, User]))
+            .filter(Turn.gameProcess_id==self.id).filter(Turn.HP!=0).distinct().all())
 
 class Turn(Base):
     __tablename__ = 'turns'
