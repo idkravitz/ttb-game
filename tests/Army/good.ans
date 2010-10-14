@@ -12,12 +12,12 @@
     "status": "ok", 
     "units": [
         {
-            "count": 3, 
-            "name": "second"
-        }, 
-        {
             "count": 5, 
             "name": "first"
+        }, 
+        {
+            "count": 3, 
+            "name": "second"
         }
     ]
 }

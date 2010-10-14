@@ -130,6 +130,9 @@ class Unit(Base):
     def __init__(self, name, HP, MP, defence, attack, range, damage, protection, initiative, cost, faction_id):
         pass
 
+    def __hash__(self):
+        return hash(self.id)
+
 TYPES = {
     int: requiredInteger,
     str: requiredString,
@@ -187,7 +190,7 @@ class UnitArmy(Base):
     army = relationship(Army, backref=backref('unitArmy'))
 
     @copy_args
-    def __init__(self, unit_id, army_id): pass
+    def __init__(self, unit_id, army_id, count): pass
 
 class GameProcess(Base):
     __tablename__ = 'gameProcess'

@@ -1,0 +1,49 @@
+{
+    "sid": "GordonFreeman", 
+    "status": "ok"
+}
+{
+    "sid": "BarneyColhoun", 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "message": "No such units in army", 
+    "status": "badUnit"
+}
+{
+    "status": "ok"
+}
+{
+    "message": "You can't request game status before everyone place their units", 
+    "status": "badTurn"
+}

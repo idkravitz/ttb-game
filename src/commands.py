@@ -101,18 +101,9 @@ def get_current_turn_number(game):
 def construct_turn_from_previous(turn, newProcess, posX, posY, destX, destY, attackX, attackY):
     return Turn(turn.unitArmy_id, newProcess.id, posX, posY, destX, destY, attackX, attackY, turn.HP)
 
-def makeStore(st, obj):
-    for ua in obj.army.unitArmy:
-        name = ua.unit.name
-        if name in st:
-            st[name].append(ua)
-        else:
-            st[name] = [ua]
-
 def checkUnit(n, st):
-    if not(n in st and st[n]):
+    if not(n in st and st[n][0]):
         raise BadUnit("No such units in army")
-
 
 @Command(str, str)
 def register(username, password):
@@ -374,7 +365,7 @@ def uploadArmy(sid, armyName, factionName, armyUnits):
     check_emptiness(armyName, 'Empty army name', BadArmy)
     if dbi().query(Army).filter_by(user_id=user.id, name=armyName).count():
         raise BadArmy('You have army with such name')
-    squads = []
+    squads = {}
     for unit in armyUnits:
         if not(isinstance(unit, dict) and len(unit) == 2 and
             'name' in unit and 'count'  in unit
@@ -383,24 +374,20 @@ def uploadArmy(sid, armyName, factionName, armyUnits):
                 "Each element of armyUnits must have fields 'name' and 'count'")
         name, count = unit['name'], unit['count']
         unit = dbi().get_unit(name, factionName)
-        squads += [unit] * count
+        if unit in squads:
+            squads[unit] += count
+        else:
+            squads[unit] = count
     army = Army(armyName, user.id)
     dbi().add(army)
-    dbi().add_all(UnitArmy(squad.id, army.id) for squad in squads)
+    dbi().add_all(UnitArmy(unit.id, army.id, count) for unit, count in squads.items())
     return response_ok()
 
 @Command(str, str)
 def getArmy(sid, armyName):
     dbi().check_sid(sid)
     army = dbi().get_army(armyName)
-    names = {}
-    for unit_army in army.unitArmy:
-        name = unit_army.unit.name
-        if name in names:
-            names[name] += 1
-        else:
-            names.update({name: 1})
-    return response_ok(units=[dict(name=name, count=count) for name, count in names.items()])
+    return response_ok(units=[dict(name=squad.unit.name, count=squad.count) for squad in army.unitArmy])
 
 @Command(str, str)
 def deleteArmy(sid, armyName):
@@ -421,7 +408,7 @@ def chooseArmy(sid, armyName):
     except sqlalchemy.orm.exc.NoResultFound:
         raise NotInGame('Can\'t choose army, because you\'re not in game')
     army = dbi().get_army(armyName)
-    total_cost = sum(squad.unit.cost for squad in army.unitArmy)
+    total_cost = sum(squad.unit.cost * squad.count for squad in army.unitArmy)
     if total_cost > player.game.total_cost:
         raise BadArmy('Your army is too expensive')
     player.army = army
@@ -442,8 +429,7 @@ def placeUnits(sid, units):
     if dbi().query(GameProcess).filter_by(game_id=game.id).count() != 1:
         raise BadTurn("Unit placing allowed only on zero turn")
     process = dbi().query(GameProcess).filter_by(game_id=game.id).one()
-    store = {}
-    makeStore(store, player)
+    store = {squad.unit.name: [squad.count, squad] for squad in player.army.unitArmy}
     placements = []
     for u in units:
         fields = ["name", "posX", "posY"]
@@ -458,7 +444,8 @@ def placeUnits(sid, units):
         if cell != str(player.player_number):
             raise BreakRules("Wrong cell")
         land[y][x] = "0"
-        ua = store[name].pop(0)
+        store[name][0] -= 1
+        ua = store[name][1]
         placements.append(Turn(ua.id, process.id, x, y, x, y, 0, 0, ua.unit.HP))
     dbi().add_all(placements)
     q = readyPlayersQuery(process).count()
@@ -472,8 +459,7 @@ def in_range(pos1, pos2, range):
 @Command(str, int, list)
 def move(sid, turn, units):
     user = dbi().get_user(sid)
-    player = dbi().get_player(user.id)
-    game = player.game
+    game = dbi().get_player(user.id).game
     check_game_is_started(game.state)
     land = game.map
     land = split_str(land.terrain, land.width)
