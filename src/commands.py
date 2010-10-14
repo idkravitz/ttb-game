@@ -102,7 +102,7 @@ def lastGameProcessQuery(game, obj):
 def getLastGameProcess(game):
     return lastGameProcessQuery(game, GameProcess)
 
-def getCurrentTurnNumber(game):
+def get_current_turn_number(game):
     return lastGameProcessQuery(game, GameProcess.turnNumber)[0]
 
 def construct_turn_from_previous(turn, newProcess, posX, posY, destX, destY, attackX, attackY):
@@ -488,11 +488,11 @@ def move(sid, turn, units):
     land = game.map
     land = split_str(land.terrain, land.width)
     # We have at least two process, because we know that game started
-    processes = dbi().query(GameProcess).filter_by(game_id=game.id).order_by(GameProcess.turnNumber).all()
-    latest_process = processes[-1]
+    processes = dbi().query(GameProcess).filter_by(game_id=game.id).order_by(desc(GameProcess.turnNumber)).limit(2).all()
+    latest_process = processes[0]
     if turn != latest_process.turnNumber or not turn:
         raise BadTurn("Not actual turn number")
-    prev_process = processes[-2] # Need a better way, than fetch all
+    prev_process = processes[1]
     moves = []
     moved = set()
     for u in units:
@@ -505,7 +505,7 @@ def move(sid, turn, units):
                 .one()
         except sqlalchemy.orm.exc.NoResultFound:
             raise BreakRules('No unit in that cell')
-        if (u["attackX"] != -1 and u["attackY"] != -1 and
+        if ((u["attackX"], u["attackY"]) != NO_TARGET and
             not dbi().query(Turn).filter_by(gameProcess_id=prev_process.id, destX=u["attackX"], destY=u["attackY"])
             .filter(Turn.HP!=0).count()
         ):
@@ -517,20 +517,16 @@ def move(sid, turn, units):
             raise BreakRules("Not enough MP")
         moves.append(construct_turn_from_previous(prevTurn, latest_process, *[u[f] for f in fields]))
         moved.add((u["posX"], u["posY"]))
-    notmoved = []
-    alive = alive_units(prev_process, user.id)
-    for t in alive:
-        if (t.destX, t.destY) not in moved:
-            notmoved.append(construct_turn_from_previous(prevTurn, latest_process, t.destX, t.destY, t.destX, t.destY, -1, -1))
-    dbi().add_all(moves)
-    q = readyPlayersQuery(latest_process).count()
-    if game.players_count == q:
+    notmoved = [ construct_turn_from_previous(prevTurn, latest_process, *(t.dest + t.dest + NO_TARGET))
+        for t in alive_units(prev_process, user.id) if t.dest not in moved ]
+    dbi().add_all(moves + notmoved)
+    if game.players_count == readyPlayersQuery(latest_process).count():
         repeat = dbi().query(Turn).filter_by(gameProcess_id=latest_process.id).all()
         random.shuffle(repeat)
         repeat.sort()
         sorted_turns = repeat
         for turn in repeat:
-            turn.path = list(find_shortest_path(land, (turn.posX, turn.posY), (turn.destX, turn.destY)))
+            turn.path = list(find_shortest_path(land, turn.pos, turn.dest))
         occupied, que = set(), []
         while len(repeat) != len(que):
             que, repeat = repeat, []
@@ -543,33 +539,28 @@ def move(sid, turn, units):
             for node in reversed(turn.path):
                 if node not in occupied:
                     occupied.add(node)
-                    turn.destX, turn.destY = node
+                    turn.dest = node
                     break
             else:
-                turn.destX, turn.destY = turn.posX, turn.posY
+                turn.dest = turn.pos
         dbi().commit()
-        # Phase 1 complete
-        attackable = {(turn.posX, turn.posY): turn for turn in sorted_turns }
+        attackable = { turn.pos: turn for turn in sorted_turns }
         for turn in sorted_turns:
             tgt = turn.attackX, turn.attackY
-            if tgt == (-1, -1):
+            if tgt == NO_TARGET:
                 continue
-            new_tgt = attackable[tgt].destX, attackable[tgt].destY
-            our_u = turn.unitArmy.unit
             their_tgt = attackable[tgt]
-            their_u = their_tgt.unitArmy.unit
-            if in_range((turn.destX, turn.destY), new_tgt, our_u.range):
-                a = our_u.attack + gen3d6()
-                b = their_u.defence + gen3d6()
-                if a > b:
-                    dmg = our_u.damage - their_u.protection + gen3d6()
-                    their_tgt.HP -= dmg
+            new_tgt = their_tgt.dest
+            our_unit = turn.unitArmy.unit
+            their_unit = their_tgt.unitArmy.unit
+            if in_range(turn.dest, new_tgt, our_unit.range):
+                attack_chance = our_unit.attack + gen3d6()
+                defence_chance = their_unit.defence + gen3d6()
+                if attack_chance > defence_chance:
+                    their_tgt.HP -= our_unit.damage - their_unit.protection + gen3d6()
                     their_tgt.HP = 0 if their_tgt.HP < 0 else their_tgt.HP
-                    hp = their_tgt.HP
-            # oops, he left too far
         dbi().add(GameProcess(game.id, latest_process.turnNumber + 1))
-        ap = alive_players(latest_process)
-        if len(ap) <= 1:
+        if len(alive_players(latest_process)) <= 1:
             game.state = 'finished'
             dbi().commit()
     return response_ok()
@@ -577,21 +568,15 @@ def move(sid, turn, units):
 @Command(str)
 def getGameState(name):
     game = dbi().get_game(name, False)
-    turnNumber = getCurrentTurnNumber(game)
-    if turnNumber == 0:
+    turn_number = get_current_turn_number(game)
+    if not turn_number:
         raise BadTurn("You can't request game status before everyone place their units")
-    proc = dbi().query(GameProcess).filter_by(turnNumber=turnNumber-1, game_id=game.id).one()
+    proc = dbi().query(GameProcess).filter_by(turnNumber=turn_number - 1, game_id=game.id).one()
     res = {}
-    players = []
     for id, name in alive_players(proc):
         res[name] = dict(units=[])
-        players.append((id, name))
-    for id, name in players:
         for t in alive_units(proc, id):
             ua = t.unitArmy
             unit = ua.unit
             res[name]["units"].append(dict(name=unit.name, HP=t.HP, X=t.destX, Y=t.destY))
-    return response_ok(players=res, turnNumber=turnNumber)
-
-def create_initiative_query():
-    pass
+    return response_ok(players=res, turnNumber=turn_number)

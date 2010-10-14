@@ -224,6 +224,21 @@ class Turn(Base):
     def __repr__(self):
         return "<Turn {0}>".format(self.id)
 
+    @property
+    def dest(self):
+        return self.destX, self.destY
+
+    @dest.setter
+    def dest(self, val):
+        self.destX, self.destY = val
+
+    @property
+    def pos(self):
+        return self.posX, self.posY
+
+    @pos.setter
+    def pos(self, val):
+        self.posX, self.posY = val
 
 class Database:
     instance = None
