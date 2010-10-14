@@ -531,7 +531,7 @@ def move(sid, turn, units):
         while len(repeat) != len(que):
             que, repeat = repeat, []
             for turn in que:
-                if turn.path[-1] not in occupied:
+                if turn.path and turn.path[-1] not in occupied:
                     occupied.add(turn.path[-1])
                 else:
                     repeat.append(turn)
