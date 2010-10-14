@@ -1,15 +1,9 @@
 {
-    "sid": "GordonFreeman", 
+    "sid": "GordonFreeman",
     "status": "ok"
 }
 {
-    "sid": "headcrabarrgh", 
-    "status": "ok"
-}
-{
-    "status": "ok"
-}
-{
+    "sid": "headcrabarrgh",
     "status": "ok"
 }
 {
@@ -25,7 +19,13 @@
     "status": "ok"
 }
 {
-    "message": "User is not playing game", 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "message": "User is not playing game",
     "status": "badGame"
 }
 {
@@ -38,18 +38,18 @@
     "status": "ok"
 }
 {
-    "message": "You can't request game status before everyone place their units", 
+    "message": "You can't request game status before everyone place their units",
     "status": "badTurn"
 }
 {
-    "message": "Bad objects in units", 
+    "message": "Bad objects in units",
     "status": "badCommand"
 }
 {
-    "message": "No such units in army", 
+    "message": "No such units in army",
     "status": "badUnit"
 }
 {
-    "message": "Wrong cell", 
+    "message": "Wrong cell",
     "status": "breakRules"
 }

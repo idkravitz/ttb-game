@@ -46,7 +46,7 @@
     "cmd": "uploadMap",
     "sid": "GordonFreeman",
     "name": "BlackMesa",
-    "terrain": ["1..", ".x.", "..2"]
+    "terrain": ["1..", "...", "..2"]
 }
 
 {
@@ -142,4 +142,94 @@
 {
     "cmd": "getGameState",
     "name": "BlackMesa"
+}
+
+{
+    "cmd": "move",
+    "sid": "GordonFreeman",
+    "turn": 1,
+    "units": [
+    {
+        "posX": 0,
+        "posY": 0,
+        "destX": 1,
+        "destY": 0,
+        "attackX": 2,
+        "attackY": 2
+    }
+    ]
+}
+
+{
+    "cmd": "move",
+    "sid": "BarneyColhoun",
+    "turn": 1,
+    "units": [
+    {
+        "posX": 2,
+        "posY": 2,
+        "destX": 1,
+        "destY": 2,
+        "attackX": 0,
+        "attackY": 0
+    }
+    ]
+}
+
+{
+    "cmd": "getGameState",
+    "name": "BlackMesa"
+}
+
+{
+    "cmd": "move",
+    "sid": "GordonFreeman",
+    "turn": 2,
+    "units": [
+    {
+        "posX": 1,
+        "posY": 0,
+        "destX": 1,
+        "destY": 1,
+        "attackX": 1,
+        "attackY": 2
+    }
+    ]
+}
+
+{
+    "cmd": "move",
+    "sid": "BarneyColhoun",
+    "turn": 2,
+    "units": [
+    {
+        "posX": 1,
+        "posY": 2,
+        "destX": 1,
+        "destY": 1,
+        "attackX": 1,
+        "attackY": 0
+    }
+    ]
+}
+
+{
+    "cmd": "getGameState",
+    "name": "BlackMesa"
+}
+
+{
+    "cmd": "move",
+    "sid": "BarneyColhoun",
+    "turn": 3,
+    "units": [
+        {
+            "posX": 1,
+            "posY": 2,
+            "destX": 1,
+            "destY": 1,
+            "attackX": -1,
+            "attackY": -1
+        }
+    ]
 }

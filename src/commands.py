@@ -6,7 +6,6 @@ import json
 import functools
 import random
 from functools import reduce
-from logics import find_shortest_path
 
 import sqlalchemy.orm.exc
 from sqlalchemy import or_, desc
@@ -17,6 +16,7 @@ from exceptions import *
 from db import db_instance as dbi
 from db import User, Map, Game, Player, Message, Faction, Unit, Army, UnitArmy, GameProcess, Turn
 from db import UNIT_ATTRS, HUMAN_READABLE_TYPES
+from logics import find_shortest_path, gen3d6
 
 class Command(object):
     def __init__(self, *args):
@@ -83,6 +83,14 @@ def checkInGame(obj, Table):
 def checkFields(fields, u):
     if not(isinstance(u, dict) and all(f in u for f in fields)):
         raise BadCommand("Bad objects in units")
+
+def alive_players(process):
+    return (dbi().query(User.id, User.username).select_from(reduce(join, [Turn, UnitArmy, Army, User]))
+        .filter(Turn.gameProcess_id==process.id).filter(Turn.HP!=0).distinct().all())
+
+def alive_units(process, user_id):
+    return (dbi().query(Turn).filter_by(gameProcess_id=process.id).join(UnitArmy).join(Army).join(User).filter(Turn.HP!=0)
+        .filter(User.id==user_id).all())
 
 def readyPlayersQuery(process):
     return (dbi().query(User.id).select_from(reduce(join, [Turn, UnitArmy, Army, User]))
@@ -464,11 +472,17 @@ def placeUnits(sid, units):
         dbi().add(GameProcess(game.id, 1))
     return response_ok()
 
+def in_range(pos1, pos2, range):
+    return sum(abs(x1 - x2) ** 2 for x1, x2 in zip(pos1, pos2)) <= range ** 2
+
 @Command(str, int, list)
 def move(sid, turn, units):
+    extrainfo = {}
     user = dbi().get_user(sid)
     player = checkInGame(user, Player)
     game = player.game
+    if game.state == 'finished':
+        raise BadGame('Game has been finished')
     land = game.map
     land = split_str(land.terrain, land.width)
     # We have at least two process, because we know that game started
@@ -478,46 +492,108 @@ def move(sid, turn, units):
         raise BadTurn("Not actual turn number")
     prev_process = processes[-2] # Need a better way, than fetch all
     moves = []
+    moved = set()
     for u in units:
         fields = ["posX", "posY", "destX", "destY", "attackX", "attackY"]
         checkFields(fields, u)
         try:
-            prevTurn = dbi().query(Turn).filter_by(gameProcess_id=prev_process.id, destX=u["posX"], destY=u["posY"]).one()
+            prevTurn = dbi().query(Turn)\
+                .filter_by(gameProcess_id=prev_process.id, destX=u["posX"], destY=u["posY"])\
+                .filter(Turn.HP!=0)\
+                .one()
         except sqlalchemy.orm.exc.NoResultFound:
             raise BreakRules('No unit in that cell')
+        if (u["attackX"] != -1 and u["attackY"] != -1 and
+            not dbi().query(Turn).filter_by(gameProcess_id=prev_process.id, destX=u["attackX"], destY=u["attackY"])
+            .filter(Turn.HP!=0).count()
+        ):
+            raise BreakRules("Can't attack dummy target")
         path = find_shortest_path(land, (u["posX"], u["posY"]), (u["destX"], u["destY"]))
         if path is None:
             raise BreakRules("Target cell is unreachable")
         if len(list(path)) > prevTurn.unitArmy.unit.MP:
             raise BreakRules("Not enough MP")
         moves.append(construct_turn_from_previous(prevTurn, latest_process, *[u[f] for f in fields]))
+        moved.add((u["posX"], u["posY"]))
+    notmoved = []
+    alive = alive_units(prev_process, user.id)
+    for t in alive:
+        if (t.destX, t.destY) not in moved:
+            notmoved.append(construct_turn_from_previous(prevTurn, latest_process, t.destX, t.destY, t.destX, t.destY, -1, -1))
     dbi().add_all(moves)
     q = readyPlayersQuery(latest_process).count()
     if game.players_count == q:
-        que = dbi().query(Turn).filter_by(gameProcess_id=latest_process.id).all()
-        random.shuffle(que)
-        que.sort()
-        # DO PHASE 2 ( attack )
-        # PROFIT
+        repeat = dbi().query(Turn).filter_by(gameProcess_id=latest_process.id).all()
+        random.shuffle(repeat)
+        repeat.sort()
+        sorted_turns = repeat
+        for turn in repeat:
+            turn.path = list(find_shortest_path(land, (turn.posX, turn.posY), (turn.destX, turn.destY)))
+        occupied, que = set(), []
+        while len(repeat) != len(que):
+            que, repeat = repeat, []
+            for turn in que:
+                if turn.path[-1] not in occupied:
+                    occupied.add(turn.path[-1])
+                else:
+                    repeat.append(turn)
+        for turn in repeat:
+            for node in reversed(turn.path):
+                if node not in occupied:
+                    occupied.add(node)
+                    turn.destX, turn.destY = node
+                    break
+            else:
+                turn.destX, turn.destY = turn.posX, turn.posY
+        dbi().commit()
+        # Phase 1 complete
+        attackable = {(turn.posX, turn.posY): turn for turn in sorted_turns }
+        for turn in sorted_turns:
+            tgt = turn.attackX, turn.attackY
+            if tgt == (-1, -1):
+                continue
+            new_tgt = attackable[tgt].destX, attackable[tgt].destY
+            our_u = turn.unitArmy.unit
+            their_tgt = attackable[tgt]
+            their_u = their_tgt.unitArmy.unit
+            if in_range((turn.destX, turn.destY), new_tgt, our_u.range):
+                a = our_u.attack + gen3d6()
+                b = their_u.defence + gen3d6()
+                if a > b:
+                    dmg = our_u.damage - their_u.protection + gen3d6()
+                    their_tgt.HP -= dmg
+                    their_tgt.HP = 0 if their_tgt.HP < 0 else their_tgt.HP
+                    hp = their_tgt.HP
+                    extrainfo = {"dmg": dmg, "hp": hp}
+            # oops, he left too far
+        dbi().add(GameProcess(game.id, latest_process.turnNumber + 1))
+        ap = alive_players(latest_process)
+        if len(ap) <= 1:
+            game.state = 'finished'
+            dbi().commit()
+        extrainfo.update({'ap': len(ap)})
+    if extrainfo:
+        return response_ok(extra=extrainfo)
     return response_ok()
 
 @Command(str)
 def getGameState(name):
-    game = dbi().get_game(name)
+    game = dbi().get_game(name, False)
     turnNumber = getCurrentTurnNumber(game)
     if turnNumber == 0:
         raise BadTurn("You can't request game status before everyone place their units")
     proc = dbi().query(GameProcess).filter_by(turnNumber=turnNumber-1, game_id=game.id).one()
     res = {}
-    for p in game.players:
-        res[p.user.username] = dict(units=[])
-    for t in proc.turns:
-        ua = t.unitArmy
-        unit = ua.unit
-        army = ua.army
-        username = army.user.username
-        res[username]["units"].append(dict(name=unit.name, HP=t.HP))
-    return response_ok(players=res)
+    players = []
+    for id, name in alive_players(proc):
+        res[name] = dict(units=[])
+        players.append((id, name))
+    for id, name in players:
+        for t in alive_units(proc, id):
+            ua = t.unitArmy
+            unit = ua.unit
+            res[name]["units"].append(dict(name=unit.name, HP=t.HP, X=t.destX, Y=t.destY))
+    return response_ok(players=res, turnNumber=turnNumber)
 
 def create_initiative_query():
     pass

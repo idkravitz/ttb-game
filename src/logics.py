@@ -45,6 +45,10 @@ class RectNode(object):
     def _get_y(self):
         return self.pos[1]
 
+    def __iter__(self):
+        yield self.x
+        yield self.y
+
     x = property(fget=_get_x)
     y = property(fget=_get_y)
 

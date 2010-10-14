@@ -284,10 +284,12 @@ class Database:
             # exception is not thrown because player is a temporary entity
             return None
 
-    def get_game(self, name):
+    def get_game(self, name, ommit_finished=True):
         try:
-            return self.session.query(Game).filter_by(name=name)\
-                .filter(Game.state!='finished').one()
+            q = self.session.query(Game).filter_by(name=name)
+            if ommit_finished:
+                q = q.filter(Game.state!='finished')
+            return q.one()
         except NoResultFound:
             raise BadGame('No unfinished game with that name')
 

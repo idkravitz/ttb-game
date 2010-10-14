@@ -1,15 +1,9 @@
 {
-    "sid": "GordonFreeman", 
+    "sid": "GordonFreeman",
     "status": "ok"
 }
 {
-    "sid": "BarneyColhoun", 
-    "status": "ok"
-}
-{
-    "status": "ok"
-}
-{
+    "sid": "BarneyColhoun",
     "status": "ok"
 }
 {
@@ -31,11 +25,17 @@
     "status": "ok"
 }
 {
-    "message": "Field 'turn' must have type 'int'", 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "message": "Field 'turn' must have type 'int'",
     "status": "badCommand"
 }
 {
-    "message": "User is not playing game", 
+    "message": "User is not playing game",
     "status": "badGame"
 }
 {
@@ -48,17 +48,17 @@
     "status": "ok"
 }
 {
-    "message": "Not actual turn number", 
+    "message": "Not actual turn number",
     "status": "badTurn"
 }
 {
     "status": "ok"
 }
 {
-    "message": "No unit in that cell", 
+    "message": "No unit in that cell",
     "status": "breakRules"
 }
 {
-    "message": "Bad objects in units", 
+    "message": "Bad objects in units",
     "status": "badCommand"
 }
