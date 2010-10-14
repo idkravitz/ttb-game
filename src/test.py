@@ -6,6 +6,7 @@ import os
 import glob
 import json
 import optparse
+import random
 
 import common
 
@@ -42,6 +43,7 @@ def compare(testname):
         return 'NO ANSWER'
 
 def launch(test, debug=False, verbose=False):
+    random.seed(common.SEED)
     testname = os.path.splitext(os.path.normpath(test))[0]
     requests = load_json(test)
     try:

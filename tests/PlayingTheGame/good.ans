@@ -117,16 +117,6 @@
                     "name": "brown"
                 }
             ]
-        }, 
-        "Gordon": {
-            "units": [
-                {
-                    "HP": 1, 
-                    "X": 1, 
-                    "Y": 1, 
-                    "name": "white"
-                }
-            ]
         }
     }, 
     "status": "ok", 
