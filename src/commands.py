@@ -72,14 +72,6 @@ def check_emptiness(obj, descr, cls):
     if not len(obj):
         raise cls(descr)
 
-def checkInGame(obj, Table):
-    try:
-        player = dbi().query(Table)\
-            .filter_by(user_id=obj.id,state='in_game').one()
-    except sqlalchemy.orm.exc.NoResultFound:
-        raise BadGame('User is not playing game')
-    return player
-
 def check_game_is_started(state):
     check_game_is_started_or_finished(state)
     if state == 'finished':
@@ -202,7 +194,7 @@ def joinGame(sid, gameName):
         raise BadGame('Game is full')
     if game.state == 'started':
         raise BadGame('Game already started')
-    if dbi().get_player(user.id, game.id):
+    if dbi().get_player(user.id, game.id, silent=True):
         raise AlreadyInGame('User is already playing')
     dbi().add(Player(user.id, game.id))
     return response_ok()
@@ -212,8 +204,6 @@ def leaveGame(sid, gameName):
     user = dbi().get_user(sid)
     game = dbi().get_game(gameName)
     player = dbi().get_player(user.id, game.id)
-    if not player:
-        raise BadGame('User is not playing')
     if game.state == 'not_started':
         dbi().delete(player)
     else:
@@ -228,8 +218,7 @@ def sendMessage(sid, text, gameName):
     user = dbi().get_user(sid)
     game = dbi().get_game(gameName)
     check_len(text, MAX_MESSAGE_LENGTH, 'Too long message', BadMessage)
-    if not dbi().get_player(user.id, game.id):
-        raise BadGame('User is not in this game')
+    dbi().get_player(user.id, game.id)
     dbi().add(Message(user.id, game.id, text))
     return response_ok()
 
@@ -445,7 +434,7 @@ def split_str(text, width):
 @Command(str, list)
 def placeUnits(sid, units):
     user = dbi().get_user(sid)
-    player = checkInGame(user, Player)
+    player = dbi().get_player(user.id)
     game = player.game
     check_game_is_started(game.state)
     land = game.map
@@ -483,7 +472,7 @@ def in_range(pos1, pos2, range):
 @Command(str, int, list)
 def move(sid, turn, units):
     user = dbi().get_user(sid)
-    player = checkInGame(user, Player)
+    player = dbi().get_player(user.id)
     game = player.game
     check_game_is_started(game.state)
     land = game.map

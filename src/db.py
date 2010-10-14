@@ -298,14 +298,17 @@ class Database:
         except NoResultFound:
             raise BadSid('Unknown sid')
 
-    def get_player(self, user_id, game_id):
+    def get_player(self, user_id, game_id=None, silent=False):
+        q = self.session.query(Player).filter_by(user_id=user_id)
         try:
-            return self.session.query(Player)\
-                .filter_by(user_id=user_id)\
-                .filter_by(game_id=game_id)\
-                .one()
+            if game_id is None:
+                q = q.filter_by(state='in_game')
+            else:
+                q = q.filter_by(game_id=game_id)
+            return q.one()
         except NoResultFound:
-            # exception is not thrown because player is a temporary entity
+            if not silent:
+                raise BadGame('User is not playing game')
             return None
 
     def get_game(self, name, ommit_finished=True):
