@@ -567,12 +567,19 @@ def getGameState(name):
     turn_number = get_current_turn_number(game)
     if not turn_number:
         raise BadTurn("You can't request game status before everyone place their units")
-    proc = dbi().query(GameProcess).filter_by(turnNumber=turn_number - 1, game_id=game.id).one()
-    res = {}
-    for id, name in proc.alive_players():
-        res[name] = dict(units=[])
-        for t in alive_units(proc, id):
-            ua = t.unitArmy
-            unit = ua.unit
-            res[name]["units"].append(dict(name=unit.name, HP=t.HP, X=t.destX, Y=t.destY))
-    return response_ok(players=res, turnNumber=turn_number)
+    process = dbi().query(GameProcess).filter_by(turnNumber=(turn_number - 1), game_id=game.id).one()
+    result = {
+        name: {
+                "units": [
+                            {
+                                "name": turn.unitArmy.unit.name,
+                                "HP": turn.HP,
+                                "X": turn.destX,
+                                "Y": turn.destY
+                            }
+                            for turn in alive_units(process, id)
+                         ]
+              }
+        for id, name in process.alive_players()
+    }
+    return response_ok(players=result, turnNumber=turn_number)
