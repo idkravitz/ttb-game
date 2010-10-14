@@ -59,7 +59,7 @@ def compare(testname):
     else:
         return no_answer()
 
-def launch(test, debug=False, verbose=False):
+def launch(test, debug=False, verbose=False, interactive=False):
     random.seed(common.SEED)
     testname = os.path.splitext(os.path.normpath(test))[0]
     requests = load_json(test)
@@ -75,16 +75,26 @@ def launch(test, debug=False, verbose=False):
     result = compare(testname)
     if result != 'OK' or verbose or debug:
         print('Test {0} {1}'.format(os.path.normpath(test), result))
-    if debug:
+    if debug or (interactive and result != 'OK'):
         print(open(testname + '.out').read())
+        if interactive and result != 'OK':
+            ans = ""
+            while ans not in ('y', 'yes', 'n', 'no', 'yea', 'nay'):
+                ans = input('Would you like to replace answer with this output?(y/n)').lower()
+            if ans[0] == 'y':
+                os.rename(testname + '.out', testname + '.ans')
 
 def main():
     parser = optparse.OptionParser(usage='test.py [options] <test(s)>')
     parser.disable_interspersed_args()
-    parser.add_option('-v', '--verbose', action='store_true', dest='verbose',
-        default=False, help='show successful tests')
-    parser.add_option('-d', '--debug', action='store_true', dest='debug',
-        default=False, help='show tests output (includes --verbose)')
+    boolean_options = {
+        'verbose': 'show successful tests',
+        'debug': 'show tests output (includes --verbose)',
+        'interactive': 'interactively decide what to do with failed tests'
+    }
+    for option, description in boolean_options.items():
+        parser.add_option('-' + option[0], '--' + option, action='store_true', dest=option,
+            default=False, help=description)
     try:
         (options, args) = parser.parse_args()
     except optparse.OptionError as e:
@@ -98,9 +108,9 @@ def main():
         if os.path.isdir(arg):
             for dirpath, dirnames, filenames in os.walk(arg):
                 for test in glob.iglob(os.path.join(dirpath, '*.tst')):
-                    launch(test, debug=options.debug, verbose=options.verbose)
+                    launch(test, debug=options.debug, verbose=options.verbose, interactive=options.interactive)
         else:
-            launch(arg, debug=options.debug, verbose=options.verbose)
+            launch(arg, debug=options.debug, verbose=options.verbose, interactive=options.interactive)
     print('Summary: {0} passed, {1} failed, {2} no answer'.format(passed_count, failed_count, no_answer_count))
     return 0
 
