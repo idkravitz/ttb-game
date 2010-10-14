@@ -15,6 +15,8 @@ common.DEBUG = True
 from main import parse_request
 from db import db_instance as dbi
 
+no_answer_count = failed_count = passed_count = 0
+
 def load_json(filename):
     find_next = lambda s, pos: json.decoder.WHITESPACE.match(s, pos).end()
     text = open(filename).read()
@@ -34,13 +36,28 @@ def error(message):
     print(message)
     return 1
 
+def passed():
+    global passed_count
+    passed_count += 1
+    return 'OK'
+
+def failed():
+    global failed_count
+    failed_count += 1
+    return 'FAIL'
+
+def no_answer():
+    global no_answer_count
+    no_answer_count += 1
+    return 'NO ANSWER'
+
 def compare(testname):
     if os.path.exists(testname + '.ans'):
         answer = load_json(testname + '.ans')
         output = load_json(testname + '.out')
-        return 'OK' if answer == output else 'FAIL'
+        return passed() if answer == output else failed()
     else:
-        return 'NO ANSWER'
+        return no_answer()
 
 def launch(test, debug=False, verbose=False):
     random.seed(common.SEED)
@@ -84,6 +101,7 @@ def main():
                     launch(test, debug=options.debug, verbose=options.verbose)
         else:
             launch(arg, debug=options.debug, verbose=options.verbose)
+    print('Summary: {0} passed, {1} failed, {2} no answer'.format(passed_count, failed_count, no_answer_count))
     return 0
 
 if __name__ == '__main__':
