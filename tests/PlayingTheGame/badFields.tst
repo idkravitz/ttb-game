@@ -78,8 +78,8 @@
 	"units": [
         {
             "name": "first",
-            "posX": "1",
-            "posY": "1"
+            "posX": 1,
+            "posY": 1
         }
     ]
 }
@@ -127,6 +127,30 @@
             "name": "xxx",
             "posX": 1,
             "posY": 1
+        }
+    ]
+}
+
+{
+	"cmd": "placeUnits",
+	"sid": "GordonFreeman",
+	"units": [
+        {
+            "name": "first",
+            "posX": 10,
+            "posY": 10
+        }
+    ]
+}
+
+{
+	"cmd": "placeUnits",
+	"sid": "GordonFreeman",
+	"units": [
+        {
+            "name": "first",
+            "posX": -5,
+            "posY": -5
         }
     ]
 }

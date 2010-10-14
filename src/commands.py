@@ -446,8 +446,8 @@ def placeUnits(sid, units):
     user = dbi().get_user(sid)
     player = checkInGame(user, Player)
     game = player.game
-    map_ = game.map
-    map_ = split_str(map_.terrain, map_.width)
+    land = game.map
+    land = split_str(land.terrain, land.width)
     if dbi().query(GameProcess).filter_by(game_id=game.id).count() != 1:
         raise BadTurn("Unit placing allowed only on zero turn")
     process = dbi().query(GameProcess).filter_by(game_id=game.id).one()
@@ -457,13 +457,16 @@ def placeUnits(sid, units):
     for u in units:
         fields = ["name", "posX", "posY"]
         checkFields(fields, u)
+        height, width = len(land), len(land[0])
+        if not (0 <= u["posX"] < width and 0 <= u["posY"] < height):
+            raise BadCommand("Outside the map limits")
         y, x = u["posY"], u["posX"]
         name = u["name"]
         checkUnit(name, store)
-        cell = map_[y][x]
+        cell = land[y][x]
         if cell != str(player.player_number):
             raise BreakRules("Wrong cell")
-        map_[y][x] = "0"
+        land[y][x] = "0"
         ua = store[name].pop(0)
         placements.append(Turn(ua.id, process.id, x, y, x, y, 0, 0, ua.unit.HP))
     dbi().add_all(placements)

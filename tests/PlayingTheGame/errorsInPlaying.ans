@@ -104,6 +104,10 @@
     "status": "ok"
 }
 {
+    "message": "Can't attack dummy target", 
+    "status": "breakRules"
+}
+{
     "status": "ok"
 }
 {
@@ -117,18 +121,12 @@
                     "name": "brown"
                 }
             ]
-        }, 
-        "Gordon": {
-            "units": [
-                {
-                    "HP": 1, 
-                    "X": 1, 
-                    "Y": 1, 
-                    "name": "white"
-                }
-            ]
         }
     }, 
     "status": "ok", 
     "turnNumber": 3
+}
+{
+    "message": "Game has been finished", 
+    "status": "badGame"
 }
