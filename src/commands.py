@@ -449,7 +449,7 @@ def move(sid, turn, units):
         raise BadTurn("Not actual turn number")
     prev_process = processes[1]
 
-    moves = turns_from_units(units, land, prev_process, latest_process)
+    moves, prevTurn = turns_from_units(units, land, prev_process, latest_process)
     moved = set(turn.pos for turn in moves)
     skips = [ construct_turn_from_previous(prevTurn, latest_process, *(t.dest + t.dest + NO_TARGET))
         for t in prev_process.alive_units(user.id) if t.dest not in moved ]
@@ -517,7 +517,7 @@ def turns_from_units(units, land, prev_process, latest_process):
         if len(list(path)) > prevTurn.unitArmy.unit.MP:
             raise BreakRules("Not enough MP")
         moves.append(construct_turn_from_previous(prevTurn, latest_process, *[u[f] for f in fields]))
-    return moves
+    return moves, prevTurn
 
 def gameState_result(process):
     result = {
