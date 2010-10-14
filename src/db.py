@@ -204,6 +204,10 @@ class GameProcess(Base):
         return (db_instance().query(User.id, User.username).select_from(reduce(join, [Turn, UnitArmy, Army, User]))
             .filter(Turn.gameProcess_id==self.id).filter(Turn.HP!=0).distinct().all())
 
+    def alive_units(self, user_id):
+        return (db_instance().query(Turn).filter_by(gameProcess_id=self.id).join(UnitArmy).join(Army).join(User).filter(Turn.HP!=0)
+            .filter(User.id==user_id).all())
+
 class Turn(Base):
     __tablename__ = 'turns'
 

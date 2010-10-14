@@ -80,13 +80,18 @@ def checkInGame(obj, Table):
         raise BadGame('User is not playing game')
     return player
 
+def check_game_is_started(state):
+    check_game_is_started_or_finished(state)
+    if state == 'finished':
+        raise BadGame('Game is finished')
+
+def check_game_is_started_or_finished(state):
+    if state == 'not_started':
+        raise BadGame('Game is not started')
+
 def checkFields(fields, u):
     if not(isinstance(u, dict) and all(f in u for f in fields)):
         raise BadCommand("Bad objects in units")
-
-def alive_units(process, user_id):
-    return (dbi().query(Turn).filter_by(gameProcess_id=process.id).join(UnitArmy).join(Army).join(User).filter(Turn.HP!=0)
-        .filter(User.id==user_id).all())
 
 def readyPlayersQuery(process):
     return (dbi().query(User.id).select_from(reduce(join, [Turn, UnitArmy, Army, User]))
@@ -442,6 +447,7 @@ def placeUnits(sid, units):
     user = dbi().get_user(sid)
     player = checkInGame(user, Player)
     game = player.game
+    check_game_is_started(game.state)
     land = game.map
     land = split_str(land.terrain, land.width)
     if dbi().query(GameProcess).filter_by(game_id=game.id).count() != 1:
@@ -479,8 +485,7 @@ def move(sid, turn, units):
     user = dbi().get_user(sid)
     player = checkInGame(user, Player)
     game = player.game
-    if game.state == 'finished':
-        raise BadGame('Game has been finished')
+    check_game_is_started(game.state)
     land = game.map
     land = split_str(land.terrain, land.width)
     # We have at least two process, because we know that game started
@@ -514,7 +519,7 @@ def move(sid, turn, units):
         moves.append(construct_turn_from_previous(prevTurn, latest_process, *[u[f] for f in fields]))
         moved.add((u["posX"], u["posY"]))
     notmoved = [ construct_turn_from_previous(prevTurn, latest_process, *(t.dest + t.dest + NO_TARGET))
-        for t in alive_units(prev_process, user.id) if t.dest not in moved ]
+        for t in prev_process.alive_units(user.id) if t.dest not in moved ]
     dbi().add_all(moves + notmoved)
     if game.players_count == readyPlayersQuery(latest_process).count():
         repeat = dbi().query(Turn).filter_by(gameProcess_id=latest_process.id).all()
@@ -564,6 +569,7 @@ def move(sid, turn, units):
 @Command(str)
 def getGameState(name):
     game = dbi().get_game(name, False)
+    check_game_is_started_or_finished(game.state)
     turn_number = get_current_turn_number(game)
     if not turn_number:
         raise BadTurn("You can't request game status before everyone place their units")
@@ -577,7 +583,7 @@ def getGameState(name):
                                 "X": turn.destX,
                                 "Y": turn.destY
                             }
-                            for turn in alive_units(process, id)
+                            for turn in process.alive_units(id)
                          ]
               }
         for id, name in process.alive_players()
