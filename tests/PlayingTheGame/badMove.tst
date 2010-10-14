@@ -108,7 +108,7 @@
     "sid": "BarneyColhoun",
     "turn": "1",
     "units": [
-        { 
+        {
             "name": "<first>",
             "posX": "1",
             "posY": "1",
@@ -117,7 +117,7 @@
             "attackX": "1",
             "attackY": "1"
         }
-    ]               
+    ]
 }
 
 {
@@ -125,7 +125,7 @@
     "sid": "BarneyColhoun",
     "turn": 1,
     "units": [
-        { 
+        {
             "name": "<first>",
             "posX": "1",
             "posY": "1",
@@ -134,7 +134,7 @@
             "attackX": "1",
             "attackY": "1"
         }
-    ]               
+    ]
 }
 
 {
@@ -166,7 +166,7 @@
     "sid": "BarneyColhoun",
     "turn": 1,
     "units": [
-        { 
+        {
             "posX": "1",
             "posY": "1",
             "destX": "1",
@@ -174,7 +174,7 @@
             "attackX": "1",
             "attackY": "1"
         }
-    ]               
+    ]
 }
 
 {
@@ -194,7 +194,7 @@
     "sid": "BarneyColhoun",
     "turn": 1,
     "units": [
-        { 
+        {
             "posX": "1",
             "posY": "1",
             "destX": "1",
@@ -202,7 +202,7 @@
             "attackX": "1",
             "attackY": "1"
         }
-    ]               
+    ]
 }
 
 {
@@ -210,12 +210,12 @@
     "sid": "BarneyColhoun",
     "turn": 1,
     "units": [
-        { 
+        {
             "posX": "1",
             "destX": "1",
             "destY": "1",
             "attackX": "1",
             "attackY": "1"
         }
-    ]               
+    ]
 }

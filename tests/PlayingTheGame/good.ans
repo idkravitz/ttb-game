@@ -72,9 +72,6 @@
     "status": "ok"
 }
 {
-    "extra": {
-        "ap": 2
-    },
     "status": "ok"
 }
 {
@@ -107,11 +104,6 @@
     "status": "ok"
 }
 {
-    "extra": {
-        "ap": 1,
-        "dmg": 12,
-        "hp": 0
-    },
     "status": "ok"
 }
 {
@@ -129,8 +121,4 @@
     },
     "status": "ok",
     "turnNumber": 3
-}
-{
-    "message": "Game has been finished",
-    "status": "badGame"
 }

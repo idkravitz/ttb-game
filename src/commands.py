@@ -477,7 +477,6 @@ def in_range(pos1, pos2, range):
 
 @Command(str, int, list)
 def move(sid, turn, units):
-    extrainfo = {}
     user = dbi().get_user(sid)
     player = checkInGame(user, Player)
     game = player.game
@@ -564,16 +563,12 @@ def move(sid, turn, units):
                     their_tgt.HP -= dmg
                     their_tgt.HP = 0 if their_tgt.HP < 0 else their_tgt.HP
                     hp = their_tgt.HP
-                    extrainfo = {"dmg": dmg, "hp": hp}
             # oops, he left too far
         dbi().add(GameProcess(game.id, latest_process.turnNumber + 1))
         ap = alive_players(latest_process)
         if len(ap) <= 1:
             game.state = 'finished'
             dbi().commit()
-        extrainfo.update({'ap': len(ap)})
-    if extrainfo:
-        return response_ok(extra=extrainfo)
     return response_ok()
 
 @Command(str)

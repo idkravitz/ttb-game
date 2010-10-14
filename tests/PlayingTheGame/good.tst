@@ -217,19 +217,3 @@
     "cmd": "getGameState",
     "name": "BlackMesa"
 }
-
-{
-    "cmd": "move",
-    "sid": "BarneyColhoun",
-    "turn": 3,
-    "units": [
-        {
-            "posX": 1,
-            "posY": 2,
-            "destX": 1,
-            "destY": 1,
-            "attackX": -1,
-            "attackY": -1
-        }
-    ]
-}
