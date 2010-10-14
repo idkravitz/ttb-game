@@ -3,6 +3,10 @@ import heapq
 import itertools
 from common import *
 
+from db import db_instance as dbi, Turn
+
+__all__ = ["gen3d6", "find_shortest_path", "attack_phase", "movement_phase"]
+
 def gen3d6():
     return sum([random.randint(1,6) for i in range(3)])
 
@@ -129,3 +133,52 @@ def reconstruct_path(target_node):
         path.append(node)
         node = node._came_from
     return reversed(path)
+
+
+def movement_phase(latest_process, land):
+    repeat = dbi().query(Turn).filter_by(gameProcess_id=latest_process.id).all()
+    random.shuffle(repeat)
+    repeat.sort()
+    sorted_moves = repeat
+    for turn in repeat:
+        turn.path = list(find_shortest_path(land, turn.pos, turn.dest))
+    occupied, que = set(), []
+    while len(repeat) != len(que):
+        que, repeat = repeat, []
+        for turn in que:
+            if turn.path and turn.path[-1] not in occupied:
+                occupied.add(turn.path[-1])
+            else:
+                repeat.append(turn)
+    for turn in repeat:
+        for node in reversed(turn.path):
+            if node not in occupied:
+                occupied.add(node)
+                turn.dest = node
+                break
+        else:
+            turn.dest = turn.pos
+    return sorted_moves
+
+def attack(our_unit, their_unit, their_trgt):
+    attack_chance = our_unit.attack + gen3d6()
+    defence_chance = their_unit.defence + gen3d6()
+    if attack_chance > defence_chance:
+        their_trgt.HP -= our_unit.damage - their_unit.protection + gen3d6()
+        their_trgt.HP = 0 if their_trgt.HP < 0 else their_trgt.HP
+
+def attack_phase(sorted_moves):
+    attackable = { turn.pos: turn for turn in sorted_moves }
+    for turn in sorted_moves:
+        attack_pos = turn.attackX, turn.attackY
+        if attack_pos == NO_TARGET:
+            continue
+        their_trgt = attackable[attack_pos]
+        new_trgt = their_trgt.dest
+        our_unit = turn.unitArmy.unit
+        their_unit = their_trgt.unitArmy.unit
+        if in_range(turn.dest, new_trgt, our_unit.range):
+            attack(our_unit, their_unit, their_trgt)
+
+def in_range(pos1, pos2, range):
+    return sum(abs(x1 - x2) ** 2 for x1, x2 in zip(pos1, pos2)) <= range ** 2

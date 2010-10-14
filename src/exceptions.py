@@ -4,6 +4,7 @@
 import json
 
 from common import copy_args, JSON_DUMPS_FORMAT
+__all__ = ['RequestError']
 
 class RequestError(Exception):
     status = None
@@ -46,4 +47,5 @@ def generate_exception(name, status):
 
 for status in exceptions:
     name = status[0].upper() + status[1:]
+    __all__.append(name)
     globals()[name] = generate_exception(name, status)
