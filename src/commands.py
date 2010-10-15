@@ -429,8 +429,7 @@ def placeUnits(sid, units):
         raise BadTurn("Unit placing allowed only on zero turn")
     process = dbi().query(GameProcess).filter_by(game_id=game.id).one()
     store = { squad.unit.name: [squad.count, squad] for squad in player.army.unitArmy }
-    placements = []
-    placements = placements_from_units(units, land, store, placements, player, process)
+    placements = placements_from_units(units, land, store, player, process)
     dbi().add_all(placements)
     if is_turn_completed(game, process):
         dbi().add(GameProcess(game.id, 1))
@@ -475,7 +474,8 @@ def getGameState(name):
     result = gameState_result(process)
     return response_ok(players=result, turnNumber=turn_number)
 
-def placements_from_units(units, land, store, placements, player, process):
+def placements_from_units(units, land, store, player, process):
+    placements = []
     for u in units:
         fields = ["name", "posX", "posY"]
         check_fields(fields, u)
