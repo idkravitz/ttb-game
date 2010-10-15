@@ -430,7 +430,7 @@ def placeUnits(sid, units):
     process = dbi().query(GameProcess).filter_by(game_id=game.id).one()
     store = { squad.unit.name: [squad.count, squad] for squad in player.army.unitArmy }
     placements = []
-    placements = check_placements(units, land, store, placements, player, process)
+    placements = placements_from_units(units, land, store, placements, player, process)
     dbi().add_all(placements)
     if is_turn_completed(game, process):
         dbi().add(GameProcess(game.id, 1))
@@ -449,9 +449,9 @@ def move(sid, turn, units):
         raise BadTurn("Not actual turn number")
     prev_process = processes[1]
 
-    moves, prevTurn = turns_from_units(units, land, prev_process, latest_process)
+    moves = turns_from_units(units, land, prev_process, latest_process)
     moved = set(turn.pos for turn in moves)
-    skips = [ construct_turn_from_previous(prevTurn, latest_process, *(t.dest + t.dest + NO_TARGET))
+    skips = [ construct_turn_from_previous(t, latest_process, *(t.dest + t.dest + NO_TARGET))
         for t in prev_process.alive_units(user.id) if t.dest not in moved ]
     dbi().add_all(moves + skips)
 
@@ -475,7 +475,7 @@ def getGameState(name):
     result = gameState_result(process)
     return response_ok(players=result, turnNumber=turn_number)
 
-def check_placements(units, land, store, placements, player, process):
+def placements_from_units(units, land, store, placements, player, process):
     for u in units:
         fields = ["name", "posX", "posY"]
         check_fields(fields, u)
@@ -517,7 +517,7 @@ def turns_from_units(units, land, prev_process, latest_process):
         if len(list(path)) > prevTurn.unitArmy.unit.MP:
             raise BreakRules("Not enough MP")
         moves.append(construct_turn_from_previous(prevTurn, latest_process, *[u[f] for f in fields]))
-    return moves, prevTurn
+    return moves
 
 def gameState_result(process):
     result = {
