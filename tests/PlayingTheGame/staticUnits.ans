@@ -1,0 +1,222 @@
+{
+    "sid": "GordonFreeman", 
+    "status": "ok"
+}
+{
+    "sid": "BarneyColhoun", 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "players": {
+        "Barney": {
+            "units": [
+                {
+                    "HP": 5, 
+                    "X": 2, 
+                    "Y": 4, 
+                    "name": "regular"
+                }, 
+                {
+                    "HP": 6, 
+                    "X": 1, 
+                    "Y": 4, 
+                    "name": "poisoned"
+                }, 
+                {
+                    "HP": 6, 
+                    "X": 3, 
+                    "Y": 4, 
+                    "name": "poisoned"
+                }
+            ]
+        }, 
+        "Gordon": {
+            "units": [
+                {
+                    "HP": 5, 
+                    "X": 1, 
+                    "Y": 0, 
+                    "name": "regular"
+                }, 
+                {
+                    "HP": 5, 
+                    "X": 2, 
+                    "Y": 0, 
+                    "name": "regular"
+                }, 
+                {
+                    "HP": 5, 
+                    "X": 3, 
+                    "Y": 0, 
+                    "name": "regular"
+                }, 
+                {
+                    "HP": 4, 
+                    "X": 0, 
+                    "Y": 0, 
+                    "name": "speedy"
+                }, 
+                {
+                    "HP": 4, 
+                    "X": 4, 
+                    "Y": 0, 
+                    "name": "speedy"
+                }
+            ]
+        }
+    }, 
+    "status": "ok", 
+    "turnNumber": 1
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "players": {
+        "Barney": {
+            "units": [
+                {
+                    "HP": 6, 
+                    "X": 1, 
+                    "Y": 3, 
+                    "name": "poisoned"
+                }, 
+                {
+                    "HP": 6, 
+                    "X": 3, 
+                    "Y": 3, 
+                    "name": "poisoned"
+                }, 
+                {
+                    "HP": 5, 
+                    "X": 2, 
+                    "Y": 4, 
+                    "name": "regular"
+                }
+            ]
+        }, 
+        "Gordon": {
+            "units": [
+                {
+                    "HP": 5, 
+                    "X": 2, 
+                    "Y": 0, 
+                    "name": "regular"
+                }, 
+                {
+                    "HP": 4, 
+                    "X": 0, 
+                    "Y": 0, 
+                    "name": "speedy"
+                }, 
+                {
+                    "HP": 4, 
+                    "X": 4, 
+                    "Y": 0, 
+                    "name": "speedy"
+                }
+            ]
+        }
+    }, 
+    "status": "ok", 
+    "turnNumber": 2
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "players": {
+        "Barney": {
+            "units": [
+                {
+                    "HP": 6, 
+                    "X": 3, 
+                    "Y": 3, 
+                    "name": "poisoned"
+                }, 
+                {
+                    "HP": 5, 
+                    "X": 2, 
+                    "Y": 4, 
+                    "name": "regular"
+                }
+            ]
+        }, 
+        "Gordon": {
+            "units": [
+                {
+                    "HP": 5, 
+                    "X": 2, 
+                    "Y": 0, 
+                    "name": "regular"
+                }
+            ]
+        }
+    }, 
+    "status": "ok", 
+    "turnNumber": 3
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "players": {
+        "Barney": {
+            "units": [
+                {
+                    "HP": 5, 
+                    "X": 2, 
+                    "Y": 4, 
+                    "name": "regular"
+                }
+            ]
+        }
+    }, 
+    "status": "ok", 
+    "turnNumber": 4
+}
