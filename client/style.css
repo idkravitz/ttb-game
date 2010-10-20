@@ -127,7 +127,7 @@ p {
     display: none;
 }
 
-.content {
+#content {
     width: 920px;
     margin: 0 auto;
     padding: 40px 10px 20px 0;

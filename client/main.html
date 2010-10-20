@@ -2,39 +2,24 @@
 
 <html>
 <head>
-
     <title>TTB-GAME</title>
     <link href="style.css" rel="stylesheet" type="text/css">
     <script type="text/javascript" src="js/jquery-1.4.3.min.js"></script>
     <script type="text/javascript" src="js/sliding_effect.js"></script>
 
     <script type="text/javascript">
-        function showBlock(nameBlock){
-            var elements = document.getElementsByTagName("div");
-            for (i = 0; i < elements.length; i++) {
-                if (elements[i].id.substring(0, 5) == nameBlock.substring(0, 5)) {
-                    elements[i].style.display = "none";
-                }
-            }
-            document.getElementById(nameBlock).style.display = "block";
-        }
+        $(document).ready(function(){
+            $('.content-caller').click(function() {
+                $(".section-nav-result").hide();
+                $("div.section-nav-result[id^=content" + $(this).attr('name') + "]").show();
+            });
 
-        function click(event){
-            if (event.target == null) {
-                return;
-            }
-            var name = event.target.id;
-            if (name.substring(0, 2) == "li"){
-                name = name.substring(2, name.length);
-                showBlock("block" + name);
-            }
-        }
+            $("#contentAbout").show();
+        });
     </script>
-
 </head>
 
-<body onLoad="showBlock('blockAbout')" onClick="click(event)">
-
+<body>
     <div id="header-wrapper">
         <div id="header">
            <div class="name">TTB-GAME</div>
@@ -51,24 +36,24 @@
     </div>
 
     <div id="page">
-        <div class="content" >
+        <div id="content">
             <div class="section-nav">
                 <div id="navigation-block">
                     <ul id="sliding-navigation">
                         <li class="sliding-element"><h1>Navigation</h1></li>
-                        <li class="sliding-element"><a id ="liAbout" href="#">About TTB-GAME</a></li>
-                        <li class="sliding-element"><a id ="liCreate" href="#">Create game</a></li>
-                        <li class="sliding-element"><a id ="liJoin" href="#">Join game</a></li>
+                        <li class="sliding-element"><a class="content-caller" name="About" href="#">About TTB-GAME</a></li>
+                        <li class="sliding-element"><a class="content-caller" name="Create" href="#">Create game</a></li>
+                        <li class="sliding-element"><a class="content-caller" name="Join" href="#">Join game</a></li>
                         <li class="sliding-element"><a href="#">Upload map</a></li>
                         <li class="sliding-element"><a href="#">Upload faction</a></li>
                         <li class="sliding-element"><a href="#">List of games</a></li>
                         <li class="sliding-element"><a href="#">List of all players</a></li>
-                        <li class="sliding-element"><a id ="liTheGamePlayers" href="#">List of players for the game</a></li>
+                        <li class="sliding-element"><a class="content-caller" name="TheGamePlayers" href="#">List of players for the game</a></li>
                     </ul>
                  </div>
             </div>
 
-            <div id ="blockAbout" class="section-nav-result">
+            <div id="contentAbout" class="section-nav-result">
                 <div class="h4">
                     About TTB-GAME:
                 </div>
@@ -77,7 +62,7 @@
                 </p>
             </div>
 
-            <div id = "blockCreate" class="section-nav-result">
+            <div id="contentCreate" class="section-nav-result">
                 <div class="h4">
                     Create new game:
                 </div>
@@ -106,7 +91,7 @@
                 </div>
             </div>
 
-            <div id="blockJoin" class="section-nav-result">
+            <div id="contentJoin" class="section-nav-result">
                 <div class="h4">
                     Join game:
                 </div>
@@ -123,7 +108,7 @@
                 </div>
             </div>
 
-            <div id="blockTheGamePlayers" class="section-nav-result">
+            <div id="contentTheGamePlayers" class="section-nav-result">
                 <div class="h4">
                     Get list of players for the game:
                 </div>
@@ -145,6 +130,5 @@
     <div id="footer-wrapper-basic">
         <div id="footer"></div>
     </div>
-
 </body>
 </html>
