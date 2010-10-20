@@ -196,9 +196,8 @@ p {
 }
 
 .register-form-holder-lobby textarea, .register-form-holder-lobby input {
-	width: 100%;
+	width: 98%;
     font-family: inherit;
-    height: 250px;
 }
 
 .register-form-holder-lobby select {
@@ -206,8 +205,9 @@ p {
 	font-family: inherit;
 }
 
-.register-form-holder-lobby input {
-    width: 98%;
+.register-form-holder-lobby textarea {
+    width: 100%;
+    height: 250px;
 }
 
 .send-message {
