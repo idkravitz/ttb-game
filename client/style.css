@@ -95,7 +95,7 @@ p {
 #menu ul {
     margin: 0px;
     padding: 5px 0 0 0;
-    list-style: none; 
+    list-style: none;
 }
 
 #menu ul li {
@@ -211,14 +211,14 @@ ul#sliding-navigation li.sliding-element a:hover {
 }
 
 #footer-wrapper, #footer-wrapper-basic {
-	clear: both;
+    clear: both;
     width: 100%;
     margin: 0 auto;
     background: url(images/footer_repeat.jpg) repeat-x;
 }
 
 #footer-wrapper {
-	position: absolute;
+    position: absolute;
     bottom: 0;
 }
 
