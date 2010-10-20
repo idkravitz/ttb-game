@@ -4,12 +4,36 @@
 <head>
     <title>TTB-GAME</title>
     <link href="style.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="js/jquery-1.4.3.min.js"></script>
 
     <script type="text/javascript">
         function showHide(s, h) {
-            document.getElementById(s).style.display = "block";
-            document.getElementById(h).style.display = "none";
+            $('#' + s).css("display", "block");
+            $('#' + h).css("display", "none");
         }
+        $(document).ready(function(){
+            $("form[name='register']").submit(function(obj){
+                var success = false;
+                $.ajax({url:'/',
+                    data:{
+                        cmd: "register",
+                        username: $("input[name='name']", this).val(),
+                        password: $("input[name='password']", this).val()
+                    },
+                    success: function(text){
+                        success = text["status"] == 'ok';
+                        if(!success)
+                        {
+                            alert(text["message"]);
+                        }
+                    }, 
+                    dataType: 'json',
+                    type: 'POST',
+                    async: false
+                });
+                return success;
+            });
+        });
     </script>
 </head>
 
@@ -30,15 +54,17 @@
 
                 <div class="section">
                     <div class="register-form-holder">
-                        <p>Your name:</p>
-                        <input type="text" name="name" class="name">
+                        <form name="register" action="main.html" method="post">
+                            <p>Your name:</p>
+                            <input type="text" name="name" class="name">
 
-                        <p>Your password:</p>
-                        <input type="text" name="password" class="password">
+                            <p>Your password:</p>
+                            <input type="text" name="password" class="password">
 
-                        <p class="submit">
-                            <a href="main.html"><input type="submit" class="send-message" value="Sign in"></a>
-                        </p>
+                            <p class="submit">
+                                <input type="submit" class="send-message" value="Sign in">
+                            </p>
+                        </form>
                     </div>
                 </div>
 
