@@ -149,7 +149,7 @@ p {
     margin-right: 10px;
     float: left;
     border-right: 1px solid grey;
-    margin-bottom: 50px;
+    margin-bottom: 200px;
 }
 
 .section-nav-result {
@@ -166,11 +166,15 @@ p {
     width: 400px;
 }
 
-.register-form-holder input {
+.register-form-holder input, .register-form-holder textarea {
     width: 100%;
     font-family: inherit;
     padding: 5px;
     margin: 5px;
+}
+
+.register-form-holder textarea {
+	height: 100%;
 }
 
 .send-message {

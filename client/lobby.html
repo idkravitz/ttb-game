@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>TTB-GAME</title>
+    <link href="style.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="js/jquery-1.4.3.min.js"></script>
+    <script type="text/javascript" src="js/sliding_effect.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('.content-caller').click(function() {
+                $(".section-nav-result").hide();
+                $("div.section-nav-result[id^=content" + $(this).attr('name') + "]").show();
+            });
+
+            $("#contentArmy").show();
+        });
+    </script>
+</head>
+
+<body>
+    <div id="header-wrapper">
+        <div id="header">
+           <div class="name">TTB-GAME</div>
+        </div>
+    </div>
+
+    <div id="menu-wrapper">
+        <div id="menu">
+            <ul>
+                <li><a href="main.html">Leave game</a></li>
+                <li><p>Lobby</p></li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="page">
+        <div id="content">
+            <div class="section-nav">
+                <div id="navigation-block">
+                    <ul id="sliding-navigation">
+                        <li class="sliding-element"><p class="content-caller" name="Army">Choose army</p></li>
+                        <li class="sliding-element"><p class="content-caller" name="Status">Set status</p></li>
+                        <li class="sliding-element"><p class="content-caller" name="Message">Send message</p></li>
+                        <li class="sliding-element"><p class="content-caller" name="Chat">Chat history</p></li>
+                        
+                    </ul>
+                 </div>
+            </div>
+
+            <div id="contentArmy" class="section-nav-result">
+                <div class="h4">
+        	        Choose army:
+        	    </div>
+        	    
+                <div class="section-main">
+        		    <div class="register-form-holder">
+        		        <p>Name of the army:</p>
+                        <input type="text" name="game-name" id="game_name_join">
+                        		    
+                        <div class="submit">
+                            <input type="submit" class="send-message" value="Choose">
+                        </div>
+        		    </div>
+        	    </div> 
+            </div>
+            
+            <div id="contentMessage" class="section-nav-result">
+                <div class="h4">
+        	        Send your message:
+        	    </div>
+        	    
+                <div class="section-main">
+        		    <div class="register-form-holder">
+        		        <p>The message:</p>
+                        <textarea name='message' id='message'></textarea>
+                        		    
+                        <div class="submit">
+                            <input type="submit" class="send-message" value="Send">
+                        </div>
+        		    </div>
+        	    </div>
+            </div>
+            
+            <div id="contentStatus" class="section-nav-result">
+                <div class="h4">
+        	        Set status:
+        	    </div>
+        	    
+                <div class="section-main">
+        		    <div class="register-form-holder">
+        		        <p>Ready:</p>
+                        <input type="checkbox" name="status" id="set_status">
+        		    </div>
+        	    </div>
+            </div>            
+
+        </div>
+    </div>
+
+    <div id="footer-wrapper">
+        <div id="footer"></div>
+    </div>
+</body>
+</html>
