@@ -194,7 +194,7 @@ ul#sliding-navigation {
     padding: 0;
 }
 
-ul#sliding-navigation li.sliding-element a {
+ul#sliding-navigation li.sliding-element .content-caller {
     display: block;
     width: 150px;
     padding: 5px 18px;
@@ -204,10 +204,14 @@ ul#sliding-navigation li.sliding-element a {
     background:#222 url(images/tab_bg.jpg) repeat-y;
     border: 1px solid #1a1a1a;
     text-decoration: none;
+    font-size: 14px;
 }
 
-ul#sliding-navigation li.sliding-element a:hover {
+ul#sliding-navigation li.sliding-element .content-caller:hover {
     color: #ffff66;
+    cursor: pointer;
+    cursor: hand;
+    text-decoration: underline;
 }
 
 #footer-wrapper, #footer-wrapper-basic {
