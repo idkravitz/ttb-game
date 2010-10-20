@@ -162,20 +162,15 @@ p {
     margin-bottom: 50px;
 }
 
-.section-nav-lobby {
-    width: 210px;
+.section-nav-lobby, .section-nav-chat {
+    width: 200px;
     padding-top: 10px;
-    float: right;
+    float: left;
     margin-bottom: 50px;
-    border-right: 1px solid grey;
 }
 
 .section-nav-chat {
-    width: 250px;
-    margin-left: 5px;
-    padding-top: 10px;
-    float: right;
-    margin-bottom: 50px;
+    width: 310px;
 }
 
 .register-form-holder {
@@ -196,19 +191,23 @@ p {
 
 .register-form-holder-lobby {
     font-variant: small-caps;
-    width: 300px;
+    width: 280px;
     margin-left: 10px;
 }
 
-.register-form-holder-lobby textarea {
+.register-form-holder-lobby textarea, .register-form-holder-lobby input {
 	width: 100%;
     font-family: inherit;
     height: 250px;
 }
 
+.register-form-holder-lobby select {
+	width: 95%;
+	font-family: inherit;
+}
+
 .register-form-holder-lobby input {
     width: 98%;
-    font-family: inherit;
 }
 
 .send-message {

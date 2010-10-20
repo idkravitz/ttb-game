@@ -27,9 +27,22 @@
     <div id="page">
         <div id="content">
 
+        <div class="section-nav-lobby">
+                <div id="navigation-block">
+                    <ul id="sliding-navigation">
+                        <li class="sliding-element"><p class="content-caller" name="Create">Players:</p></li>
+                    </ul>
+                </div>
+            </div>
+
             <div class="section-nav-chat">
                 <div class="register-form-holder-lobby">
-        		    <p>Chat:</p>
+        		    <div id="navigation-block">
+                        <ul id="sliding-navigation">
+                            <li class="sliding-element"><p class="content-caller" name="Create">Chat:</p></li>
+                        </ul>
+                    </div>
+
                     <textarea name='message' id='message'></textarea>
 
                     <p>The message:</p>
@@ -40,28 +53,34 @@
                     </div>
                 </div>
             </div>
-
-            <div class="section-nav-lobby">
-                <div id="navigation-block">
-                    <ul id="sliding-navigation">
-                        <li class="sliding-element"><p class="content-caller" name="Create">Players:</p></li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="section-nav-lobby">
-                <div id="navigation-block">
-                    <ul id="sliding-navigation">
-                        <li class="sliding-element"><p class="content-caller" name="Create">Choose army:</p></li>
-                    </ul>
-                </div>
-            </div>
             
             <div class="section-nav-lobby">
                 <div id="navigation-block">
                     <ul id="sliding-navigation">
                         <li class="sliding-element"><p class="content-caller" name="Create">Status:</p></li>
                     </ul>
+                </div>
+
+                <div class="section-main">
+        		    <p>Ready:
+                        <input type="checkbox" name="status" id="set_status">
+                    </p>
+        	    </div>
+            </div>
+            
+            <div class="section-nav-lobby">
+                <div class="register-form-holder-lobby">
+                    <div id="navigation-block">
+                        <ul id="sliding-navigation">
+                            <li class="sliding-element"><p class="content-caller" name="Create">Choose army:</p></li>
+                        </ul>
+                    </div>
+
+                    <select name=chooseArmy>
+                        <option name = "first" value = "first"> First </option>
+                        <option name = "second" value = "second"> Second </option>
+                        <option name = "third" value = "third"> Third </option>
+                    </select>
                 </div>
             </div>
 
