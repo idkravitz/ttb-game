@@ -1,6 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-   "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
 
 <head>
 
@@ -21,10 +19,10 @@
         }
 
         function click(event){
-            if (event.srcElement == null) {
+            if (event.target == null) {
                 return;
             }
-            var name = event.srcElement.id;
+            var name = event.target.id;
             if (name.substring(0, 2) == "li"){
                 name = name.substring(2, name.length);
                 showBlock("block" + name);
@@ -143,7 +141,7 @@
         </div>
     </div>
 
-    <div id="footer-wrapper">
+    <div id="footer-wrapper-basic">
         <div id="footer"></div>
     </div>
 
