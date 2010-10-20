@@ -149,6 +149,7 @@ p {
     margin-right: 10px;
     float: left;
     border-right: 1px solid grey;
+    margin-bottom: 50px;
 }
 
 .section-nav-result {
@@ -157,6 +158,7 @@ p {
     padding-top: 10px;
     float: right;
     display: none;
+    margin-bottom: 50px;
 }
 
 .register-form-holder {
