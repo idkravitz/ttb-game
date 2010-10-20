@@ -149,8 +149,6 @@ p {
     margin-right: 10px;
     float: left;
     border-right: 1px solid grey;
-    margin-bottom: 200px;
-    borde-right: 1px solid grey;
 }
 
 .section-nav-result {
@@ -160,11 +158,11 @@ p {
     float: right;
     display: none;
     margin-bottom: 50px;
+    height: 400px;
 }
 
 .section-nav-lobby, .section-nav-chat {
     width: 200px;
-    padding-top: 10px;
     float: left;
     margin-bottom: 50px;
 }
@@ -196,7 +194,7 @@ p {
 }
 
 .register-form-holder-lobby textarea, .register-form-holder-lobby input {
-	width: 98%;
+	width: 100%;
     font-family: inherit;
 }
 
@@ -206,7 +204,6 @@ p {
 }
 
 .register-form-holder-lobby textarea {
-    width: 100%;
     height: 250px;
 }
 
@@ -229,7 +226,7 @@ p {
 ul#sliding-navigation {
     list-style: none;
     font-size: 0.75em;
-    margin: 20px 0;
+    margin: 10px 0;
     padding: 0;
 }
 
@@ -253,14 +250,11 @@ ul#sliding-navigation li.sliding-element .content-caller:hover {
     text-decoration: underline;
 }
 
-#footer-wrapper, #footer-wrapper-basic {
+#footer-wrapper {
     clear: both;
     width: 100%;
     margin: 0 auto;
     background: url(images/footer_repeat.jpg) repeat-x;
-}
-
-#footer-wrapper {
     position: absolute;
     bottom: 0;
 }
