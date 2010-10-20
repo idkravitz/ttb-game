@@ -7,7 +7,7 @@ function slide(navigation_id, pad_out, pad_in, time, multiplier)
 {
     // creates the target paths
     var list_elements = navigation_id + " li.sliding-element";
-    var link_elements = list_elements + " a";
+    var link_elements = list_elements + " .content-caller";
 
     // initiates the timer used for the sliding animation
     var timer = 0;
