@@ -210,11 +210,15 @@ ul#sliding-navigation li.sliding-element a:hover {
     color: #ffff66;
 }
 
-#footer-wrapper {
+#footer-wrapper, #footer-wrapper-basic {
+	clear: both;
     width: 100%;
     margin: 0 auto;
     background: url(images/footer_repeat.jpg) repeat-x;
-    position: absolute;
+}
+
+#footer-wrapper {
+	position: absolute;
     bottom: 0;
 }
 
