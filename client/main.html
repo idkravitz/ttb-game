@@ -7,28 +7,28 @@
     <title>TTB-GAME</title>
     <link href="style.css" rel="stylesheet" type="text/css">
     <script type="text/javascript" src="js/jquery-1.4.3.min.js"></script>
-    <script type="text/javascript" src="sliding_effect.js"></script>
-    
+    <script type="text/javascript" src="js/sliding_effect.js"></script>
+
     <script type="text/javascript">
         function showBlock(nameBlock){
             var elements = document.getElementsByTagName("div");
             for (i = 0; i < elements.length; i++) {
-    	        if (elements[i].id.substring(0, 5) == nameBlock.substring(0, 5)) {
-    	            elements[i].style.display = "none";
-    	        }
-    	    }
+                if (elements[i].id.substring(0, 5) == nameBlock.substring(0, 5)) {
+                    elements[i].style.display = "none";
+                }
+            }
             document.getElementById(nameBlock).style.display = "block";
         }
-       
+
         function click(event){
             if (event.srcElement == null) {
                 return;
             }
-    	    var name = event.srcElement.id;
-    	    if (name.substring(0, 2) == "li"){
-    	        name = name.substring(2, name.length);
-    		    showBlock("block" + name);
-    	    }
+            var name = event.srcElement.id;
+            if (name.substring(0, 2) == "li"){
+                name = name.substring(2, name.length);
+                showBlock("block" + name);
+            }
         }
     </script>
 
@@ -38,111 +38,111 @@
 
     <div id="header-wrapper">
         <div id="header">
-           <div class="name">TTB-GAME</div>       
+           <div class="name">TTB-GAME</div>
         </div>
     </div>
-    
+
     <div id="menu-wrapper">
         <div id="menu">
             <ul>
-    	        <li><a href="index.html">Sign out</a></li>
-    	        <li><p>Not in game</p></li>
-    	    </ul>   
-        </div> 
+                <li><a href="index.html">Sign out</a></li>
+                <li><p>Not in game</p></li>
+            </ul>
+        </div>
     </div>
-    
-    <div id="page">    
+
+    <div id="page">
         <div class="content" >
             <div class="section-nav">
                 <div id="navigation-block">
                     <ul id="sliding-navigation">
-    		            <li class="sliding-element"><h1>Navigation</h1></li>
-    		            <li class="sliding-element"><a id ="liAbout" href="#">About TTB-GAME</a></li>
-    		            <li class="sliding-element"><a id ="liCreate" href="#">Create game</a></li>
+                        <li class="sliding-element"><h1>Navigation</h1></li>
+                        <li class="sliding-element"><a id ="liAbout" href="#">About TTB-GAME</a></li>
+                        <li class="sliding-element"><a id ="liCreate" href="#">Create game</a></li>
                         <li class="sliding-element"><a id ="liJoin" href="#">Join game</a></li>
-    		            <li class="sliding-element"><a href="#">Upload map</a></li>
-    		            <li class="sliding-element"><a href="#">Upload faction</a></li>
+                        <li class="sliding-element"><a href="#">Upload map</a></li>
+                        <li class="sliding-element"><a href="#">Upload faction</a></li>
                         <li class="sliding-element"><a href="#">List of games</a></li>
                         <li class="sliding-element"><a href="#">List of all players</a></li>
                         <li class="sliding-element"><a id ="liTheGamePlayers" href="#">List of players for the game</a></li>
                     </ul>
                  </div>
             </div>
-    
+
             <div id ="blockAbout" class="section-nav-result">
-    	        <div class="h4">
-    	            About TTB-GAME:
-    	        </div>
-    	        
-    	        <p>text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text
-    	        </p>
-    	    </div>
-    	
+                <div class="h4">
+                    About TTB-GAME:
+                </div>
+
+                <p>text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text
+                </p>
+            </div>
+
             <div id = "blockCreate" class="section-nav-result">
-        	    <div class="h4">
-        	        Create new game:
-        	    </div>
-        	    
+                <div class="h4">
+                    Create new game:
+                </div>
+
                 <div class="section-main">
-        		    <div class="register-form-holder">
-        		        <p>Name of the game:</p>
-                        <input type="text" name="game-name" id="game-name">	    
-                        
-        		        <p>Name of the map:</p>
+                    <div class="register-form-holder">
+                        <p>Name of the game:</p>
+                        <input type="text" name="game-name" id="game-name">
+
+                        <p>Name of the map:</p>
                         <input type="text" name="map-name" id="map-name">
-                        	    
-        		        <p>Name of the faction:</p>
-        		        <input type="text" name="faction-name" id="faction-name">
-        		        
-                        <p>Total cost:</p>		
+
+                        <p>Name of the faction:</p>
+                        <input type="text" name="faction-name" id="faction-name">
+
+                        <p>Total cost:</p>
                         <input type="text" name="cost" id="cost">
-                            
-        		        <p>Players count:</p>	
-        		        <input type="text" name="count" id="count">
-        		        	    
+
+                        <p>Players count:</p>
+                        <input type="text" name="count" id="count">
+
                         <div class="submit">
-        			        <input type="submit" class="send-message" value="Create">
-        			    </div>    
-        	        </div>          
+                            <input type="submit" class="send-message" value="Create">
+                        </div>
+                    </div>
                 </div>
             </div>
-    	
-        	<div id="blockJoin" class="section-nav-result">	    
-        	    <div class="h4">
-        	        Join game:
-        	    </div>
-        	    
+
+            <div id="blockJoin" class="section-nav-result">
+                <div class="h4">
+                    Join game:
+                </div>
+
                 <div class="section-main">
-        		    <div class="register-form-holder">
-        		        <p>Name of the game:</p>
+                    <div class="register-form-holder">
+                        <p>Name of the game:</p>
                         <input type="text" name="game-name" id="game_name_join">
-                        		    
+
                         <div class="submit">
                             <input type="submit" class="send-message" value="Join">
                         </div>
-        		    </div>
-        	    </div>          
+                    </div>
+                </div>
             </div>
-    
-            <div id="blockTheGamePlayers" class="section-nav-result">    
-    	        <div class="h4">
-    	            Get list of players for the game:
-    	        </div>
-    	        
+
+            <div id="blockTheGamePlayers" class="section-nav-result">
+                <div class="h4">
+                    Get list of players for the game:
+                </div>
+
                 <div class="section-main">
-    		        <div class="register-form-holder">
-    		            <p>Name of the game:</p>
-    		            <input type="text" name="game-name" id="game_name_list">
-                        	    
+                    <div class="register-form-holder">
+                        <p>Name of the game:</p>
+                        <input type="text" name="game-name" id="game_name_list">
+
                         <div class="submit">
-    			            <input type="submit" class="send-message" value="Get">
+                            <input type="submit" class="send-message" value="Get">
                         </div>
-    		        </div>
-    	        </div>        
+                    </div>
+                </div>
             </div>
         </div>
-    </div>   
-    
+    </div>
+
     <div id="footer-wrapper">
         <div id="footer"></div>
     </div>
