@@ -19,24 +19,24 @@
                     success: function(text){
                         success = text["status"] == 'ok';
                         if (!success) {
-                        	var message = text["message"];
+                            var message = text["message"];
 
-                        	var element = document.getElementById("username_error");
+                            var element = $("#username_error");
                             if (message == "Incorrect username" ||
                                 message == "Too long username") {
-                            	element.style.display = "block";
-                            	element.textContent = message;
+                                element.css("display", "block");
+                                element.append(message);
                             } else {
-                            	element.style.display = "none";
+                                element.css("display", "none");
                             }
 
-                            element = document.getElementById("password_error");
+                            element = $("#password_error");
                             if (message == "Empty password" ||
                                 message == "User already exists, but passwords don't match") {
-                              	element.style.display = "block";
-                            	element.textContent = message;
+                                element.css("display", "block");
+                                element.append(message);
                             } else {
-                            	element.style.display = "none";
+                                element.css("display", "none");
                             }
                         }
                     }, 
@@ -68,11 +68,11 @@
                     <div class="register-form-holder">
                         <form name="register" action="main.html" method="post">
                             <p>Your name:</p>
-                            <div class="error" id="username_error"><img src='error.png'></div>
+                            <div class="error" id="username_error"><img src='/images/error.png'></div>
                             <input type="text" name="name" class="name">
 
                             <p>Your password:</p>
-                            <div class="error" id="password_error"><img src='error.png'></div>
+                            <div class="error" id="password_error"><img src='/images/error.png'></div>
                             <input type="text" name="password" class="password">
 
                             <p class="submit">

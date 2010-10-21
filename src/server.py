@@ -17,7 +17,7 @@ def get_static(url):
     htmls = r'^/(\w*)(|\.html)[/]?$'
     statics = [r'^/(js/[\w\d\.\-_]*\.js)$',
                r'^/([\w\d\.\-_]*\.css)$',
-               r'^/(images/[\w\d\.\-_]*\.jpg)$',
+               r'^/(images/[\w\d\.\-_]*\.(jpg|png|jpeg))$',
                r'^/(favicon.ico)']
     if re.match(index, url):
         return os.path.join(STATIC_FILES_ROOT, 'index.html')
@@ -70,4 +70,7 @@ class Application(object):
 
 httpd = make_server('', port, Application())
 print("Serving on port {0}...".format(port))
-httpd.serve_forever()
+try:
+    httpd.serve_forever()
+except KeyboardInterrupt:
+    print("Stopping server ...")
