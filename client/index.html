@@ -20,24 +20,17 @@
                         success = text["status"] == 'ok';
                         if (!success) {
                             var message = text["message"];
-
-                            var element = $("#username_error");
-                            if (message == "Incorrect username" ||
-                                message == "Too long username") {
-                                element.css("display", "block");
-                                element.append(message);
+                            var active_element, hidden_element;
+                            if (/.*username.*/i.test(message)) {
+                                active_element = $("#username_error");
+                                hidden_element = $("#password_error")
                             } else {
-                                element.css("display", "none");
+                                active_element = $("#password_error");
+                                hidden_element = $("#username_error");
                             }
-
-                            element = $("#password_error");
-                            if (message == "Empty password" ||
-                                message == "User already exists, but passwords don't match") {
-                                element.css("display", "block");
-                                element.append(message);
-                            } else {
-                                element.css("display", "none");
-                            }
+                            active_element.css("display", "block");
+                            active_element.append('<span>' + message + '</span>');
+                            hidden_element.css("display", "none");
                         }
                     }, 
                     dataType: 'json',
