@@ -123,10 +123,6 @@ p {
     background: #ffffff;
 }
 
-#block-register {
-    display: none;
-}
-
 #content {
     width: 920px;
     margin: 0 auto;
@@ -159,6 +155,7 @@ p {
     display: none;
     margin-bottom: 50px;
     height: 400px;
+    margin-bottom: 20px;
 }
 
 .section-nav-lobby, .section-nav-chat {
@@ -218,6 +215,15 @@ p {
     text-align: right;
 }
 
+.error {
+    display: none;
+    padding: 5px;
+    margin: 5px;
+    color: #D8000C;
+    font-size: 12px;
+    background-color: #FFBABA;
+}
+
 #navigation-block {
     position: relative;
     padding-left: 5px;
@@ -250,11 +256,14 @@ ul#sliding-navigation li.sliding-element .content-caller:hover {
     text-decoration: underline;
 }
 
-#footer-wrapper {
+#footer-wrapper, #footer-wrapper-basic{
     clear: both;
     width: 100%;
     margin: 0 auto;
     background: url(images/footer_repeat.jpg) repeat-x;
+}
+
+#footer-wrapper-basic {
     position: absolute;
     bottom: 0;
 }
