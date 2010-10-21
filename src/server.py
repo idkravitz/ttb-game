@@ -43,13 +43,13 @@ class Application(object):
     def __call__(self, environ, start_response):
         setup_testing_defaults(environ)
         self.env = environ
-        if self.is_ajax() or self.env["REQUEST_METHOD"] == "POST":
+        if self.is_ajax():
             self.raw = environ['wsgi.input'].read(int(environ['CONTENT_LENGTH']))
             self.body = self.raw.decode("utf-8")
             args = { name: value[0] if len(value) == 1 else value
-                for name, value in parse_qs(body, keep_blank_values=True).items() }
-            body = json.dumps(args)
-            ret = [ main.parse_request(body) ]
+                for name, value in parse_qs(self.body, keep_blank_values=True).items() }
+            self.body = json.dumps(args)
+            ret = [ main.parse_request(self.body) ]
             start_response(self.status, self.html_headers)
             return ret
         else: # static serve
