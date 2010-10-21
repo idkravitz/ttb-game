@@ -74,5 +74,4 @@ class Application(object):
 
 httpd = make_server('', port, Application())
 print("Serving on port {0}...".format(port))
-print(get_static('/js/jquery-1.4.3.min.js'))
 httpd.serve_forever()

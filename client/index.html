@@ -7,10 +7,6 @@
     <script type="text/javascript" src="js/jquery-1.4.3.min.js"></script>
 
     <script type="text/javascript">
-        function showHide(s, h) {
-            $('#' + s).css("display", "block");
-            $('#' + h).css("display", "none");
-        }
         $(document).ready(function(){
             $("form[name='register']").submit(function(obj){
                 var success = false;
@@ -46,7 +42,6 @@
 
     <div id="page">
         <div id="content">
-
             <div id="block-sign">
                 <div class="h1">
                     Sign in with your account:
@@ -67,37 +62,7 @@
                         </form>
                     </div>
                 </div>
-
-                <div class="h2">
-                    Don't have TTB-Game account?
-                    <a onclick="showHide('block-register','block-sign')">Create an account now</a>
-                </div>
             </div>
-
-            <div id="block-register">
-                <div class="h1">
-                    Create an account:
-                </div>
-                <div class="section">
-                    <div class='register-form-holder'>
-                        <div class="h3">
-                            If you already have a TTB-Game account, you can
-                            <a onclick="showHide('block-sign','block-register')">sign in here.</a>
-                        </div>
-
-                        <p> Your name:  </p>
-                        <input type="text" name="name" class="name">
-
-                        <p>Your password:</p>
-                        <input type="text" name="password" class="PASSWORD">
-
-                        <div class="submit">
-                            <a href="main.html"><input type="submit" class="send-message" value="Create my account"></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
 
