@@ -20,16 +20,14 @@
                         success = text["status"] == 'ok';
                         if (!success) {
                             var message = text["message"];
-                            var active_element, hidden_element;
+                            var active_element = $("#password_error");
+                            var hidden_element = $("#username_error");
                             if (/.*username.*/i.test(message)) {
                                 active_element = $("#username_error");
-                                hidden_element = $("#password_error")
-                            } else {
-                                active_element = $("#password_error");
-                                hidden_element = $("#username_error");
+                                hidden_element = $("#password_error");
                             }
                             active_element.css("display", "block");
-                            active_element.append('<span>' + message + '</span>');
+                            active_element.text(message);
                             hidden_element.css("display", "none");
                         }
                     }, 
