@@ -6,10 +6,6 @@ import json
 from wsgiref.util import setup_testing_defaults
 from wsgiref.simple_server import make_server
 from urllib.parse import parse_qs
-import common
-
-common.DEBUG = True
-
 import main
 
 port = 80
