@@ -5,6 +5,7 @@ import re
 import json
 import functools
 import random
+import hashlib
 from functools import reduce
 
 import sqlalchemy.orm.exc
@@ -107,13 +108,14 @@ def check_fields(fields, u):
 def split_str(text, width):
     return [list(text[i:i+width]) for i in range(0, len(text), width)]
 
-
 @Command(str, str)
 def register(username, password):
     if not username.replace('_', '').isalnum():
         raise BadUsername('Incorrect username')
     check_len(username, MAX_NAME_LENGTH, 'Too long username', BadUsername)
     check_emptiness(password, 'Empty password', BadPassword)
+    if not DEBUG:
+        password = hashlib.md5(password.encode("utf-8")).hexdigest()
     try:
         user = dbi().query(User).filter_by(username=username).one()
         if user.password != password:

@@ -18,8 +18,7 @@
                     },
                     success: function(text){
                         success = text["status"] == 'ok';
-                        if(!success)
-                        {
+                        if(!success){
                             alert(text["message"]);
                         }
                     }, 

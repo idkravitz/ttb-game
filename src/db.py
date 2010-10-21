@@ -10,6 +10,10 @@ from sqlalchemy.ext.declarative import declarative_base
 from common import copy_args, DEBUG, utcnow
 from exceptions import *
 
+import hashlib
+import datetime
+import random
+
 Base = declarative_base()
 
 uniqueString = lambda: Column(String, unique=True, nullable=False)
@@ -287,7 +291,8 @@ class Database:
         if DEBUG:
             sid = username + password
         else:
-            sid = 0 # change it to a SHA-1 applied to a shuffled date+username+password-hash
+            seq = str(datetime.datetime.utcnow()) + username + password
+            sid = hashlib.sha1(seq.encode("utf-8")).hexdigest()
         return sid
 
     def check_sid(self, sid):
