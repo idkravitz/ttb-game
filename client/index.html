@@ -20,15 +20,12 @@
                         success = text["status"] == 'ok';
                         if (!success) {
                             var message = text["message"];
-                            var active_element = $("#password_error");
-                            var hidden_element = $("#username_error");
-                            if (/.*username.*/i.test(message)) {
-                                active_element = $("#username_error");
-                                hidden_element = $("#password_error");
-                            }
-                            active_element.css("display", "block");
-                            active_element.text(message);
-                            hidden_element.css("display", "none");
+                            var active_element;
+                            $("#username_error, #password_error").hide();
+                            active_element = /.*username.*/i.test(message)
+                                ? $("#username_error") : $("#password_error");
+                            active_element.show();
+                            $('span', active_element).text(message);
                         }
                     }, 
                     dataType: 'json',
@@ -59,11 +56,11 @@
                     <div class="register-form-holder">
                         <form name="register" action="main.html" method="post">
                             <p>Your name:</p>
-                            <div class="error" id="username_error"><img src='/images/error.png'></div>
+                            <div class="error" id="username_error"><img src='/images/error.png'><span></span></div>
                             <input type="text" name="name" class="name">
 
                             <p>Your password:</p>
-                            <div class="error" id="password_error"><img src='/images/error.png'></div>
+                            <div class="error" id="password_error"><img src='/images/error.png'><span></span></div>
                             <input type="text" name="password" class="password">
 
                             <p class="submit">
