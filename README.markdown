@@ -27,6 +27,22 @@ simple settings to your git config (global settings preferred for future use in 
 You could add them by _git config_, replacing the equal (=) signs with whitespace and optionally pass a _--global_ key if you want
 to set this settings globally.
 
+Testing
+-------
+Comandline tests can be run, by tester test.py. It has some simple options, which you can read by
+    $ src/test.py --help
+
+To run all tests:
+    $ src/test.py tests/
+
+Run server
+----------
+Make sure that your port 80 isn't already occupied. Then you must run src/server.py with root privileges. For
+instance you can do it with sudo:
+    $ sudo src/server.py
+
+After that you can view client at [http://localhost/](http://localhost/)
+
 [python download]: http://www.python.org/download/
 [sqlalchemy download]: http://www.sqlalchemy.org/download.html
 [github 2steps]: http://help.github.com/git-email-settings/
