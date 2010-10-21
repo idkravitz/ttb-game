@@ -224,6 +224,11 @@ p {
     background-color: #FFBABA;
 }
 
+.error img {
+	vertical-align: top;
+	padding: 2px;
+}
+
 #navigation-block {
     position: relative;
     padding-left: 5px;

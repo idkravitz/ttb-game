@@ -21,10 +21,10 @@
                         if (!success) {
                             var message = text["message"];
                             var active_element;
-                            $("#username_error, #password_error").hide();
+                            $("#username_error, #password_error").fadeOut(500);
                             active_element = /.*username.*/i.test(message)
                                 ? $("#username_error") : $("#password_error");
-                            active_element.show();
+                            active_element.fadeIn(500);
                             $('span', active_element).text(message);
                         }
                     }, 
