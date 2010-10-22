@@ -9,7 +9,7 @@
     <script type="text/javascript">
         $(document).ready(function(){
             $("form[name='register']").submit(function(obj){
-                var success = false;
+                var result = false;
                 $.ajax({url:'/',
                     data:{
                         cmd: "register",
@@ -17,9 +17,9 @@
                         password: $("input[name='password']", this).val()
                     },
                     success: function(text){
-                        success = text["status"] == 'ok';
-                        if (!success) {
-                            var message = text["message"];
+                        result = text.status == 'ok';
+                        if (!result){
+                            var message = text.message;
                             var active_element;
                             $("#username_error, #password_error").fadeOut(500);
                             active_element = /.*username.*/i.test(message)
@@ -32,7 +32,7 @@
                     type: 'POST',
                     async: false
                 });
-                return success;
+                return result;
             });
         });
     </script>

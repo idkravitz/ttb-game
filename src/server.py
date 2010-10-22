@@ -17,7 +17,7 @@ def get_static(url):
     htmls = r'^/(\w*)(|\.html)[/]?$'
     statics = [r'^/(js/[\w\d\.\-_]*\.js)$',
                r'^/([\w\d\.\-_]*\.css)$',
-               r'^/(images/[\w\d\.\-_]*\.(jpg|png|jpeg))$',
+               r'^/(images/[\w\d\.\-_]*\.(jpg|png|jpeg|svg))$',
                r'^/(favicon.ico)']
     if re.match(index, url):
         return os.path.join(STATIC_FILES_ROOT, 'index.html')
