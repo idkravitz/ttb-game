@@ -12,7 +12,7 @@ $(document).ready(function(){
     window.onhashchange = function(){          // We have a new browser only
         hash = window.location.hash.substr(1); // remove # symbol
         if(hash && hash in descr){
-            activate(descr[hash]);                
+            activate(descr[hash]);
         }
         else{
             window.location.hash = 'registration';
@@ -71,7 +71,7 @@ $(document).ready(function(){
                 else{
                     window.location.hash = 'main';
                 }
-            }, 
+            },
             dataType: 'json',
             type: 'POST',
             async: false
