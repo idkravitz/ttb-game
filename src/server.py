@@ -20,7 +20,7 @@ def get_static(url):
                r'^/(images/[\w\d\.\-_]*\.(jpg|png|jpeg|svg))$',
                r'^/(favicon.ico)']
     if re.match(index, url):
-        return os.path.join(STATIC_FILES_ROOT, 'index.html')
+        return os.path.join(STATIC_FILES_ROOT, 'main.html')
     m = re.match(htmls, url)
     if m:
         return os.path.join(STATIC_FILES_ROOT, m.group(1) + '.html')
