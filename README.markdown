@@ -1,6 +1,7 @@
 Installation
 ------------
-The main requirements for successfull installation are: **>=python 3.1.2** and **>=sqlalchemy 0.6**
+The main requirements for successfull installation are: **>=python 3.1.2**, **>=sqlalchemy 0.6**
+and **bottle**
 
 Python can be installed by simply downloading installer for your OS [here][python download]
 or, if you are on a linux-based OS -- by package manager. For instance Ubuntu users can do it by:
@@ -14,6 +15,9 @@ of the following:
 Or if you can't or don't want to have none of this nice tools you can download 
 SQLAlchemy directly [here][sqlalchemy download] and execute:
     $ sudo python setup.py install
+
+**Bottle** can be installed installed in a same way as SQLAlchemy, but with replacing in commands
+above word 'SQLAlchemy' with 'bottle'. Also you can read more info about bottle [here][bottle site]
 
 Contribution requirement
 ------------------------
@@ -46,3 +50,4 @@ After that you can view client at [http://localhost/](http://localhost/)
 [python download]: http://www.python.org/download/
 [sqlalchemy download]: http://www.sqlalchemy.org/download.html
 [github 2steps]: http://help.github.com/git-email-settings/
+[bottle site]: http://bottle.paws.de/
