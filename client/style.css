@@ -38,7 +38,7 @@ p {
     padding: 10px 0;
 }
 
-.h1, .h2 {
+h1{
     position: relative;
     height: 40px;
     width: 260px;
@@ -49,31 +49,9 @@ p {
     background:url(images/header_h.jpg) right no-repeat;
 }
 
-.h2 {
-    margin-top: 20px;
-    font-size: 12px;
-}
-
-.h3 {
+h2 {
     position: relative;
-    width: 400px;
-    margin-bottom: 20px;
-    margin-top: 15px;
-    font-size: 12px;
-    color: #333333;
-}
-
-.h2 a, .h3 a {
-    color: #000000;
-    text-decoration: underline;
-    cursor: pointer;
-}
-
-.h4 {
-    position: relative;
-    height: 40px;
-    width: 260px;
-    padding: 10px 0 0 15px;
+    padding: 10px 0 0 10px;
     margin-right: 10px;
     font-size: 15px;
     color: #333333;
