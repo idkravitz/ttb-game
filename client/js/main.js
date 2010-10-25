@@ -53,13 +53,13 @@ $(document).ready(function(){
 
     $("#contentAbout").show();
     $("form[name='register']").submit(function(obj){
-        $.ajax({url:'/',
-            data:{
+        $.getJSON('/ajax',
+            {
                 cmd: "register",
                 username: $("input[name='name']", this).val(),
                 password: $("input[name='password']", this).val()
             },
-            success: function(text){
+            function(text){
                 if (text.status != 'ok'){
                     var active_element, message = text.message;
                     $("#username_error, #password_error").fadeOut(500);
@@ -71,11 +71,8 @@ $(document).ready(function(){
                 else{
                     window.location.hash = 'main';
                 }
-            },
-            dataType: 'json',
-            type: 'POST',
-            async: false
-        });
+            }
+        );
         return false;       // don't allow form to send POST requests
     });
 
