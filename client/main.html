@@ -24,170 +24,157 @@
         </div>
     </div>
 
-    <div id="page">
-        <div id="content">
-            <section id="registration">
-                        <div id="block-sign">
-                            <h1>
-                                Sign in with your account:
-                            </h1>
+    <section id="content">
+        <section id="registration">
+            <h1>
+                Sign in with your account:
+            </h1>
 
-                            <div class="section">
-                                <div class="register-form-holder">
-                                    <form name="register" action="/" method="post">
-                                        <p>Your name:</p>
-                                        <input type="text" name="name" class="name">
-                                        <div class="error" id="username_error"><img src='/images/error.png'><span></span></div>
+            <div class="register-form-holder">
+                <form name="register" action="/" method="post">
+                    <p>Your name:</p>
+                    <input type="text" name="name" class="name">
+                    <div class="error" id="username_error"><img src='/images/error.png'><span></span></div>
 
-                                        <p>Your password:</p>
-                                        <input type="text" name="password" class="password">
-                                        <div class="error" id="password_error"><img src='/images/error.png'><span></span></div>
+                    <p>Your password:</p>
+                    <input type="text" name="password" class="password">
+                    <div class="error" id="password_error"><img src='/images/error.png'><span></span></div>
 
-                                        <p class="submit">
-                                            <input type="submit" class="send-message" value="Sign in">
-                                        </p>
-                                    </form>
-                                </div>
-                            </div>
+                    <p class="submit">
+                        <input type="submit" class="send-message" value="Sign in">
+                    </p>
+                </form>
+            </div>
+        </section >
+
+        <section id="main">
+            <div class="menu-content">
+                <ul>
+                    <li><a href="/#registration">Sign out</a></li>
+                    <li><p>Not in game</p></li>
+                </ul>
+            </div>
+
+            <nav>
+                <ul id="sliding-navigation">
+                    <li class="sliding-element"><p class="content-caller" name="Create">Create game</p></li>
+                    <li class="sliding-element"><p class="content-caller" name="Games">Active games</p></li>
+                    <li class="sliding-element"><p class="content-caller" name="About">About</p></li>
+                </ul>
+            </nav>
+
+            <div id="contentAbout" class="section-nav-result">
+                <h2>
+                    About:
+                </h2>
+
+                <p>
+                    Hello! I'm a pony.
+                </p>
+            </div>
+
+            <div id="contentCreate" class="section-nav-result">
+                <h2>
+                    Create game:
+                </h2>
+
+                <div class="section-main">
+                    <form name="lobby" class="register-form-holder" action="/#lobby" method="post">
+                        <p>Name of the game:</p>
+                        <input type="text" name="game-name" id="game-name">
+
+                        <p>Name of the map:</p>
+                        <input type="text" name="map-name" id="map-name">
+
+                        <p>Name of the faction:</p>
+                        <input type="text" name="faction-name" id="faction-name">
+
+                        <p>Total cost:</p>
+                        <input type="text" name="cost" id="cost">
+
+                        <p>Players count:</p>
+                        <input type="text" name="count" id="count">
+
+                        <div class="submit">
+                            <input type="submit" class="send-message" value="Create">
                         </div>
-            </section >
-
-            <section id="main">
-                <div class="menu-content">
-                    <ul>
-                        <li><a href="/#registration">Sign out</a></li>
-                        <li><p>Not in game</p></li>
-                    </ul>
+                    </form>
                 </div>
+            </div>
 
+            <div id="contentGames" class="section-nav-result">
+                <h2>
+                    Active games:
+                </h2>
+
+                <p>
+                    Hello! I'm a pony.
+                </p>
+            </div>
+
+        </section>
+
+        <section id="lobby">
+            <div class="menu-content">
+                <ul>
+                    <li><a href="/#main">Leave game</a></li>
+                    <li><p>Lobby</p></li>
+                </ul>
+            </div>
+
+            <div class="section-lobby">
                 <nav>
                     <ul id="sliding-navigation">
-                        <li class="sliding-element"><p class="content-caller" name="Create">Create game</p></li>
-                        <li class="sliding-element"><p class="content-caller" name="Games">Active games</p></li>
-                        <li class="sliding-element"><p class="content-caller" name="About">About</p></li>
+                        <li class="sliding-element"><p class="content-caller" name="Create">Players:</p></li>
+                    </ul>
+                </nav>
+            </div>
+
+            <div class="section-lobby">
+                <nav>
+                    <ul id="sliding-navigation">
+                        <li class="sliding-element"><p class="content-caller">Chat:</p></li>
                     </ul>
                 </nav>
 
+                <textarea name='message' id='message'></textarea>
 
-                <div id="contentAbout" class="section-nav-result">
-                    <h2>
-                        About:
-                    </h2>
+                <p>The message:</p>
+                <input name='message' id='message'></textarea>
 
-                    <p>
-                        Hello! I'm a pony.
-                    </p>
+                <div class="submit">
+                    <input type="submit" class="send-message" value="Send"
                 </div>
+            </div>
 
-                    <div id="contentCreate" class="section-nav-result">
-                        <h2>
-                            Create game:
-                        </h2>
-
-                        <div class="section-main">
-                            <form name="lobby" class="register-form-holder" action="/#lobby" method="post">
-                                <p>Name of the game:</p>
-                                <input type="text" name="game-name" id="game-name">
-
-                                <p>Name of the map:</p>
-                                <input type="text" name="map-name" id="map-name">
-
-                                <p>Name of the faction:</p>
-                                <input type="text" name="faction-name" id="faction-name">
-
-                                <p>Total cost:</p>
-                                <input type="text" name="cost" id="cost">
-
-                                <p>Players count:</p>
-                                <input type="text" name="count" id="count">
-
-                                <div class="submit">
-                                    <input type="submit" class="send-message" value="Create">
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-
-                    <div id="contentGames" class="section-nav-result">
-                        <h2>
-                            Active games:
-                        </h2>
-
-                        <p>
-                        Hello! I'm a pony.
-                        </p>
-                    </div>
-            </section>
-
-            <section id="lobby">
-                <div class="menu-content">
-                    <ul>
-                        <li><a href="/#main">Leave game</a></li>
-                        <li><p>Lobby</p></li>
+            <div class="section-lobby">
+                <nav>
+                    <ul id="sliding-navigation">
+                        <li class="sliding-element"><p class="content-caller">Status:</p></li>
                     </ul>
-                </div>
+                </nav>
 
-                <div class="section-lobby">
+                <p>Ready:
+                    <input type="checkbox" name="status" id="set_status">
+                </p>
+            </div>
 
-                    <nav>
-                        <ul id="sliding-navigation">
-                            <li class="sliding-element"><p class="content-caller" name="Create">Players:</p></li>
-                        </ul>
-                    </nav>
+            <div class="section-lobby">
+                <nav>
+                    <ul id="sliding-navigation">
+                        <li class="sliding-element"><p class="content-caller">Choose army:</p></li>
+                    </ul>
+                </nav>
 
-                </div>
+                <select name=chooseArmy>
+                    <option name="first" value="first">First</option>
+                    <option name="second" value="second">Second</option>
+                    <option name="third" value="third">Third</option>
+                </select>
+            </div>
+        </section>
+    </section>
 
-                <div class="section-lobby">
-
-                    <nav>
-                        <ul id="sliding-navigation">
-                            <li class="sliding-element"><p class="content-caller">Chat:</p></li>
-                        </ul>
-                    </nav>
-
-                    <textarea name='message' id='message'></textarea>
-
-                    <p>The message:</p>
-                    <input name='message' id='message'></textarea>
-
-                    <div class="submit">
-                        <input type="submit" class="send-message" value="Send"
-                    </div>
-
-                </div>
-
-                <div class="section-lobby">
-
-                    <nav>
-                        <ul id="sliding-navigation">
-                            <li class="sliding-element"><p class="content-caller">Status:</p></li>
-                        </ul>
-                    </nav>
-
-                    <p>Ready:
-                        <input type="checkbox" name="status" id="set_status">
-                    </p>
-
-                </div>
-
-                <div class="section-lobby">
-
-                    <nav>
-                        <ul id="sliding-navigation">
-                            <li class="sliding-element"><p class="content-caller">Choose army:</p></li>
-                        </ul>
-                    </nav>
-
-                    <select name=chooseArmy>
-                        <option name="first" value="first">First</option>
-                        <option name="second" value="second">Second</option>
-                        <option name="third" value="third">Third</option>
-                    </select>
-
-                </div>
-            </section>
-        </div>
-    </div>
     <div id="footer-wrapper-basic">
         <div id="footer"></div>
     </div>

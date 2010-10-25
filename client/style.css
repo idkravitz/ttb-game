@@ -106,12 +106,6 @@ h3 {
     display: none;
 }
 
-#page {
-    width: 100%;
-    margin: 0 auto;
-    background: #ffffff;
-}
-
 #content {
     width: 920px;
     margin: 0 auto;
@@ -119,21 +113,9 @@ h3 {
     background: #ffffff;
 }
 
-.section {
-    width: 920px;
-    padding: 0 15px;
-}
-
 .section-main {
     width: 550px;
     padding: 0 15px;
-}
-
-.section-nav {
-    width: 220px;
-    margin-right: 10px;
-    float: left;
-    border-right: 1px solid grey;
 }
 
 .section-nav-result {
@@ -155,6 +137,7 @@ h3 {
 .register-form-holder {
     font-variant: small-caps;
     width: 400px;
+    padding: 0 15px;
 }
 
 .register-form-holder input, .register-form-holder textarea {
