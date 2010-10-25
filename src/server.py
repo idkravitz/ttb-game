@@ -21,7 +21,8 @@ def serve_images(filename):
     return static_file(filename, join(STATIC_FILES_ROOT, './images/'))
 
 @route('/:filename#.*\.css#')
-def serve_css(filename):
+@route('/:filename#.*\.ico#')
+def serve_root_statics(filename):
     return static_file(filename, STATIC_FILES_ROOT)
 
 @route('/ajax')
