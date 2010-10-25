@@ -44,7 +44,7 @@ h1{
     width: 260px;
     padding: 10px 0 0 15px;
     margin-right: 10px;
-    font-size: 18px;
+    font-size: 14px;
     color: #333333;
     background:url(images/header_h.jpg) right no-repeat;
 }
@@ -198,6 +198,7 @@ h2 {
 }
 
 .error {
+	width: 405px;
     display: none;
     padding: 5px;
     margin: 5px;
