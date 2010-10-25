@@ -37,7 +37,7 @@ p {
     background: url(images/header_banner.jpg) no-repeat;
 }
 
-h1{
+h1 {
     position: relative;
     height: 40px;
     width: 260px;
@@ -97,7 +97,7 @@ h3 {
     color: #BBB;
 }
 
-#menu li a: hover {
+#menu li a:hover {
     background: #666;
     color: #FFF;
 }
@@ -127,13 +127,6 @@ h3 {
     height: 400px;
 }
 
-.section-lobby {
-    float: left;
-    margin: 0 0 50px 10px;
-    font-variant: small-caps;
-    width: 220px;
-}
-
 .register-form-holder {
     font-variant: small-caps;
     width: 400px;
@@ -149,6 +142,13 @@ h3 {
 
 .register-form-holder textarea {
 	height: 100%;
+}
+
+.section-lobby {
+    float: left;
+    margin: 0 0 50px 10px;
+    font-variant: small-caps;
+    width: 220px;
 }
 
 .section-lobby textarea, .section-lobby input {
@@ -189,6 +189,14 @@ h3 {
 .error img {
 	vertical-align: top;
 	padding: 2px;
+}
+
+.line {
+	width: 1px;
+	height: 130px;
+	background-color: #000000;
+	overflow: hidden;
+	float: left;
 }
 
 nav {
