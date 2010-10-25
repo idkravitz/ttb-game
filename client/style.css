@@ -4,9 +4,12 @@
 	padding: 0;
 }
 
+/* Tell the browser to render HTML 5 elements as block */
+header, section, nav {
+	display: block;
+}
+
 body {
-    margin: 0;
-    padding: 0;
     line-height: 1.5em;
     font-family: Verdana;
     font-variant: small-caps;
@@ -16,8 +19,6 @@ body {
 }
 
 p {
-    margin: 0px;
-    padding: 0px;
     text-align: justify;
 }
 
@@ -44,14 +45,13 @@ h1{
     margin-right: 10px;
     font-size: 14px;
     color: #333333;
-    background:url(images/header_h.jpg) right no-repeat;
+    background: url(images/header_h.jpg) right no-repeat;
 }
 
 h2 {
     position: relative;
     padding: 10px 0 0 10px;
-    margin-right: 10px;
-    margin-bottom: 15px;
+    margin: 0 10px 15px 0;
     font-size: 15px;
     color: #333333;
 }
@@ -97,7 +97,7 @@ h3 {
     color: #BBB;
 }
 
-#menu li a:hover {
+#menu li a: hover {
     background: #666;
     color: #FFF;
 }
@@ -138,21 +138,18 @@ h3 {
 
 .section-nav-result {
     width: 600px;
-    margin-left: 10px;
+    margin: 0 0 20px 10px;
     padding-top: 10px;
     float: right;
     display: none;
-    margin-bottom: 50px;
     height: 400px;
-    margin-bottom: 20px;
 }
 
 .section-lobby {
     float: left;
-    margin-bottom: 50px;
+    margin: 0 0 50px 10px;
     font-variant: small-caps;
     width: 220px;
-    margin-left: 10px;
 }
 
 .register-form-holder {
@@ -171,24 +168,18 @@ h3 {
 	height: 100%;
 }
 
-.register-form-holder-lobby {
-    font-variant: small-caps;
-    width: 280px;
-    margin-left: 10px;
-}
-
 .section-lobby textarea, .section-lobby input {
 	width: 100%;
     font-family: inherit;
 }
 
+.section-lobby textarea {
+    height: 250px;
+}
+
 .section-lobby select {
 	width: 95%;
 	font-family: inherit;
-}
-
-.section-lobby textarea {
-    height: 250px;
 }
 
 .send-message {
