@@ -60,25 +60,24 @@
                     </ul>
                 </div>
 
-                    <div class="section-nav">
-                        <div id="navigation-block">
-                            <ul id="sliding-navigation">
-                                <li class="sliding-element"><p class="content-caller" name="Create">Create game</p></li>
-                                <li class="sliding-element"><p class="content-caller" name="Games">Active games</p></li>
-                                <li class="sliding-element"><p class="content-caller" name="About">About</p></li>
-                            </ul>
-                         </div>
-                    </div>
+                <nav>
+                    <ul id="sliding-navigation">
+                        <li class="sliding-element"><p class="content-caller" name="Create">Create game</p></li>
+                        <li class="sliding-element"><p class="content-caller" name="Games">Active games</p></li>
+                        <li class="sliding-element"><p class="content-caller" name="About">About</p></li>
+                    </ul>
+                </nav>
 
-                    <div id="contentAbout" class="section-nav-result">
-                        <h2>
-                            About:
-                        </h2>
 
-                        <p>
+                <div id="contentAbout" class="section-nav-result">
+                    <h2>
+                        About:
+                    </h2>
+
+                    <p>
                         Hello! I'm a pony.
-                        </p>
-                    </div>
+                    </p>
+                </div>
 
                     <div id="contentCreate" class="section-nav-result">
                         <h2>
@@ -128,62 +127,64 @@
                     </ul>
                 </div>
 
-                <div class="section-nav-lobby">
-                        <div id="navigation-block">
-                            <ul id="sliding-navigation">
-                                <li class="sliding-element"><p class="content-caller" name="Create">Players:</p></li>
-                            </ul>
-                        </div>
+                <div class="section-lobby">
+
+                    <nav>
+                        <ul id="sliding-navigation">
+                            <li class="sliding-element"><p class="content-caller" name="Create">Players:</p></li>
+                        </ul>
+                    </nav>
+
+                </div>
+
+                <div class="section-lobby">
+
+                    <nav>
+                        <ul id="sliding-navigation">
+                            <li class="sliding-element"><p class="content-caller">Chat:</p></li>
+                        </ul>
+                    </nav>
+
+                    <textarea name='message' id='message'></textarea>
+
+                    <p>The message:</p>
+                    <input name='message' id='message'></textarea>
+
+                    <div class="submit">
+                        <input type="submit" class="send-message" value="Send"
                     </div>
 
-                    <div class="section-nav-chat">
-                        <div class="register-form-holder-lobby">
-                            <div id="navigation-block">
-                                <ul id="sliding-navigation">
-                                    <li class="sliding-element"><p class="content-caller" name="Create">Chat:</p></li>
-                                </ul>
-                            </div>
+                </div>
 
-                            <textarea name='message' id='message'></textarea>
+                <div class="section-lobby">
 
-                            <p>The message:</p>
-                            <input name='message' id='message'></textarea>
+                    <nav>
+                        <ul id="sliding-navigation">
+                            <li class="sliding-element"><p class="content-caller">Status:</p></li>
+                        </ul>
+                    </nav>
 
-                            <div class="submit">
-                                <input type="submit" class="send-message" value="Send">
-                            </div>
-                        </div>
-                    </div>
+                    <p>Ready:
+                        <input type="checkbox" name="status" id="set_status">
+                    </p>
 
-                    <div class="section-nav-lobby">
-                        <div id="navigation-block">
-                            <ul id="sliding-navigation">
-                                <li class="sliding-element"><p class="content-caller" name="Create">Status:</p></li>
-                            </ul>
-                        </div>
+                </div>
 
-                        <div class="section-main">
-                            <p>Ready:
-                                <input type="checkbox" name="status" id="set_status">
-                            </p>
-                        </div>
-                    </div>
+                <div class="section-lobby">
 
-                    <div class="section-nav-lobby">
-                        <div class="register-form-holder-lobby">
-                            <div id="navigation-block">
-                                <ul id="sliding-navigation">
-                                    <li class="sliding-element"><p class="content-caller" name="Create">Choose army:</p></li>
-                                </ul>
-                            </div>
+                    <nav>
+                        <ul id="sliding-navigation">
+                            <li class="sliding-element"><p class="content-caller">Choose army:</p></li>
+                        </ul>
+                    </nav>
 
-                            <select name=chooseArmy>
-                                <option name="first" value="first">First</option>
-                                <option name="second" value="second">Second</option>
-                                <option name="third" value="third">Third</option>
-                            </select>
-                        </div>
-                    </div>
+                    <select name=chooseArmy>
+                        <option name="first" value="first">First</option>
+                        <option name="second" value="second">Second</option>
+                        <option name="third" value="third">Third</option>
+                    </select>
+
+                </div>
             </section>
         </div>
     </div>
