@@ -234,19 +234,16 @@ ul#sliding-navigation li.sliding-element .content-caller:hover {
     text-decoration: underline;
 }
 
-#footer-wrapper, #footer-wrapper-basic{
+footer {
     clear: both;
     width: 100%;
     margin: 0 auto;
     background: url(images/footer_repeat.jpg) repeat-x;
-}
-
-#footer-wrapper-basic {
     position: absolute;
     bottom: 0;
 }
 
-#footer {
+footer div {
     width: 920px;
     height: 40px;
     padding: 5px 10px 0 10px;
