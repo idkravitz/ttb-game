@@ -1,4 +1,5 @@
 var descr;          // descriptions of toplevel sections (which behave like pages)
+var sid;
 
 function activate(descr){
     $("#content > section").hide();
@@ -18,7 +19,7 @@ $(document).ready(function(){
             window.location.hash = 'registration';
         }
     };
-    $('.content-caller').click(function() {
+    $('.content-caller').click(function(){
         $(".section-nav-result").hide();
         $("div.section-nav-result[id^=content" + $(this).attr('name') + "]").show();
     });
@@ -53,14 +54,17 @@ $(document).ready(function(){
 
     $("#contentAbout").show();
     $("form[name='register']").submit(function(obj){
-        $.getJSON('/ajax',
-            {
+        $.getJSON('/ajax', {
                 cmd: "register",
                 username: $("input[name='name']", this).val(),
                 password: $("input[name='password']", this).val()
             },
             function(text){
-                if (text.status != 'ok'){
+                if (text.status == 'ok'){
+                    window.location.hash = 'main';
+                    sid = text.sid;
+                }
+                else{
                     var active_element, message = text.message;
                     $("#username_error, #password_error").fadeOut(500);
                     active_element = /.*username.*/i.test(message)
@@ -68,12 +72,25 @@ $(document).ready(function(){
                     active_element.fadeIn(500);
                     $('span', active_element).text(message);
                 }
-                else{
-                    window.location.hash = 'main';
-                }
             }
         );
         return false;       // don't allow form to send POST requests
+    });
+
+    $("#main-content a[href='/#registration']").click(function(){
+        $.getJSON('/ajax', {
+                cmd: "unregister",
+                sid: sid
+            },
+            function(json){
+                if(json.status == 'ok'){
+                    window.location.hash = 'registration';
+                }
+                else{
+                } // handle error situations
+            }
+        );
+        return false;
     });
 
     $("form[name='lobby']").submit(function(obj){
