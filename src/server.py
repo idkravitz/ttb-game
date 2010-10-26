@@ -5,8 +5,9 @@ from bottle import route, run, static_file, request
 import main
 import json
 
-current_path = os.path.dirname(os.path.abspath(__file__))
-STATIC_FILES_ROOT = os.path.normpath(os.path.join(current_path, "../client/"))
+CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
+STATIC_FILES_ROOT = os.path.normpath(os.path.join(CURRENT_PATH, "../client/"))
+PORT = 80
 
 @route('/')
 def serve_main():
@@ -29,4 +30,4 @@ def serve_root_statics(filename):
 def serve_ajax():
     return main.parse_request(json.dumps(dict(request.GET)))
 
-run(host='localhost', port=80)
+run(host='localhost', port=PORT)
