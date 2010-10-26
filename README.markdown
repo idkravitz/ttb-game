@@ -12,6 +12,9 @@ of the following:
     $ sudo easy_install SQLAlchemy
     $ sudo pip install SQLAlchemy
 
+_(If your OS have multiple python installations probably your easy\_install will
+have some suffix like **-3.1**, for instance in gentoo it have a name **easy_install-3.1**)_
+
 Or if you can't or don't want to have none of this nice tools you can download 
 SQLAlchemy directly [here][sqlalchemy download] and execute:
     $ sudo python setup.py install
