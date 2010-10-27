@@ -77,6 +77,7 @@ $(document).ready(function(){
             }
         );
         returnUsername("nameInMain");
+        clearForm("register");
         return false;       // don't allow form to send POST requests
     });
 
@@ -106,4 +107,13 @@ $(document).ready(function(){
 
 function returnUsername(obj){
 	document.getElementById(obj).innerHTML = user;
+}
+
+function clearForm(obj){
+	temp = this.document.forms[obj].elements;
+	for (i = 0; i < this.document.forms[obj].length - 1; i++) {
+		temp[i].value = "";
+	}
+	$("#username_error").hide();
+	$("#password_error").hide();
 }
