@@ -49,6 +49,7 @@
                 <ul>
                     <li><a href="/#registration">Sign out</a></li>
                     <li><p>Not in game</p></li>
+                    <li><p id="nameInMain"></p></li>
                 </ul>
             </div>
 
@@ -56,8 +57,6 @@
                 <ul class="sliding-navigation">
                     <li class="sliding-element"><p class="content-caller" id="Create">Create game</p></li>
                     <li class="sliding-element"><p class="content-caller" id="Games">Active games</p></li>
-                    <li class="sliding-element"><p class="content-caller" id="Map">Upload map</p></li>
-                    <li class="sliding-element"><p class="content-caller" id="Faction">Upload faction</p></li>
                     <li class="sliding-element"><p class="content-caller" id="Army">Upload army</p></li>
                     <li class="sliding-element"><p class="content-caller" id="About">About</p></li>
                 </ul>
@@ -104,25 +103,18 @@
                 <p>Hello! I'm a pony.</p>
             </div>
 
-            <div id="contentMap" class="section-nav-result">
-                <h2>Upload map:</h2>
-            </div>
-
-            <div id="contentFaction" class="section-nav-result">
-                <h2>Upload faction:</h2>
-            </div>
-
             <div id="contentArmy" class="section-nav-result">
                 <h2>Upload army:</h2>
             </div>
 
         </section>
 
-        <section id="lobby">
+        <section id="lobby" onLoad="returnUsername()">
             <div class="menu-content">
                 <ul>
                     <li><a href="/#main">Leave game</a></li>
                     <li><p>Lobby</p></li>
+                    <li><p id="nameInLobby"></p></li>
                 </ul>
             </div>
 

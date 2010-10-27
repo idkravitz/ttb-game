@@ -1,5 +1,6 @@
 var descr;          // descriptions of toplevel sections (which behave like pages)
 var sid;
+var user;
 
 function activate(descr){
     $("#content > section").hide();
@@ -52,11 +53,12 @@ $(document).ready(function(){
 
     window.onhashchange();        // adjust page by anchor
 
-    $("#contentAbout").show();
+    $("#contentGames").show();
     $("form[name='register']").submit(function(obj){
+    	user = $("input[name='name']", this).val();
         $.getJSON('/ajax', {
                 cmd: "register",
-                username: $("input[name='name']", this).val(),
+                username: user,
                 password: $("input[name='password']", this).val()
             },
             function(text){
@@ -74,6 +76,7 @@ $(document).ready(function(){
                 }
             }
         );
+        returnUsername("nameInMain");
         return false;       // don't allow form to send POST requests
     });
 
@@ -95,7 +98,12 @@ $(document).ready(function(){
 
     $("form[name='lobby']").submit(function(obj){
         // do some ajax
+        returnUsername("nameInLobby");
         window.location.hash = 'lobby';
         return false;
     });
 });
+
+function returnUsername(obj){
+	document.getElementById(obj).innerHTML = user;
+}
