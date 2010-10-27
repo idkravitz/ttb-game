@@ -20,15 +20,12 @@
     </div>
 
     <div id="menu-wrapper">
-        <div id="menu">
-        </div>
+        <div id="menu"></div>
     </div>
 
     <section id="content">
         <section id="registration">
-            <h1>
-                Sign in with your account:
-            </h1>
+            <h1>Sign in with your account:</h1>
 
             <div class="register-form-holder">
                 <form name="register" action="/" method="post">
@@ -56,29 +53,23 @@
             </div>
 
             <nav>
-                <ul id="sliding-navigation">
-                    <li class="sliding-element"><p class="content-caller" name="Create">Create game</p></li>
-                    <li class="sliding-element"><p class="content-caller" name="Games">Active games</p></li>
-                    <li class="sliding-element"><p class="content-caller" name="About">About</p></li>
+                <ul class="sliding-navigation">
+                    <li class="sliding-element"><p class="content-caller" id="Create">Create game</p></li>
+                    <li class="sliding-element"><p class="content-caller" id="Games">Active games</p></li>
+                    <li class="sliding-element"><p class="content-caller" id="About">About</p></li>
                 </ul>
             </nav>
             
             <div class="line"></div>
 
             <div id="contentAbout" class="section-nav-result">
-                <h2>
-                    About:
-                </h2>
+                <h2>About:</h2>
 
-                <p>
-                    Hello! I'm a pony.
-                </p>
+                <p>Hello! I'm a pony.</p>
             </div>
 
             <div id="contentCreate" class="section-nav-result">
-                <h2>
-                    Create game:
-                </h2>
+                <h2>Create game:</h2>
 
                 <div class="section-main">
                     <form name="lobby" class="register-form-holder" action="/#lobby" method="post">
@@ -105,13 +96,9 @@
             </div>
 
             <div id="contentGames" class="section-nav-result">
-                <h2>
-                    Active games:
-                </h2>
+                <h2>Active games:</h2>
 
-                <p>
-                    Hello! I'm a pony.
-                </p>
+                <p>Hello! I'm a pony.</p>
             </div>
 
         </section>
@@ -126,23 +113,23 @@
 
             <div class="section-lobby">
                 <nav>
-                    <ul id="sliding-navigation">
-                        <li class="sliding-element"><p class="content-caller" name="Create">Players:</p></li>
+                    <ul class="sliding-navigation">
+                        <li class="sliding-element"><p class="content-caller">Players:</p></li>
                     </ul>
                 </nav>
             </div>
 
             <div class="section-lobby">
                 <nav>
-                    <ul id="sliding-navigation">
+                    <ul class="sliding-navigation">
                         <li class="sliding-element"><p class="content-caller">Chat:</p></li>
                     </ul>
                 </nav>
 
-                <textarea name='message' id='message'></textarea>
+                <textarea name='message'></textarea>
 
                 <p>The message:</p>
-                <input name='message' id='message'>
+                <input name='message'>
 
                 <div class="submit">
                     <input type="submit" class="send-message" value="Send">
@@ -151,7 +138,7 @@
 
             <div class="section-lobby">
                 <nav>
-                    <ul id="sliding-navigation">
+                    <ul class="sliding-navigation">
                         <li class="sliding-element"><p class="content-caller">Status:</p></li>
                     </ul>
                 </nav>
@@ -163,15 +150,15 @@
 
             <div class="section-lobby">
                 <nav>
-                    <ul id="sliding-navigation">
+                    <ul class="sliding-navigation">
                         <li class="sliding-element"><p class="content-caller">Choose army:</p></li>
                     </ul>
                 </nav>
 
                 <select name=chooseArmy>
-                    <option name="first" value="first">First</option>
-                    <option name="second" value="second">Second</option>
-                    <option name="third" value="third">Third</option>
+                    <option id="first" value="first">First</option>
+                    <option id="second" value="second">Second</option>
+                    <option id="third" value="third">Third</option>
                 </select>
             </div>
         </section>

@@ -21,7 +21,7 @@ $(document).ready(function(){
     };
     $('.content-caller').click(function(){
         $(".section-nav-result").hide();
-        $("div.section-nav-result[id^=content" + $(this).attr('name') + "]").show();
+        $("div.section-nav-result[id^=content" + $(this).attr('id') + "]").show();
     });
 
     descr = {

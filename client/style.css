@@ -5,7 +5,7 @@
 }
 
 /* Tell the browser to render HTML 5 elements as block */
-header, section, nav {
+header, section, nav, footer {
 	display: block;
 }
 
@@ -108,6 +108,7 @@ h3 {
 
 #content {
     width: 920px;
+    height: 450px;
     margin: 0 auto;
     padding: 40px 10px 20px 0;
     background: #ffffff;
@@ -207,14 +208,14 @@ nav {
     float: left;
 }
 
-ul#sliding-navigation {
+ul.sliding-navigation {
     list-style: none;
     font-size: 0.75em;
     margin: 10px 0;
     padding: 0;
 }
 
-ul#sliding-navigation li.sliding-element .content-caller {
+ul.sliding-navigation li.sliding-element .content-caller {
     display: block;
     width: 150px;
     padding: 5px 18px;
@@ -227,10 +228,9 @@ ul#sliding-navigation li.sliding-element .content-caller {
     font-size: 14px;
 }
 
-ul#sliding-navigation li.sliding-element .content-caller:hover {
+ul.sliding-navigation li.sliding-element .content-caller:hover {
     color: #ffff66;
     cursor: pointer;
-    cursor: hand;
     text-decoration: underline;
 }
 
@@ -239,8 +239,6 @@ footer {
     width: 100%;
     margin: 0 auto;
     background: url(images/footer_repeat.jpg) repeat-x;
-    position: absolute;
-    bottom: 0;
 }
 
 footer div {
