@@ -55,16 +55,18 @@ $(document).ready(function(){
 
     $("#contentGames").show();
     $("form[name='register']").submit(function(obj){
-    	user = $("input[name='name']", this).val();
+        user = $("input[name='name']", this).val();
+        var form = $(this);
         $.getJSON('/ajax', {
                 cmd: "register",
                 username: user,
-                password: $("input[name='password']", this).val()
+                password: $("input[name='password']", form).val()
             },
             function(text){
                 if (text.status == 'ok'){
                     window.location.hash = 'main';
                     sid = text.sid;
+                    clearForm(form);
                 }
                 else{
                     var active_element, message = text.message;
@@ -76,8 +78,7 @@ $(document).ready(function(){
                 }
             }
         );
-        returnUsername("nameInMain");
-        clearForm("register");
+        setUsername("#nameInMain");
         return false;       // don't allow form to send POST requests
     });
 
@@ -99,21 +100,18 @@ $(document).ready(function(){
 
     $("form[name='lobby']").submit(function(obj){
         // do some ajax
-        returnUsername("nameInLobby");
+        setUsername("#nameInLobby");
         window.location.hash = 'lobby';
         return false;
     });
 });
 
-function returnUsername(obj){
-	document.getElementById(obj).innerHTML = user;
+function setUsername(obj){
+    $(obj).html(user);
 }
 
 function clearForm(obj){
-	temp = this.document.forms[obj].elements;
-	for (i = 0; i < this.document.forms[obj].length - 1; i++) {
-		temp[i].value = "";
-	}
-	$("#username_error").hide();
-	$("#password_error").hide();
+    var form = typeof obj == "string" ? $("form[name='" + obj + "']"): $(obj);
+    $("input[type!='submit']", form).val('');
+    $(".error", form).hide();
 }
