@@ -56,11 +56,12 @@ $(document).ready(function(){
     $("#contentGames").show();
     $("form[name='register']").submit(function(obj){
         user = $("input[name='name']", this).val();
+        pass = $("input[name='password']", form).val()
         var form = $(this);
         $.getJSON('/ajax', {
                 cmd: "register",
                 username: user,
-                password: $("input[name='password']", form).val()
+                password: pass
             },
             function(text){
                 if (text.status == 'ok'){
@@ -82,7 +83,7 @@ $(document).ready(function(){
         return false;       // don't allow form to send POST requests
     });
 
-    $("#main-content a[href='/#registration']").click(function(){
+    $("#menu a[href='/#registration']").click(function(){
         $.getJSON('/ajax', {
                 cmd: "unregister",
                 sid: sid
