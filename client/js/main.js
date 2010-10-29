@@ -100,8 +100,8 @@ $(document).ready(function(){
 
     $("form[name='lobby']").submit(function(obj){
         // do some ajax
-        setUsername("#nameInLobby");
         window.location.hash = 'lobby';
+        setUsername("#nameInLobby");
         return false;
     });
 });
