@@ -145,6 +145,13 @@ h3 {
 	height: 100%;
 }
 
+.register-form-holder select {
+	width: 100%;
+	height: 25px;
+	margin: 10px;
+	font-family: inherit;
+}
+
 .section-lobby {
     float: left;
     margin: 0 0 50px 10px;
