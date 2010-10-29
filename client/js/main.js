@@ -39,6 +39,21 @@ $(document).ready(function(){
             hide: [],
             init: function() {
                 $('#menu').html($('#main > .menu-content').html());
+                $("#menu a[href='/#registration']").click(function(){
+                    $.getJSON('/ajax', {
+                        cmd: "unregister",
+                        sid: sid
+                    },
+                    function(json){
+                        if(json.status == 'ok'){
+                            window.location.hash = 'registration';
+                        }
+                        else{
+                            alert(json.message);
+                        } // handle error situations
+                    });
+                    return false;
+                });
             }
         },
         lobby: {
@@ -56,7 +71,7 @@ $(document).ready(function(){
     $("#contentGames").show();
     $("form[name='register']").submit(function(obj){
         user = $("input[name='name']", this).val();
-        pass = $("input[name='password']", form).val()
+        var pass = $("input[name='password']", form).val()
         var form = $(this);
         $.getJSON('/ajax', {
                 cmd: "register",
@@ -81,22 +96,6 @@ $(document).ready(function(){
         );
         setUsername("#nameInMain");
         return false;       // don't allow form to send POST requests
-    });
-
-    $("#menu a[href='/#registration']").click(function(){
-        $.getJSON('/ajax', {
-                cmd: "unregister",
-                sid: sid
-            },
-            function(json){
-                if(json.status == 'ok'){
-                    window.location.hash = 'registration';
-                }
-                else{
-                } // handle error situations
-            }
-        );
-        return false;
     });
 
     $("form[name='lobby']").submit(function(obj){

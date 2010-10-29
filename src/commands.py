@@ -138,6 +138,7 @@ def unregister(sid):
         pass
     else:
         leaveGame(sid, player.game.name)
+    dbi().delete(user)
     return response_ok()
 
 @debug_only
