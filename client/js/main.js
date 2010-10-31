@@ -83,6 +83,24 @@ $(document).ready(function(){
                     window.location.hash = 'main';
                     sid = text.sid;
                     clearForm(form);
+                    $.getJSON('/ajax', {
+                        cmd: "getGamesList",
+                        sid: sid
+                    },
+                    function(json){
+                        if(json.status == 'ok'){
+                            var form = $("form[name='active-games']");
+                            gamename = "";
+                            alert(json.games.length);
+                            for (i = 0; i < json.games.length; i++) {
+                                gamename += json.games[i].gameName + "\n";
+                            }
+                            $("textarea[name='games']", form).val(gamename);
+                        }
+                        else{
+                            alert(json.message);
+                        }
+                    });
                 }
                 else{
                     var active_element, message = text.message;
