@@ -98,12 +98,66 @@ $(document).ready(function(){
         return false;       // don't allow form to send POST requests
     });
 
+    $("#Create").click(function(){
+        var form = $("form[name='lobby']");
+        var a = $("select[name='chooseMap']",form).val();
+        $("select[name='chooseMap']").click(function() {
+            $.getJSON('/ajax', {
+                cmd: "getMapList",
+                sid: sid
+            },
+            function(json){
+                if(json.status == 'ok'){
+                    alert(json.maps);  //need to upload maps in bd
+                }
+                else{
+                    alert(json.message);
+                }
+            });
+            return false;
+        });
+
+        $("select[name='chooseFaction']").click(function(){
+            $.getJSON('/ajax', {
+                cmd: "getFactionList",
+                sid: sid
+            },
+            function(json){
+                if(json.status == 'ok'){
+                    alert(json.factions);  //need to upload factions in bd
+                }
+                else{
+                    alert(json.message);
+                }
+            });
+            return false;
+        });
+
+    });
+
     $("form[name='lobby']").submit(function(obj){
-        // do some ajax
-        window.location.hash = 'lobby';
+        $.getJSON('/ajax', {
+            cmd: "getPlayersList",
+            sid: sid
+        },
+        function(json){
+            if(json.status == 'ok'){
+                var form = $("form[name='formlobby']");
+                playername = "";
+                for (i = 0; i < json.players.length; i++) {
+                    playername += json.players[i].username + "\n";
+                }
+                $("textarea[name='players']", form).val(playername);
+                window.location.hash = 'lobby';
+            }
+            else{
+                alert(json.message);
+            }
+        });
         setUsername("#nameInLobby");
         return false;
     });
+
 });
 
 function setUsername(obj){
