@@ -1,31 +1,42 @@
 {
-    "sid": "Mikshinfish",
+    "sid": "Mikshinfish", 
     "status": "ok"
 }
 {
     "status": "ok"
 }
 {
-    "map": [
-        "1..",
-        ".x.",
-        "..2"
-    ],
     "status": "ok"
 }
 {
     "map": [
-        "1..",
-        ".x.",
+        "1..", 
+        ".x.", 
         "..2"
-    ],
+    ], 
     "status": "ok"
 }
 {
     "map": [
-        "1..",
-        ".x.",
+        "1..", 
+        ".x.", 
         "..2"
-    ],
+    ], 
     "status": "ok"
 }
+{
+    "maps": [
+        {
+            "map": [
+                "de_dust"
+            ]
+        }, 
+        {
+            "map": [
+                "de_rust"
+            ]
+        }
+    ], 
+    "status": "ok"
+}
+

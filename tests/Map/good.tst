@@ -12,9 +12,10 @@
 }
 
 {
-    "cmd": "getMap",
+    "cmd": "uploadMap",
     "sid": "Mikshinfish",
-    "name": "de_dust"
+    "name": "de_rust",
+    "terrain": ["1...", ".x..", "..x.", "...2"]
 }
 
 {
@@ -27,4 +28,9 @@
     "cmd": "getMap",
     "sid": "Mikshinfish",
     "name": "de_dust"
+}
+
+{
+    "cmd": "getMapList",
+    "sid": "Mikshinfish"
 }

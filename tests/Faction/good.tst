@@ -25,9 +25,34 @@
 }
 
 {
+    "cmd": "uploadFaction",
+    "sid": "GordonFreeman",
+    "factionName": "Demons",
+    "units": [
+        {
+            "name": "first",
+            "HP": 2,
+            "MP": 2,
+            "defence": 2,
+            "attack": 2,
+            "range": 2,
+            "damage": 2,
+            "protection": 2,
+            "initiative": 2,
+            "cost": 2
+        }
+    ]
+}
+
+{
     "cmd": "getFaction",
     "sid": "GordonFreeman",
     "factionName": "People"
+}
+
+{
+    "cmd": "getFactionList",
+    "sid": "GordonFreeman"
 }
 
 {

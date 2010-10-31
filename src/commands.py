@@ -318,6 +318,12 @@ def getMap(sid, name):
     return response_ok(
         map=[terrain[i:i+width] for i in range(0, len(terrain), width)])
 
+@Command(str)
+def getMapList(sid):
+    dbi().check_sid(sid)
+    maps = [{"map": name} for name in dbi().query(Map.name).all()]
+    return response_ok(maps=maps)
+
 @Command(str, str)
 def deleteMap(sid, name):
     dbi().check_sid(sid)
@@ -362,6 +368,12 @@ def getFaction(sid, factionName):
     units = [dict((attr, getattr(unit, attr)) for attr in UNIT_ATTRS)
         for unit in faction.units]
     return response_ok(unitList=units)
+
+@Command(str)
+def getFactionList(sid):
+    dbi().check_sid(sid)
+    factions = [{"faction": name} for name in dbi().query(Faction.name).all()]
+    return response_ok(factions=factions)
 
 @Command(str, str, str, list)
 def uploadArmy(sid, armyName, factionName, armyUnits):
