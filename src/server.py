@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
-import os
-from os.path import join
+from utils.path import join
 from bottle import route, run, static_file, request
 import main
 import json
 
-CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
-STATIC_FILES_ROOT = os.path.normpath(os.path.join(CURRENT_PATH, "../client/"))
+STATIC_FILES_ROOT = join("./client/")
 PORT = 80
 
 @route('/')
 def serve_main():
-    return static_file('main.html', root=STATIC_FILES_ROOT)
+    return static_file('main.html', STATIC_FILES_ROOT)
 
 @route('/js/:filename#.*\.js#')
 def serve_javascript(filename):
