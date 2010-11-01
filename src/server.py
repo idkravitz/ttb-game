@@ -28,6 +28,6 @@ def serve_root_statics(filename):
 
 @route('/ajax')
 def serve_ajax():
-    return main.parse_request(json.dumps(dict(request.GET)))
+    return main.parse_request(request.GET['data'])
 
 run(host='localhost', port=PORT)

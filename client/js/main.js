@@ -10,6 +10,10 @@ function activate(descr){
     descr.init();
 }
 
+function getJSON(data, handler){
+    $.getJSON('/ajax', { data: JSON.stringify(data) }, handler);
+}
+
 $(document).ready(function(){
     window.onhashchange = function(){          // We have a new browser only
         hash = window.location.hash.substr(1); // remove # symbol
@@ -40,7 +44,7 @@ $(document).ready(function(){
             init: function() {
                 $('#menu').html($('#main > .menu-content').html());
                 $("#menu a[href='/#registration']").click(function(){
-                    $.getJSON('/ajax', {
+                    getJSON({
                         cmd: "unregister",
                         sid: sid
                     },
@@ -73,7 +77,7 @@ $(document).ready(function(){
         user = $("input[name='name']", this).val();
         var pass = $("input[name='password']", form).val()
         var form = $(this);
-        $.getJSON('/ajax', {
+        getJSON({
                 cmd: "register",
                 username: user,
                 password: pass
@@ -83,7 +87,7 @@ $(document).ready(function(){
                     window.location.hash = 'main';
                     sid = text.sid;
                     clearForm(form);
-                    $.getJSON('/ajax', {
+                    getJSON({
                         cmd: "getGamesList",
                         sid: sid
                     },
@@ -120,7 +124,7 @@ $(document).ready(function(){
         var form = $("form[name='lobby']");
         var a = $("select[name='chooseMap']",form).val();
         $("select[name='chooseMap']").click(function() {
-            $.getJSON('/ajax', {
+            getJSON({
                 cmd: "getMapList",
                 sid: sid
             },
@@ -136,7 +140,7 @@ $(document).ready(function(){
         });
 
         $("select[name='chooseFaction']").click(function(){
-            $.getJSON('/ajax', {
+            getJSON({
                 cmd: "getFactionList",
                 sid: sid
             },
@@ -154,7 +158,7 @@ $(document).ready(function(){
     });
 
     $("form[name='lobby']").submit(function(obj){
-        $.getJSON('/ajax', {
+        getJSON({
             cmd: "getPlayersList",
             sid: sid
         },
