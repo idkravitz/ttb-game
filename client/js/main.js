@@ -123,6 +123,7 @@ $(document).ready(function(){
     $("#Create").click(function(){
         var form = $("form[name='lobby']");
         var a = $("select[name='chooseMap']",form).val();
+
         $("select[name='chooseMap']").click(function() {
             getJSON({
                 cmd: "getMapList",
@@ -155,6 +156,37 @@ $(document).ready(function(){
             return false;
         });
 
+        $("form[name='lobby']").submit(function(obj){
+            var gname = $("input[name='game-name']", form).val();
+            var cost = $("input[name='cost']", form).val();
+            var count = $("input[name='count']", form).val();
+            var form = $(this);
+            getJSON({
+                    cmd: "createGame",
+                    sid: sid,
+                    gameName: gname,
+                    mapName: "111",
+                    factionName: "222",
+                    totalCost: parseInt(cost),
+                    playersCount: parseInt(count)
+                },
+                function(text){
+                    if (text.status == 'ok'){
+                        window.location.hash = 'lobby';
+                        sid = text.sid;
+                        clearForm(form);
+                    }
+                    else{
+                        var active_element, message = text.message;
+                        $("#create_error").fadeOut(500);
+                        active_element = $("#create_error")
+                        active_element.fadeIn(500);
+                        $('span', active_element).text(message);
+                    }
+                }
+            );
+        });
+
     });
 
     $("form[name='lobby']").submit(function(obj){
@@ -170,7 +202,6 @@ $(document).ready(function(){
                     playername += json.players[i].username + "\n";
                 }
                 $("textarea[name='players']", form).val(playername);
-                window.location.hash = 'lobby';
             }
             else{
                 alert(json.message);

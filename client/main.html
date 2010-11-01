@@ -28,21 +28,19 @@
         <section id="registration">
             <h1>Sign in with your account:</h1>
 
-            <div class="register-form-holder">
-                <form name="register" action="/" method="post">
-                    <p>Your name:</p>
-                    <input type="text" name="name" class="name">
-                    <div class="error" id="username_error"><img src='/images/error.png'><span></span></div>
+            <form name="register" class="register-form-holder" action="/" method="post">
+                <p>Your name:</p>
+                <input type="text" name="name" class="name">
+                <div class="error" id="username_error"><img src='/images/error.png'><span></span></div>
 
-                    <p>Your password:</p>
-                    <input type="text" name="password" class="password">
-                    <div class="error" id="password_error"><img src='/images/error.png'><span></span></div>
+                <p>Your password:</p>
+                <input type="text" name="password" class="password">
+                <div class="error" id="password_error"><img src='/images/error.png'><span></span></div>
 
-                    <p class="submit">
-                        <input type="submit" class="send-message" value="Sign in">
-                    </p>
-                </form>
-            </div>
+                <p class="submit">
+                    <input type="submit" class="send-message" value="Sign in">
+                </p>
+            </form>
         </section >
 
         <section id="main">
@@ -75,7 +73,7 @@
                 <h2>Create game:</h2>
 
                 <div class="section-main">
-                    <form name="lobby" class="register-form-holder" action="/#lobby" method="post">
+                    <form name="lobby" class="register-form-holder" action="/" method="post">
                         <p>Name of the game:</p>
                         <input type="text" name="game-name" id="game-name">
 
@@ -98,6 +96,8 @@
 
                         <p>Players count:</p>
                         <input type="text" name="count" id="count">
+
+                        <div class="error" id="create_error"><img src='/images/error.png'><span></span></div>
 
                         <div class="submit">
                             <input type="submit" class="send-message" value="Create">
