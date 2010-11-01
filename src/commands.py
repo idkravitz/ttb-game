@@ -45,7 +45,16 @@ class Command(object):
             return function(**kwargs)
         return wraps
 
+def commandline_only(function):
+    @functools.wraps(function)
+    def wraps(**kwargs):
+        if not COMMANDLINE:
+            raise BadCommand('Command allowed only in commandline mode')
+        return function(**kwargs)
+    return wraps
+
 def debug_only(function):
+    @commandline_only
     @functools.wraps(function)
     def wraps(**kwargs):
         if not DEBUG:
@@ -283,6 +292,7 @@ def setPlayerStatus(sid, status):
     dbi().commit()
     return response_ok()
 
+@commandline_only
 @Command(str, str, list)
 def uploadMap(sid, name, terrain):
     dbi().check_sid(sid)
@@ -324,12 +334,14 @@ def getMapList(sid):
     maps = [{"map": name} for name in dbi().query(Map.name).all()]
     return response_ok(maps=maps)
 
+@commandline_only
 @Command(str, str)
 def deleteMap(sid, name):
     dbi().check_sid(sid)
     dbi().delete(dbi().get_map(name))
     return response_ok()
 
+@commandline_only
 @Command(str, str, list)
 def uploadFaction(sid, factionName, units):
     dbi().check_sid(sid)
@@ -355,6 +367,7 @@ def uploadFaction(sid, factionName, units):
     dbi().add_all(Unit(faction_id=faction.id, **unit) for unit in units)
     return response_ok()
 
+@commandline_only
 @Command(str, str)
 def deleteFaction(sid, factionName):
     dbi().check_sid(sid)

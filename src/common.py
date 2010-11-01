@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import settings
+
 JSON_DUMPS_FORMAT = {
     'sort_keys': 'true',
     'indent': 4,
 }
 
-DEBUG = False
+DEBUG = settings.DEBUG or False
+COMMANDLINE = False
 
 MAX_NAME_LENGTH = 20
 MAX_MESSAGE_LENGTH = 140
@@ -15,6 +18,7 @@ MAX_MAP_WIDTH = 100
 MAX_MAP_HEIGHT = 100
 MIN_TOTAL_COST = 1
 NO_TARGET = (-1, -1)
+
 SEED = 0
 
 import inspect

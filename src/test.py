@@ -11,6 +11,7 @@ import random
 import common
 
 common.DEBUG = True
+common.COMMANDLINE = True
 
 from main import parse_request
 from db import db_instance as dbi
