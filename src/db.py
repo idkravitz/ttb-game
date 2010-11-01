@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker, relationship, backref, join
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.ext.declarative import declarative_base
 
-from common import copy_args, DEBUG, utcnow
+from common import copy_args, DEBUG, utcnow, get_db_string
 from exceptions import *
 
 import hashlib
@@ -258,12 +258,12 @@ class Turn(Base):
 
 class Database:
     instance = None
-    engine = create_engine('sqlite:///:memory:', echo=False)
+    engine = create_engine(get_db_string(), echo=False)
 
     def __init__(self):
+        Base.metadata.create_all(self.engine)
         Session = sessionmaker(bind=self.engine)
         self.session = Session()
-        Base.metadata.create_all(bind=self.engine)
 
     def commit(self):
         self.session.commit()

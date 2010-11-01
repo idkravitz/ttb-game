@@ -47,19 +47,19 @@ class Command(object):
 
 def commandline_only(function):
     @functools.wraps(function)
-    def wraps(**kwargs):
+    def wraps(*args, **kwargs):
         if not COMMANDLINE:
             raise BadCommand('Command allowed only in commandline mode')
-        return function(**kwargs)
+        return function(*args, **kwargs)
     return wraps
 
 def debug_only(function):
     @commandline_only
     @functools.wraps(function)
-    def wraps(**kwargs):
-        if not DEBUG:
+    def wraps(*args, **kwargs):
+        if not (DEBUG or COMMANDLINE):
             raise BadCommand('Command allowed only in test mode')
-        return function(**kwargs)
+        return function(*args, **kwargs)
     return wraps
 
 def process_request(request):
@@ -72,7 +72,7 @@ def process_request(request):
 
 def response_ok(**kwargs):
     kwargs.update({'status': 'ok'})
-    return json.dumps(kwargs, **JSON_DUMPS_FORMAT)
+    return kwargs
 
 def check_len(obj, max_len, descr, cls):
     if len(obj) > max_len:

@@ -31,6 +31,12 @@ def utcnow():
     else:
         return datetime.datetime.utcnow()
 
+def get_db_string():
+    if DEBUG:
+        return 'sqlite:///:memory:'
+    else:
+        return 'sqlite:///' + (settings.DB_PATH or ':memory:')
+
 def copy_args(func):
     '''
         Decorator.

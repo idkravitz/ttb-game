@@ -5,6 +5,7 @@ import sys
 import json
 
 import commands
+from common import JSON_DUMPS_FORMAT
 from exceptions import RequestError, BadRequest
 
 def parse_request(request):
@@ -15,7 +16,7 @@ def parse_request(request):
             raise BadRequest('Error in JSON syntax')
         if not isinstance(request, dict) or not request:
             raise BadRequest('The request must be an object')
-        return commands.process_request(request)
+        return json.dumps(commands.process_request(request), **JSON_DUMPS_FORMAT)
     except RequestError as e:
         return str(e)
 

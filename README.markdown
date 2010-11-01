@@ -12,8 +12,8 @@ of the following:
     $ sudo easy_install SQLAlchemy
     $ sudo pip install SQLAlchemy
 
-_(If your OS have multiple python installations probably your easy\_install will
-have some suffix like **-3.1**, for instance in gentoo it have a name **easy_install-3.1**)_
+_(If your OS have multiple python installations probably your easy_\__install will
+have some suffix like **-3.1**, for instance in gentoo it have a name **easy_\__install-3.1**)_
 
 Or if you can't or don't want to have none of this nice tools you can download 
 SQLAlchemy directly [here][sqlalchemy download] and execute:
@@ -49,6 +49,11 @@ instance you can do it with sudo:
     $ sudo src/server.py
 
 After that you can view client at [http://localhost/](http://localhost/)
+
+Initialize Database
+-------------------
+To generate factions and other stuff you need to initialize your DB, simply run init\_database.py. Be carefull
+because it will erase your existing DB.
 
 [python download]: http://www.python.org/download/
 [sqlalchemy download]: http://www.sqlalchemy.org/download.html
