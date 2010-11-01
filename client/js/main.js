@@ -1,6 +1,7 @@
 var descr;          // descriptions of toplevel sections (which behave like pages)
 var sid;
 var user;
+var gname;
 
 function activate(descr){
     $("#content > section").hide();
@@ -66,6 +67,21 @@ $(document).ready(function(){
             hide: [],
             init: function() {
                 $('#menu').html($('#lobby > .menu-content').html());
+                $("#menu a[href='/#main']").click(function(){
+                    getJSON({
+                        cmd: "leaveGame",
+                        gameName: gname,
+                        sid: sid
+                    },
+                    function(json){
+                        if(json.status == 'ok'){
+                            window.location.hash = 'main';
+                        }
+                        else{
+                            alert(json.message);
+                    });
+                    return false;
+                });
             }
         }
     };
@@ -157,7 +173,7 @@ $(document).ready(function(){
         });
 
         $("form[name='lobby']").submit(function(obj){
-            var gname = $("input[name='game-name']", form).val();
+            gname = $("input[name='game-name']", form).val();
             var cost = $("input[name='cost']", form).val();
             var count = $("input[name='count']", form).val();
             var form = $(this);
