@@ -106,13 +106,21 @@ $(document).ready(function(){
                     },
                     function(json){
                         if(json.status == 'ok'){
-                            var form = $("form[name='active-games']");
-                            gamename = "";
-                            alert(json.games.length);
-                            for (i = 0; i < json.games.length; i++) {
-                                gamename += json.games[i].gameName + "\n";
-                            }
-                            $("textarea[name='games']", form).val(gamename);
+                            var agtable = $("#contentGames table");
+                            $('tr', agtable).not($('tr', agtable).first()).remove();
+                            $.each(json.games, function(i, v){
+                                if(v.gameStatus != 'finished')
+                                {
+                                    var row = document.createElement('tr');
+                                    $.each(["gameName", "mapName", "factionName", "gameStatus",
+                                        "playersCount", "connectedPlayersCount", "totalCost"],
+                                        function(j, key){
+                                            $(row).append('<td>' + v[key] + '</td>');
+                                        }
+                                    );
+                                    agtable.append(row);
+                                }
+                            });
                         }
                         else{
                             alert(json.message);
