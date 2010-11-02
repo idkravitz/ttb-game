@@ -141,49 +141,51 @@ $(document).ready(function(){
         var form = $("form[name='lobby']");
         var a = $("select[name='chooseMap']",form).val();
 
-        $("select[name='chooseMap']").click(function() {
-            getJSON({
-                cmd: "getMapList",
-                sid: sid
-            },
-            function(json){
-                if(json.status == 'ok'){
-                    alert(json.maps);  //need to upload maps in bd
-                }
-                else{
-                    alert(json.message);
-                }
-            });
-            return false;
+
+        getJSON({
+            cmd: "getMapList",
+            sid: sid
+        },
+        function(json){
+            if(json.status == 'ok'){
+                for (i = 0; i < json.maps.length; i++) {
+                   $('#chooseMap').append($("<option value="+i+">"+json.maps[i].map+"</option>"));
+              	}
+            }
+            else{
+                alert(json.message);
+            }
         });
 
-        $("select[name='chooseFaction']").click(function(){
-            getJSON({
-                cmd: "getFactionList",
-                sid: sid
-            },
-            function(json){
-                if(json.status == 'ok'){
-                    alert(json.factions);  //need to upload factions in bd
-                }
-                else{
-                    alert(json.message);
-                }
-            });
-            return false;
+
+        getJSON({
+            cmd: "getFactionList",
+            sid: sid
+        },
+        function(json){
+            if(json.status == 'ok'){
+                for (i = 0; i < json.factions.length; i++) {
+                   $('#chooseFaction').append($("<option value="+i+">"+json.factions[i].faction+"</option>"));
+              	}
+            }
+            else{
+                alert(json.message);
+            }
         });
 
         $("form[name='lobby']").submit(function(obj){
             gname = $("input[name='game-name']", form).val();
             var cost = $("input[name='cost']", form).val();
             var count = $("input[name='count']", form).val();
+            var map = $("select[name='mapName']", form).val();
+            var faction = $("select[name='factionName']", form).val();
             var form = $(this);
             getJSON({
                     cmd: "createGame",
                     sid: sid,
                     gameName: gname,
-                    mapName: "111",
-                    factionName: "222",
+                    mapName: map,
+                    factionName: faction,
                     totalCost: parseInt(cost),
                     playersCount: parseInt(count)
                 },
