@@ -79,6 +79,7 @@ $(document).ready(function(){
                         }
                         else{
                             alert(json.message);
+                        }
                     });
                     return false;
                 });
