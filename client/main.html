@@ -30,7 +30,7 @@
 
             <form name="register" class="register-form-holder" action="/" method="post">
                 <p>Your name:</p>
-                <input type="text" name="name" class="name">
+                <input type="text" name="username" class="name">
                 <div class="error" id="username_error"><img src='/images/error.png'><span></span></div>
 
                 <p>Your password:</p>
@@ -75,21 +75,21 @@
                 <div class="section-main">
                     <form name="lobby" class="register-form-holder" action="/" method="post">
                         <p>Name of the game:</p>
-                        <input type="text" name="game-name" id="game-name">
+                        <input type="text" name="gameName">
 
                         <p>Name of the map:</p>
-                        <select id="chooseMap" name="chooseMap">
+                        <select id="chooseMap" name="mapName">
                         </select>
 
                         <p>Name of the faction:</p>
-                        <select id="chooseFaction" name="chooseFaction">
+                        <select id="chooseFaction" name="factionName">
                         </select>
 
                         <p>Total cost:</p>
-                        <input type="text" name="cost" id="cost">
+                        <input type="text" name="totalCost" rel="int">
 
                         <p>Players count:</p>
-                        <input type="text" name="count" id="count">
+                        <input type="text" name="playersCount" rel="int">
 
                         <div class="error" id="create_error"><img src='/images/error.png'><span></span></div>
 

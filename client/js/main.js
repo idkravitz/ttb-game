@@ -91,14 +91,10 @@ $(document).ready(function(){
 
     $("#contentGames").show();
     $("form[name='register']").submit(function(obj){
-        user = $("input[name='name']", this).val();
-        var pass = $("input[name='password']", form).val()
         var form = $(this);
-        getJSON({
-                cmd: "register",
-                username: user,
-                password: pass
-            },
+        var data = grabForm(form);
+        user = data.username;
+        getJSON($.extend(data, {cmd: "register"}),
             function(text){
                 if (text.status == 'ok'){
                     window.location.hash = 'main';
@@ -175,28 +171,19 @@ $(document).ready(function(){
 
         $("form[name='lobby']").submit(function(obj){
             var form = $(this);
-            gname = $("input[name='game-name']", form).val();
-            var cost = $("input[name='cost']", form).val();
-            var count = $("input[name='count']", form).val();
-            var map = $("select[name='chooseMap'] :selected", form).text();
-            var faction = $("select[name='chooseFaction'] :selected", form).text();
-            getJSON({
+            var data = grabForm(form);
+            gname = data.gameName;
+            getJSON($.extend(data, {
                     cmd: "createGame",
                     sid: sid,
-                    gameName: gname,
-                    mapName: map,
-                    factionName: faction,
-                    totalCost: parseInt(cost),
-                    playersCount: parseInt(count)
-                },
-                function(text){
-                    if (text.status == 'ok'){
+                }),
+                function(json){
+                    if (json.status == 'ok'){
                         window.location.hash = 'lobby';
-                        sid = text.sid;
                         clearForm(form);
                     }
                     else{
-                        var active_element, message = text.message;
+                        var active_element, message = json.message;
                         $("#create_error").fadeOut(500);
                         active_element = $("#create_error")
                         active_element.fadeIn(500);
@@ -234,6 +221,17 @@ $(document).ready(function(){
 
 function setUsername(obj){
     $(obj).html(user);
+}
+
+function grabForm(form){
+    var obj = {};
+    $("input[type!='submit']", form).each(function(i, v){
+        obj[$(v).attr('name')] = $(v).attr('rel') == 'int' ? parseInt($(v).val()) : $(v).val();
+    });
+    $("select", form).each(function(i, v){
+        obj[$(v).attr('name')] = $(':selected', v).text();
+    });
+    return obj;
 }
 
 function clearForm(obj){
