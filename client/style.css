@@ -246,6 +246,23 @@ ul.sliding-navigation li.sliding-element .content-caller:hover {
     text-decoration: underline;
 }
 
+table {
+	border: 1px solid grey;
+}
+
+tr {
+	border: 1px solid grey;
+}
+
+th {
+	padding: 10px;
+	border: 1px solid grey;
+}
+
+th p {
+	font-size: 12px;
+}
+
 footer {
     clear: both;
     width: 100%;

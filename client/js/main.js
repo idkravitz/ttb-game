@@ -115,7 +115,7 @@ $(document).ready(function(){
                                     $.each(["gameName", "mapName", "factionName", "gameStatus",
                                         "playersCount", "connectedPlayersCount", "totalCost"],
                                         function(j, key){
-                                            $(row).append('<td>' + v[key] + '</td>');
+                                            $(row).append('<th><p>' + v[key] + '</p></th>');
                                         }
                                     );
                                     agtable.append(row);
