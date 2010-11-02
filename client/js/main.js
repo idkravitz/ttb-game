@@ -174,12 +174,12 @@ $(document).ready(function(){
         });
 
         $("form[name='lobby']").submit(function(obj){
+            var form = $(this);
             gname = $("input[name='game-name']", form).val();
             var cost = $("input[name='cost']", form).val();
             var count = $("input[name='count']", form).val();
-            var map = $("select[name='mapName']", form).val();
-            var faction = $("select[name='factionName']", form).val();
-            var form = $(this);
+            var map = $("select[name='chooseMap'] :selected", form).text();
+            var faction = $("select[name='chooseFaction'] :selected", form).text();
             getJSON({
                     cmd: "createGame",
                     sid: sid,
