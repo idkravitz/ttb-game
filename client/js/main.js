@@ -2,6 +2,7 @@ var descr;          // descriptions of toplevel sections (which behave like page
 var sid;
 var user;
 var gname;
+var gameToJoin;
 
 function activate(descr){
     $("#content > section").hide();
@@ -115,12 +116,36 @@ $(document).ready(function(){
                                     $.each(["gameName", "mapName", "factionName", "gameStatus",
                                         "playersCount", "connectedPlayersCount", "totalCost"],
                                         function(j, key){
-                                            $(row).append('<th><p>' + v[key] + '</p></th>');
+                                            if (key=="gameName"){
+                                            	$(row).append('<th><a href="/#lobby">' + v[key] + '</a></th>');
+                                            	gameToJoin = v[key];
+                                            }
+                                            else {
+                                            	$(row).append('<th><p>' + v[key] + '</p></th>');
+                                            }
                                         }
                                     );
                                     agtable.append(row);
                                 }
                             });
+
+                            $("#active-games a[href='/#lobby']").click(function(){
+                                getJSON({
+                                    cmd: "joinGame",
+                                    gameName: gameToJoin,
+                                    sid: sid
+                                },
+                                function(json){
+                                    if(json.status == 'ok'){
+                                        window.location.hash = 'lobby';
+                                    }
+                                    else{
+                                        alert(json.message);
+                                    }
+                                });
+                                return false;
+                            });
+
                         }
                         else{
                             alert(json.message);

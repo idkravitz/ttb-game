@@ -263,6 +263,16 @@ th p {
 	font-size: 12px;
 }
 
+th a {
+	color: #000000;
+	text-decoration: none;
+}
+
+th a:hover {
+	color: #ff00cc;
+	text-decoration: underline;
+}
+
 footer {
     clear: both;
     width: 100%;
