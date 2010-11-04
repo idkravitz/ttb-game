@@ -5,19 +5,12 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Tactical turn-based game</title>
     <link href="style.css" rel="stylesheet" type="text/css">
+    <link href="css/black-tie/jquery-ui-1.8.5.custom.css" rel="stylesheet" type="text/css">
     <script type="text/javascript" src="js/jquery-1.4.3.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.8.5.custom.min.js"></script>
     <script type="text/javascript" src="js/json2.js"></script>
     <script type="text/javascript" src="js/jquery.cookie.js" ></script>
     <script type="text/javascript" src="js/main.js" ></script>
-
-    <script type="text/javascript" src="js/jquery-ui-1.8.5.custom.min.js"></script>
-    <link href="css/black-tie/jquery-ui-1.8.5.custom.css" rel="stylesheet" type="text/css">
-    <script>
-        $(function()
-        {
-            $("input:submit, a.button").button();
-        });
-    </script>
 </head>
 
 <body>
@@ -50,6 +43,7 @@
             <p>Upload army</p>
             <p>About</p>
         </nav>
+        <div id="nav-vertical-line"></div>
 
         <section id="create-game" class="main-section">
             <form name="creation" class="register-form-holder" action="/" method="post">

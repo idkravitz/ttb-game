@@ -109,6 +109,14 @@ nav p.nav-current:hover {
     cursor: default;
 }
 
+#nav-vertical-line {
+    width: 1px;
+    height: 165px;
+    background-color: #000;
+    overflow: hidden;
+    float: left;
+}
+
 footer {
     clear: both;
     position: absolute;

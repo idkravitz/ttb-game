@@ -6,7 +6,7 @@ function describeSections()
     sections = {
         'registration': {                      // key for anchor
             body: $("#registration"),          // what section to show (maybe move in 'show')
-            hide: [$("#menu"), $("nav")],      // elements to hide
+            hide: [$("#menu"), $("nav"), $("#nav-vertical-line")], // elements to hide
             show: [],                          // elements to show
             init: initRegistration             // actions to perform after showing
         },
@@ -37,7 +37,7 @@ function describeSections()
         'lobby': {
             body: $("#lobby"),
             show: [$("#menu")],
-            hide: [$("nav")],
+            hide: [$("nav"), $("#nav-vertical-line")],
             init: initLobby
         }
     }
@@ -266,7 +266,7 @@ function initCreateGame()
 
     $('form[name="creation"]').submit(function()
     {
-        return submitForm($(this), function(json, data) 
+        return submitForm($(this), function(json, data)
         {
             session = updateCookie("session", {gameName: data.gameName});
             showSection("lobby");
@@ -375,6 +375,8 @@ $(document).ready(function()
     globalAjaxCursorChange();
     initNavigation();
     initHorzMenu();
+
+    $("input:submit, a.button").button();
 
     describeSections();
     window.onhashchange = innerShowSection;
