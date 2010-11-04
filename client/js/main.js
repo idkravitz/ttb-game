@@ -75,7 +75,9 @@ function getJSON(data, handler, error_handler)
         function (json)
         {
             if (json.status == 'ok')
+            {
                 handler(json);
+            }
             else
             {
                 if (error_handler == null)
