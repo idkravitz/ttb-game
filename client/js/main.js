@@ -67,9 +67,15 @@ function initNavigation()
     $(".main-section").hide();
     items.click(function()
     {
+        var item = $(this);
+        if (item.hasClass("nav-current")) return;
+
         $(".main-section").hide();
-        target_id = $(this).text().toLowerCase().replace(" ", "-");
+        target_id = item.text().toLowerCase().replace(" ", "-");
         $(".main-section[id=" + target_id +"]").show();
+
+        $.each(items, function() { $(this).removeClass("nav-current"); });
+        item.addClass("nav-current");
     });
 
     // add animation

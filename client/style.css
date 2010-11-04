@@ -88,7 +88,7 @@ nav p {
     padding: 5px 18px;
     margin-bottom: 5px;
     color: #999;
-    background:#222 url(images/tab_bg.jpg) repeat-y;
+    background: #222 url(images/tab_bg.jpg) repeat-y;
     border: 1px solid #1a1a1a;
     text-decoration: none;
     font-size: 14px;
@@ -98,6 +98,15 @@ nav p:hover {
     color: #ffff66;
     cursor: pointer;
     text-decoration: underline;
+}
+
+nav p.nav-current {
+    color: #ffff66;
+    text-decoration: underline;
+}
+
+nav p.nav-current:hover {
+    cursor: default;
 }
 
 footer {
