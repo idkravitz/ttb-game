@@ -13,7 +13,6 @@ def serve_main():
 
 @route('/:root#css.*|images.*|js.*#/:filename')
 def serve_dirs(root,filename):
-    print(root + filename)
     return static_file(filename, join(STATIC_FILES_ROOT, root))
 
 @route('/:filename#.*\.css#')
