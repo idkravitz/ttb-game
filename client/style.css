@@ -11,9 +11,9 @@ header, section, nav, footer {
 }
 
 /* Change cursor in AJAX requests */
-html.busy, html.busy * {  
-    cursor: wait !important;  
-}  
+html.busy, html.busy * {
+    cursor: wait !important;
+}
 
 body {
     line-height: 1.5em;
@@ -31,13 +31,40 @@ header {
 
 header p {
     width: 920px;
-    height: 172px;
+    height: 102px;
     margin: 0 auto;
-    padding: 70px 0px 0px 0px;
+    padding-top: 70px;
     color: #fff;
     font-size: 40px;
     text-align: center;
     background: url(images/header_banner.jpg) no-repeat;
+}
+
+#menu {
+    width: 100%;
+    height: 45px;
+    margin: -10px auto 0px auto;
+    background: url(images/menu_repeat.jpg) repeat-x;
+}
+
+#menu li {
+    float: right;
+    padding: 7px 30px 7px 30px;
+    margin: 0 5px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #BBB;
+}
+
+#menu li:hover {
+    background: #666;
+    color: #FFF;
+    cursor: pointer;
+}
+
+#menu li a, #menu li a:visited {
+    color: #BBB;
+    text-decoration: none;
 }
 
 #content {
@@ -61,7 +88,7 @@ nav p {
     padding: 5px 18px;
     margin-bottom: 5px;
     color: #999;
-    background:#222 url(images/tab_bg.jpg) repeat-y;
+    background: #222 url(images/tab_bg.jpg) repeat-y;
     border: 1px solid #1a1a1a;
     text-decoration: none;
     font-size: 14px;
@@ -71,6 +98,15 @@ nav p:hover {
     color: #ffff66;
     cursor: pointer;
     text-decoration: underline;
+}
+
+nav p.nav-current {
+    color: #ffff66;
+    text-decoration: underline;
+}
+
+nav p.nav-current:hover {
+    cursor: default;
 }
 
 footer {
@@ -131,7 +167,7 @@ form input[type="submit"] {
     margin: 0 auto;
 }
 
-#main .main-section {
+.main-section {
     width: 600px;
     height: 400px;
     margin: 0 0 20px 10px;
@@ -139,32 +175,32 @@ form input[type="submit"] {
     float: right;
 }
 
-#main form {
+.main-section form {
     width: 400px;
     padding: 0 15px;
 }
 
-#main form input[type="text"],
-#main form textarea {
+.main-section form input[type="text"],
+.main-section form textarea {
     width: 100%;
     padding: 5px;
-    margin: 5px;
+    margin-bottom: 5px;
 }
 
-#main form .submit
+.main-section form .submit
 {
     display: block;
     text-align: right;
 }
 
-#main form textarea {
+.main-section form textarea {
     height: 100%;
 }
 
-#main form select {
+.main-section form select {
     width: 100%;
     height: 25px;
-    margin: 10px;
+    margin-bottom: 5px;
 }
 
 /*#main .section-nav-result textarea {
@@ -208,44 +244,6 @@ h3 {
     color: #ffffff;
     font-size: 40px;
     padding: 10px 0;
-}
-
-#menu-wrapper {
-    width: 100%;
-    margin: 0 auto;
-    background: url(images/menu_repeat.jpg) repeat-x;
-}
-
-#menu {
-    width: 920px;
-    height: 45px;
-    padding: 0 10px;
-    margin: 0 auto;
-}
-
-#menu ul {
-    margin: 0px;
-    padding: 5px 0 0 0;
-    list-style: none;
-}
-
-#menu ul li {
-    float: right;
-}
-
-#menu ul li a, #menu ul li p {
-    display: inline-block;
-    padding: 5px 30px;
-    margin: 0 5px;
-    font-size: 13px;
-    font-weight: bold;
-    text-decoration: none;
-    color: #BBB;
-}
-
-#menu li a:hover {
-    background: #666;
-    color: #FFF;
 }
 
 .menu-content {

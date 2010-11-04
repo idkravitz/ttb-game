@@ -25,9 +25,9 @@
         <p>Tactical turn-based game</p>
     </header>
 
-    <div id="menu-wrapper">
-        <div id="menu"></div>
-    </div>
+    <ul id="menu">
+        <li><a id="sign-out" href="#registration">Sign out</a></li>
+    </ul>
 
     <section id="content">
 
@@ -38,60 +38,56 @@
 
                 <label for="registration-password">Password</label>
                 <input type="password" id="registration-password" name="password">
-                
+
                 <input type="submit" value="Register">
             </form>
         </section>
 
-        <section id="main">
-            <nav>
-                <p>Create game</p>
-                <p>Active games</p>
-                <p>Upload army</p>
-                <p>About</p>
-            </nav>
+        <nav>
+            <p>Create game</p>
+            <p>Active games</p>
+            <p>Upload army</p>
+            <p>About</p>
+        </nav>
 
-            <section id="create-game" class="main-section">
-                <h2>Game creation</h2>
-                <form name="creation" class="register-form-holder" action="/" method="post">
-                    <label for="creation-title">Title</label>
-                    <input type="text" id="creation-title" name="title">
+        <section id="create-game" class="main-section">
+            <form name="creation" class="register-form-holder" action="/" method="post">
+                <label for="creation-title">Name</label>
+                <input type="text" id="creation-title" name="gameName">
 
-                    <label for="creation-map">Map</label>
-                    <select id="creation-map" name="map"></select>
-                    
-                    <label for="creation-faction">Faction</label>
-                    <select id="creation-faction" name="faction"></select>
+                <label for="creation-map">Map</label>
+                <select id="creation-map" name="mapName"></select>
 
-                    <label for="creation-totalcost">Total cost</label>
-                    <input type="text" id="creation-totalcost" name="totalCost">
+                <label for="creation-faction">Faction</label>
+                <select id="creation-faction" name="factionName"></select>
 
-                    <label for="creation-playerscount">Players</label>
-                    <input type="text" id="creation-playerscount" name="playersCount">
+                <label for="creation-totalcost">Total cost</label>
+                <input type="text" id="creation-totalcost" name="totalCost" rel="int">
 
-                    <div class="submit">
-                        <input type="submit" value="Create">
-                    </div>
-                </form>
-            </section>
+                <label for="creation-playerscount">Players</label>
+                <input type="text" id="creation-playerscount" name="playersCount" rel="int">
 
-            <section id="about" class="main-section">
-                <h1>Hello, I'm a pony!</h1>
-            </section>
+                <div class="submit">
+                    <input type="submit" value="Create">
+                </div>
+            </form>
+        </section>
 
-            <section id="active-games" class="main-section">
-                <h2>Active games:</h2>
-                <table>
-                    <tr>
-                        <th>Title</th>
-                        <th>Map</th>
-                        <th>Faction</th>
-                        <th>Status</th>
-                        <th>Players</th>
-                        <th>Total cost</th>
-                    </tr>
-                </table>
-            </section>
+        <section id="about" class="main-section">
+            <h1>Hello, I'm a pony!</h1>
+        </section>
+
+        <section id="active-games" class="main-section">
+            <table>
+                <tr>
+                    <th>Title</th>
+                    <th>Status</th>
+                    <th>Players</th>
+                    <th>Map</th>
+                    <th>Faction</th>
+                    <th>Total cost</th>
+                </tr>
+            </table>
         </section>
 
         <section id="lobby">
@@ -126,7 +122,7 @@
                     <li class="sliding-element"><p class="content-caller" id="About">About</p></li>
                 </ul>
             </nav>
-            
+
             <div class="line"></div>
 
             <div id="contentAbout" class="section-nav-result">
