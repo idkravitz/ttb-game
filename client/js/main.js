@@ -155,9 +155,9 @@ function initRegistration()
 
 function initLobby()
 {
-    $("#menu li a").not($("#left-game")).parent().hide();
-    $("#left-game").parent().show();
-    $("#left-game").click(function()
+    $("#menu li a").not($("#leave-game")).hide();
+    $("#leave-game").show();
+    $("#leave-game").click(function()
     {
         getJSON(addGame(addSid({cmd:"leaveGame"})), function()
         {

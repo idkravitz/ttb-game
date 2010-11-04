@@ -62,11 +62,6 @@ header p {
     cursor: pointer;
 }
 
-#menu li a, #menu li a:visited {
-    color: #BBB;
-    text-decoration: none;
-}
-
 #content {
     width: 920px;
     height: 450px;
