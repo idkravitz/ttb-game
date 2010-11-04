@@ -284,3 +284,53 @@ h3 {
     float: left;
 }
 
+/* Lobby */
+#chat {
+    border: 1px solid;
+    height: 400px;
+    float: left;
+    overflow: auto;
+}
+.chat-message:before {
+    content: ">"
+}
+
+#chat p {
+    display: block; float: left;
+}
+
+#chat div {
+    width: 100%;
+    clear: both;
+}
+
+#players {
+    float: left;
+    border: 1px solid;
+    width: 415px;
+    height: 200px;
+    margin-left: 3px;
+}
+
+#chat, #lobby form {
+    width: 500px;
+}
+
+#lobby form {
+    clear: left;
+    margin-top: 6px;
+}
+
+#lobby form label {
+    display: block;
+}
+
+#lobby form textarea {
+    width: 100%;
+}
+
+#ready {
+    float: right;
+    top: -32px;
+    display: block;
+}

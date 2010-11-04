@@ -15,7 +15,7 @@
     <script>
         $(function()
         {
-            $("input:submit").button();
+            $("input:submit, a.button").button();
         });
     </script>
 </head>
@@ -92,6 +92,19 @@
                     </tr>
                 </table>
             </section>
+        </section>
+
+        <section id="lobby">
+            <div id="chat">
+            </div>
+            <table id="players">
+            </table>
+            <form name="message">
+                <label for="message-text">Message</label>
+                <textarea id="message-text" name="text"></textarea>
+                <input type="submit"/>
+            </form>
+            <a class="button" href="/#lobby" id="ready">Ready</a>
         </section>
 
     </section>
