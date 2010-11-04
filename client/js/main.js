@@ -282,11 +282,11 @@ function initCreateGame()
                 var array = attr + 's';
                 var select = $('#creation-' + attr);
                 select.empty();
-                for (i = 0; i < json[array].length; ++i)
+                $.each(json[array], function(i, value)
                 {
                     select.append(
-                       $('<option value="' + i + '">' + json[array][i][attr] + '</option>'));
-                }
+                       $('<option value="' + i + '">' + value[attr] + '</option>'));
+                });
             }
         );
     }
