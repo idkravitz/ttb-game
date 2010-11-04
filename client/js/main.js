@@ -45,6 +45,19 @@ function describeSections()
 
 function initLobby()
 {
+    $("#menu li a").not($("#left-game")).parent().hide();
+    $("#left-game").parent().show();
+    $("#left-game").click(function()
+    {
+        getJSON(addGame(addSid({cmd:"leaveGame"})), function()
+        {
+            delete session.gameName;
+            session = updateCookie("session", session);
+            $("#chat").html("");
+            showSection("active-games");
+        });
+        return false;
+    });
     $('form[name="message"]').submit(function()
     {
         var form = $(this);
@@ -56,14 +69,18 @@ function initLobby()
     }
     else if(!session.gameName)
     {
-        showSection("main");
+        showSection("active-games");
     }
     getLobbyState();
 }
 
 function getLobbyState()
 {
-    var command = {cmd: "getChatHistory", sid: session.sid, gameName: "test"};
+    var command = {cmd: "getChatHistory", sid: session.sid, gameName: session.gameName};
+    if(!session.gameName)
+    {
+        return;
+    }
     if(sections.lobby.last_id)
     {
         $.extend(command, { since: sections.lobby.last_id });
@@ -86,15 +103,6 @@ function getLobbyState()
         }
         setTimeout("getLobbyState()", 3000);
     });
-}
-
-function joinGame(gameName)
-{
-    getJSON(
-        {cmd:"joinGame", sid: session.sid, gameName: gameName},
-        function(json){
-        }
-    );
 }
 
 function showSection(section_name)
@@ -190,6 +198,8 @@ function initRegistration()
 
 function initActiveGames()
 {
+    $("#menu li a").not($("#sign-out")).parent().hide();
+    $("#sign-out").parent().show();
 
 }
 
