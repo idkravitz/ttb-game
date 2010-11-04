@@ -1,249 +1,154 @@
-var descr;          // descriptions of toplevel sections (which behave like pages)
-var sid;
-var user;
-var gname;
+var sections; // descriptions of toplevel sections (which behave like pages)
 
-function activate(descr){
-    $("#content > section").hide();
-    descr.section.show();
-    $.each(descr.show, function(i, v) { v.show(); });
-    $.each(descr.hide, function(i, v) { v.hide(); });
-    descr.init();
-}
-
-function getJSON(data, handler){
-    $.getJSON('/ajax', { data: JSON.stringify(data) }, handler);
-}
-
-$(document).ready(function(){
-    window.onhashchange = function(){          // We have a new browser only
-        hash = window.location.hash.substr(1); // remove # symbol
-        if(hash && hash in descr){
-            activate(descr[hash]);
-        }
-        else{
-            window.location.hash = 'registration';
-        }
-    };
-    $('.content-caller').click(function(){
-        $(".section-nav-result").hide();
-        $("div.section-nav-result[id^=content" + $(this).attr('id') + "]").show();
-    });
-
-    descr = {
-        registration: {                         // key for anchor
-            section: $('#registration'),        // what section to show (maybe move in 'show')
-            hide: [$("#menu-wrapper")],         // elements to hide
-            show: [],                           // elements to show
-            init: function() {                  // actions to perform after showing
-            }
+function describeSections()
+{
+    sections = {
+        registration: {                  // key for anchor
+            body: $("#registration"),    // what section to show (maybe move in 'show')
+            hide: [$("#menu-wrapper")],  // elements to hide
+            show: [],                    // elements to show
+            init: function() {}          // actions to perform after showing
         },
         main: {
-            section: $('#main'),
+            body: $('#main'),
             show: [$('#menu-wrapper')],
             hide: [],
-            init: function() {
-                $('#menu').html($('#main > .menu-content').html());
-                $("#menu a[href='/#registration']").click(function(){
-                    getJSON({
-                        cmd: "unregister",
-                        sid: sid
-                    },
-                    function(json){
-                        if(json.status == 'ok'){
-                            window.location.hash = 'registration';
-                        }
-                        else{
-                            alert(json.message);
-                        } // handle error situations
-                    });
-                    return false;
-                });
-            }
-        },
-        lobby: {
-            section: $('#lobby'),
-            show: [$('#menu-wrapper')],
-            hide: [],
-            init: function() {
-                $('#menu').html($('#lobby > .menu-content').html());
-                $("#menu a[href='/#main']").click(function(){
-                    getJSON({
-                        cmd: "leaveGame",
-                        gameName: gname,
-                        sid: sid
-                    },
-                    function(json){
-                        if(json.status == 'ok'){
-                            window.location.hash = 'main';
-                        }
-                        else{
-                            alert(json.message);
-                        }
-                    });
-                    return false;
-                });
-            }
+            init: function() {}
         }
-    };
-
-    window.onhashchange();        // adjust page by anchor
-
-    $("#contentGames").show();
-    $("form[name='register']").submit(function(obj){
-        var form = $(this);
-        var data = grabForm(form);
-        user = data.username;
-        getJSON($.extend(data, {cmd: "register"}),
-            function(text){
-                if (text.status == 'ok'){
-                    window.location.hash = 'main';
-                    sid = text.sid;
-                    clearForm(form);
-                    getJSON({
-                        cmd: "getGamesList",
-                        sid: sid
-                    },
-                    function(json){
-                        if(json.status == 'ok'){
-                            var agtable = $("#contentGames table");
-                            $('tr', agtable).not($('tr', agtable).first()).remove();
-                            $.each(json.games, function(i, v){
-                                if(v.gameStatus != 'finished')
-                                {
-                                    var row = document.createElement('tr');
-                                    $.each(["gameName", "mapName", "factionName", "gameStatus",
-                                        "playersCount", "connectedPlayersCount", "totalCost"],
-                                        function(j, key){
-                                            $(row).append('<td>' + v[key] + '</td>');
-                                        }
-                                    );
-                                    agtable.append(row);
-                                }
-                            });
-                        }
-                        else{
-                            alert(json.message);
-                        }
-                    });
-                }
-                else{
-                    var active_element, message = text.message;
-                    $("#username_error, #password_error").fadeOut(500);
-                    active_element = /.*username.*/i.test(message)
-                        ? $("#username_error") : $("#password_error");
-                    active_element.fadeIn(500);
-                    $('span', active_element).text(message);
-                }
-            }
-        );
-        setUsername("#nameInMain");
-        return false;       // don't allow form to send POST requests
-    });
-
-    $("#Create").click(function(){
-        var form = $("form[name='lobby']");
-        var a = $("select[name='chooseMap']",form).val();
-
-
-        getJSON({
-            cmd: "getMapList",
-            sid: sid
-        },
-        function(json){
-            if(json.status == 'ok'){
-                for (i = 0; i < json.maps.length; i++) {
-                   $('#chooseMap').append($("<option value="+i+">"+json.maps[i].map+"</option>"));
-              	}
-            }
-            else{
-                alert(json.message);
-            }
-        });
-
-
-        getJSON({
-            cmd: "getFactionList",
-            sid: sid
-        },
-        function(json){
-            if(json.status == 'ok'){
-                for (i = 0; i < json.factions.length; i++) {
-                   $('#chooseFaction').append($("<option value="+i+">"+json.factions[i].faction+"</option>"));
-              	}
-            }
-            else{
-                alert(json.message);
-            }
-        });
-
-        $("form[name='lobby']").submit(function(obj){
-            var form = $(this);
-            var data = grabForm(form);
-            gname = data.gameName;
-            getJSON($.extend(data, {
-                    cmd: "createGame",
-                    sid: sid,
-                }),
-                function(json){
-                    if (json.status == 'ok'){
-                        window.location.hash = 'lobby';
-                        clearForm(form);
-                    }
-                    else{
-                        var active_element, message = json.message;
-                        $("#create_error").fadeOut(500);
-                        active_element = $("#create_error")
-                        active_element.fadeIn(500);
-                        $('span', active_element).text(message);
-                    }
-                }
-            );
-        });
-
-    });
-
-    $("form[name='lobby']").submit(function(obj){
-        getJSON({
-            cmd: "getPlayersList",
-            sid: sid
-        },
-        function(json){
-            if(json.status == 'ok'){
-                var form = $("form[name='formlobby']");
-                playername = "";
-                for (i = 0; i < json.players.length; i++) {
-                    playername += json.players[i].username + "\n";
-                }
-                $("textarea[name='players']", form).val(playername);
-            }
-            else{
-                alert(json.message);
-            }
-        });
-        setUsername("#nameInLobby");
-        return false;
-    });
-
-});
-
-function setUsername(obj){
-    $(obj).html(user);
+    }
 }
 
-function grabForm(form){
+function showSection(section_name)
+{
+    window.location.hash = section_name;
+}
+
+function innerShowSection()
+{
+    var section_name = window.location.hash.substr(1); // remove # symbol
+    if (!section_name || !(section_name in sections))
+    {
+        section_name = "registration";
+    }
+
+    section = sections[section_name];
+    $("#content > section").hide();
+    section.body.show();
+    $.each(section.show, function(i, v) { v.show(); });
+    $.each(section.hide, function(i, v) { v.hide(); });
+    section.init();
+}
+
+function initNavigation()
+{
+    var items = $("nav > p");
+
+    $(".main-section").hide();
+    items.click(function()
+    {
+        $(".main-section").hide();
+        target_id = $(this).text().toLowerCase().replace(" ", "-");
+        $(".main-section[id=" + target_id +"]").show();
+    });
+
+    // add animation
+    var pad_out = 25;
+    var pad_in = 15;
+    items.each(function()
+    {
+        $(this).hover(function()
+        {
+            $(this).animate({ paddingLeft: pad_out }, 150);
+        },
+        function()
+        {
+            $(this).animate({ paddingLeft: pad_in }, 150);
+        });
+    });
+}
+
+function getJSON(data, handler, error_handler)
+{
+    $.getJSON(
+        '/ajax',
+        { data: JSON.stringify(data) },
+        function (json)
+        {
+            if (json.status == 'ok')
+                handler(json);
+            else
+            {
+                if (error_handler == null)
+                    error_handler = alert;
+                error_handler(json.message);
+            }
+        }
+    );
+}
+
+function globalAjaxCursorChange()   
+{  
+    $("html").bind("ajaxStart", function()
+    {  
+        $(this).addClass('busy');  
+    }).bind("ajaxStop", function()
+    {  
+        $(this).removeClass('busy');  
+    });  
+}  
+   
+function grabForm(form)
+{
     var obj = {};
-    $("input[type!='submit']", form).each(function(i, v){
+    $("input[type!='submit']", form).each(function(i, v)
+    {
         obj[$(v).attr('name')] = $(v).attr('rel') == 'int' ? parseInt($(v).val()) : $(v).val();
     });
-    $("select", form).each(function(i, v){
+    $("select", form).each(function(i, v)
+    {
         obj[$(v).attr('name')] = $(':selected', v).text();
     });
     return obj;
 }
 
-function clearForm(obj){
-    var form = typeof obj == "string" ? $("form[name='" + obj + "']"): $(obj);
-    $("input[type!='submit']", form).val('');
-    $(".error", form).hide();
+function formError(form, text)
+{
+    form.prepend('<p class="error ui-corner-all">' + '<img src="/images/error.png">' + text + '</p>');
 }
+
+$(document).ready(function()
+{
+    globalAjaxCursorChange();
+    initNavigation();
+
+    describeSections();
+    window.onhashchange = innerShowSection;
+    showSection("registration");
+
+    $("form").submit(function()
+    {
+        var form = $(this);
+        var data = grabForm(form);
+        
+        var command = "";
+        
+        if (form.attr("name") == "registration")
+        {
+            var command = { cmd: "register" };
+        }
+        
+        $(".error", form).hide();
+
+        getJSON(
+            $.extend(data, command),
+            function (json)
+            { 
+                sid = json.sid;
+                showSection("main");
+            },
+            function (message) { formError(form, message); }
+        );
+        
+        return false; // ban POST requests
+    });
+});

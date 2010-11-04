@@ -1,43 +1,189 @@
 /* Universal reset: */
-*{
-	margin: 0;
-	padding: 0;
+* {
+    margin: 0;
+    padding: 0;
+    list-style: none;
 }
 
 /* Tell the browser to render HTML 5 elements as block */
 header, section, nav, footer {
-	display: block;
+    display: block;
 }
+
+/* Change cursor in AJAX requests */
+html.busy, html.busy * {  
+    cursor: wait !important;  
+}  
 
 body {
     line-height: 1.5em;
-    font-family: Verdana;
-    font-variant: small-caps;
     font-size: 14px;
     color: #333;
-    background: #ffffff;
+    background: #fff;
 }
 
-p {
-    text-align: justify;
-}
-
-#header-wrapper {
+header {
     width: 100%;
     height: 172px;
     margin: 0 auto;
-    background: url(images/header_repeat.jpg)  repeat-x;
+    background: url(images/header_repeat.jpg) repeat-x;
 }
 
-.header-picture {
+header p {
     width: 920px;
     height: 172px;
-    padding: 0 10px;
     margin: 0 auto;
+    padding: 70px 0px 0px 0px;
+    color: #fff;
+    font-size: 40px;
+    text-align: center;
     background: url(images/header_banner.jpg) no-repeat;
 }
 
-h1 {
+#content {
+    width: 920px;
+    height: 450px;
+    margin: 0 auto;
+    padding: 40px 10px 20px 0;
+}
+
+nav {
+    float: left;
+    position: relative;
+    padding-left: 5px;
+    width: 220px;
+    margin-right: 10px;
+}
+
+nav p {
+    display: block;
+    width: 150px;
+    padding: 5px 18px;
+    margin-bottom: 5px;
+    color: #999;
+    background:#222 url(images/tab_bg.jpg) repeat-y;
+    border: 1px solid #1a1a1a;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+nav p:hover {
+    color: #ffff66;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+footer {
+    clear: both;
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    background: url(images/footer_repeat.jpg) repeat-x;
+}
+
+footer p {
+    width: 920px;
+    height: 40px;
+    padding-top: 5px;
+    margin: 0 auto;
+    text-align: center;
+    background: url(images/footer_banner.jpg) no-repeat;
+    color: #fff;
+}
+
+/* Forms */
+
+form .error {
+    width: 100%;
+    padding: 5px;
+    margin: 5px auto;
+    color: #D8000C;
+    font-size: 12px;
+    background-color: #FFBABA;
+    text-align: center;
+}
+
+form .error img {
+    vertical-align: top;
+    padding: 3px;
+}
+
+form input[type="submit"] {
+    text-align: right;
+}
+
+/* Sections */
+
+#registration {
+    width: 350px;
+    margin: 0 auto;
+}
+
+#registration form input[type="text"],
+#registration form input[type="password"] {
+    width: 100%;
+    padding: 5px 0px 5px 5px;
+    margin: 2px 0px 15px 0px;
+}
+
+#registration form input[type="submit"] {
+    display: block;
+    margin: 0 auto;
+}
+
+#main .main-section {
+    width: 600px;
+    height: 400px;
+    margin: 0 0 20px 10px;
+    padding-top: 10px;
+    float: right;
+}
+
+#main form {
+    width: 400px;
+    padding: 0 15px;
+}
+
+#main form input[type="text"],
+#main form textarea {
+    width: 100%;
+    padding: 5px;
+    margin: 5px;
+}
+
+#main form .submit
+{
+    display: block;
+    text-align: right;
+}
+
+#main form textarea {
+    height: 100%;
+}
+
+#main form select {
+    width: 100%;
+    height: 25px;
+    margin: 10px;
+}
+
+/*#main .section-nav-result textarea {
+    border: none;
+} */
+
+
+
+
+
+
+
+    
+
+/*p {
+    text-align: justify;
+} */
+
+/*h1 {
     position: relative;
     height: 40px;
     width: 260px;
@@ -45,15 +191,15 @@ h1 {
     margin-right: 10px;
     font-size: 14px;
     color: #333333;
-    background: url(images/header_h.jpg) right no-repeat;
-}
+   /* background: url(images/header_h.jpg) right no-repeat;*
+} */
 
 h2 {
     position: relative;
     padding: 10px 0 0 10px;
     margin: 0 10px 15px 0;
     font-size: 15px;
-    color: #333333;
+    color: #333;
 }
 
 h3 {
@@ -106,66 +252,19 @@ h3 {
     display: none;
 }
 
-#content {
-    width: 920px;
-    height: 450px;
-    margin: 0 auto;
-    padding: 40px 10px 20px 0;
-    background: #ffffff;
-}
-
 .section-main {
     width: 550px;
     padding: 0 15px;
 }
 
-.section-nav-result {
-    width: 600px;
-    margin: 0 0 20px 10px;
-    padding-top: 10px;
-    float: right;
-    display: none;
-    height: 400px;
-}
-
-.section-nav-result textarea {
-	border: none;
-}
-
-.register-form-holder {
-    font-variant: small-caps;
-    width: 400px;
-    padding: 0 15px;
-}
-
-.register-form-holder input, .register-form-holder textarea {
-    width: 100%;
-    font-family: inherit;
-    padding: 5px;
-    margin: 5px;
-}
-
-.register-form-holder textarea {
-	height: 100%;
-}
-
-.register-form-holder select {
-	width: 100%;
-	height: 25px;
-	margin: 10px;
-	font-family: inherit;
-}
-
 .section-lobby {
     float: left;
     margin: 0 0 50px 10px;
-    font-variant: small-caps;
     width: 220px;
 }
 
 .section-lobby textarea, .section-lobby input {
-	width: 100%;
-    font-family: inherit;
+    width: 100%;
 }
 
 .section-lobby textarea {
@@ -174,91 +273,14 @@ h3 {
 }
 
 .section-lobby select {
-	width: 95%;
-	font-family: inherit;
-}
-
-.send-message {
-    width: 140px !important;
-    font-variant: small-caps;
-    border: 1px solid black;
-    cursor: pointer;
-}
-
-.submit {
-    text-align: right;
-}
-
-.error {
-	width: 405px;
-    display: none;
-    padding: 5px;
-    margin: 5px;
-    color: #D8000C;
-    font-size: 12px;
-    background-color: #FFBABA;
-}
-
-.error img {
-	vertical-align: top;
-	padding: 2px;
+    width: 95%;
 }
 
 .line {
-	width: 1px;
-	height: 165px;
-	background-color: #000000;
-	overflow: hidden;
-	float: left;
-}
-
-nav {
-    position: relative;
-    padding-left: 5px;
-    width: 220px;
-    margin-right: 10px;
+    width: 1px;
+    height: 165px;
+    background-color: #000000;
+    overflow: hidden;
     float: left;
 }
 
-ul.sliding-navigation {
-    list-style: none;
-    font-size: 0.75em;
-    margin: 10px 0;
-    padding: 0;
-}
-
-ul.sliding-navigation li.sliding-element .content-caller {
-    display: block;
-    width: 150px;
-    padding: 5px 18px;
-    margin: 0;
-    margin-bottom: 5px;
-    color: #999;
-    background:#222 url(images/tab_bg.jpg) repeat-y;
-    border: 1px solid #1a1a1a;
-    text-decoration: none;
-    font-size: 14px;
-}
-
-ul.sliding-navigation li.sliding-element .content-caller:hover {
-    color: #ffff66;
-    cursor: pointer;
-    text-decoration: underline;
-}
-
-footer {
-    clear: both;
-    width: 100%;
-    margin: 0 auto;
-    background: url(images/footer_repeat.jpg) repeat-x;
-}
-
-footer div {
-    width: 920px;
-    height: 40px;
-    padding: 5px 10px 0 10px;
-    margin: 0 auto;
-    text-align: center;
-    background: url(images/footer_banner.jpg) no-repeat;
-    color: #ffffff;
-}
