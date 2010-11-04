@@ -25,13 +25,13 @@ class Command(object):
 
     def __call__(self, function):
         function.iscommand = True
-        argspec = inspect.getargspec(function)
+        argspec = inspect.getfullargspec(function)
         @functools.wraps(function)
         def wraps(*args, **kwargs):
             kwargs.update(zip(argspec.args, args))
             if len(kwargs) < len(argspec.args):
                 raise BadCommand('Not enough fields')
-            if len(kwargs) > len(argspec.args):
+            if (argspec.varkw is None) and len(kwargs) > len(argspec.args):
                 raise BadCommand('Too many fields')
             for name in argspec.args:
                 if name not in kwargs:
@@ -229,15 +229,20 @@ def sendMessage(sid, text, gameName):
     return response_ok()
 
 @Command(str, str)
-def getChatHistory(sid, gameName):
+def getChatHistory(sid, gameName, **opt):
     dbi().check_sid(sid)
     game = dbi().get_game(gameName)
+    if "since" in opt:
+        messages = dbi().query(Message).filter_by(game_id=game.id).filter(Message.id > int(opt["since"])).all()
+    else:
+        messages = game.messages
     chat = [{
+                "id": msg.id,
                 "username": msg.user.username,
                 "message": msg.text,
                 "time": str(msg.dateSent),
             }
-        for msg in game.messages]
+        for msg in messages]
     return response_ok(chat=chat)
 
 @Command(str)
