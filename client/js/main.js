@@ -17,8 +17,12 @@ function updateCookie(name, data)
     return setCookie(name, $.extend(readCookie(name), data));
 }
 
-function getJSON(data, handler, error_handler)
+function getJSON(data, handler, error_handler, disable_wait_cursor)
 {
+    if (disable_wait_cursor)
+    {
+        disableAjaxCursorChange();
+    }
     $.getJSON(
         "/ajax",
         { data: JSON.stringify(data) },
@@ -36,9 +40,18 @@ function getJSON(data, handler, error_handler)
             }
         }
     );
+    if (disable_wait_cursor)
+    {
+        enableAjaxCursorChange();
+    }
 }
 
-function globalAjaxCursorChange()
+function disableAjaxCursorChange()
+{
+    $("html").unbind("ajaxStart").unbind("ajaxStop");
+}
+
+function enableAjaxCursorChange()
 {
     $("html").bind("ajaxStart", function()
     {
@@ -174,37 +187,44 @@ function initLobby()
 
 function getLobbyState()
 {
-    var command = {cmd: "getChatHistory", sid: session.sid, gameName: session.gameName};
-    if(!session.gameName)
+    var command = addSid(addGame({ cmd: 'getChatHistory' }));
+    if (!session.gameName)
     {
         return;
     }
-    if(sections.lobby.last_id)
+    if (sections.lobby.last_id)
     {
         $.extend(command, { since: sections.lobby.last_id });
     }
-    getJSON(command,
-    function(json){
-        if(json.chat.length)
+    getJSON(
+        command,
+        function (json)
         {
-            sections.lobby.last_id = json.chat[json.chat.length-1].id;
-            $.each(json.chat, function(i, rec)
+            if (json.chat.length)
             {
-               var name = $(document.createElement("p")).addClass("chat-name");
-               var message = $(document.createElement("p")).addClass("chat-message");
-               name.text(rec.username);
-               message.text(rec.message);
-               var record = $(document.createElement("div"));
-               record.append(name).append(message);
-               $("#chat").append(record);
-            });
-        }
-        setTimeout("getLobbyState()", 3000);
-    });
+                sections.lobby.last_id = json.chat[json.chat.length-1].id;
+                $.each(json.chat, function(i, rec)
+                {
+                   var name = $(document.createElement("p")).addClass("chat-name");
+                   var message = $(document.createElement("p")).addClass("chat-message");
+                   name.text(rec.username);
+                   message.text(rec.message);
+                   var record = $(document.createElement("div"));
+                   record.append(name).append(message);
+                   $("#chat").append(record);
+                });
+            }
+            setTimeout("getLobbyState()", 3000);
+        },
+        null,
+        true
+    );
+    enableAjaxCursorChange();
 }
 
 function getGamesList()
 {
+    disableAjaxCursorChange();
     getJSON(
         addSid({ cmd: 'getGamesList' }),
         function (json)
@@ -243,9 +263,12 @@ function getGamesList()
             });
             empty_message.hide();
             table.show();
-        }
+        },
+        null,
+        true
     );
-    //setTimeout("getGamesList()", 3000);
+    setTimeout("getGamesList()", 3000);
+    enableAjaxCursorChange();
 }
 
 function initCreateGame()
@@ -375,7 +398,7 @@ function submitForm(form, handler)
 
 $(document).ready(function()
 {
-    globalAjaxCursorChange();
+    enableAjaxCursorChange();
     initNavigation();
     initHorzMenu();
 
