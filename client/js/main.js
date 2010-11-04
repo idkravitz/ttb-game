@@ -85,11 +85,11 @@ function innerShowSection()
 function describeSections()
 {
     sections = {
-        'registration': {                      // key for anchor
-            body: $("#registration"),          // what section to show (maybe move in 'show')
+        'registration': {                                          // key for anchor
+            body: $("#registration"),                              // what section to show (maybe move in 'show')
             hide: [$("#menu"), $("nav"), $("#nav-vertical-line")], // elements to hide
-            show: [],                          // elements to show
-            init: initRegistration             // actions to perform after showing
+            show: [],                                              // elements to show
+            init: initRegistration                                 // actions to perform after showing
         },
         'about': {
             body: $('#about'),
@@ -99,8 +99,8 @@ function describeSections()
         },
         'active-games': {
             body: $('#active-games'),
-            hide: [$('#empty-server'), $('#active-games table')],
-            show: [$('#menu'), $("nav")],
+            hide: [$('#empty-server'), $('#active-games table'), $("#left-game").parent()],
+            show: [$('#menu'), $("nav"), $("#menu li").not($("#left-game").parent())],
             init: getGamesList,
         },
         'create-game': {
@@ -117,8 +117,8 @@ function describeSections()
         },
         'lobby': {
             body: $("#lobby"),
-            show: [$("#menu")],
-            hide: [$("nav"), $("#nav-vertical-line")],
+            show: [$("#menu"), $("#left-game").parent()],
+            hide: [$("nav"), $("#nav-vertical-line"), $("#menu li").not($("#left-game").parent())],
             init: initLobby
         }
     }
@@ -142,8 +142,6 @@ function initRegistration()
 
 function initLobby()
 {
-    $("#menu li a").not($("#left-game")).parent().hide();
-    $("#left-game").parent().show();
     $("#left-game").click(function()
     {
         getJSON(addGame(addSid({cmd:"leaveGame"})), function()
@@ -175,7 +173,7 @@ function initLobby()
 function getLobbyState()
 {
     var command = {cmd: "getChatHistory", sid: session.sid, gameName: session.gameName};
-    if(!session.gameName)
+    if(!session.gameName) // Break loop, if we exit the game
     {
         return;
     }
@@ -183,8 +181,8 @@ function getLobbyState()
     {
         $.extend(command, { since: sections.lobby.last_id });
     }
-    getJSON(command,
-    function(json){
+    getJSON(command, function(json)
+    {
         if(json.chat.length)
         {
             sections.lobby.last_id = json.chat[json.chat.length-1].id;
