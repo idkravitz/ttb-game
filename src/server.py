@@ -11,13 +11,10 @@ PORT = 80
 def serve_main():
     return static_file('main.html', STATIC_FILES_ROOT)
 
-@route('/js/:filename#.*\.js#')
-def serve_javascript(filename):
-    return static_file(filename, join(STATIC_FILES_ROOT, './js/'))
-
-@route('/images/:filename')
-def serve_images(filename):
-    return static_file(filename, join(STATIC_FILES_ROOT, './images/'))
+@route('/:root#css.*|images.*|js.*#/:filename')
+def serve_dirs(root,filename):
+    print(root + filename)
+    return static_file(filename, join(STATIC_FILES_ROOT, root))
 
 @route('/:filename#.*\.css#')
 @route('/:filename#.*\.ico#')
