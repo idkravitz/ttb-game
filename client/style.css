@@ -11,9 +11,9 @@ header, section, nav, footer {
 }
 
 /* Change cursor in AJAX requests */
-html.busy, html.busy * {  
-    cursor: wait !important;  
-}  
+html.busy, html.busy * {
+    cursor: wait !important;
+}
 
 body {
     line-height: 1.5em;
@@ -184,7 +184,7 @@ form input[type="submit"] {
 #main form textarea {
     width: 100%;
     padding: 5px;
-    margin: 5px;
+    margin-bottom: 5px;
 }
 
 #main form .submit
@@ -200,7 +200,7 @@ form input[type="submit"] {
 #main form select {
     width: 100%;
     height: 25px;
-    margin: 10px;
+    margin-bottom: 5px;
 }
 
 /*#main .section-nav-result textarea {

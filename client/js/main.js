@@ -1,5 +1,5 @@
 var sections; // descriptions of toplevel sections (which behave like pages)
-var session; // session info, obtained from cookies
+var session;  // session info, obtained from cookies
 
 function describeSections()
 {
@@ -30,7 +30,7 @@ function describeSections()
 
 function showSection(section_name)
 {
-    if(getCurrentSection() == section_name)
+    if (getCurrentSection() == section_name)
     {
         return false;
     }
@@ -177,7 +177,7 @@ $(document).ready(function()
     describeSections();
     window.onhashchange = innerShowSection;
 
-    if(!showSection(getCurrentSection() || "registration"))
+    if (!showSection(getCurrentSection() || "registration"))
     {
         innerShowSection(); // force redraw to avoid artifacts
     }
@@ -194,7 +194,8 @@ $(document).ready(function()
             $.extend(data, command),
             function (json)
             {
-                session = setCookie("session",
+                session = setCookie(
+                    "session",
                     {
                         sid: json.sid,
                         username: data.username
@@ -207,4 +208,5 @@ $(document).ready(function()
 
         return false; // ban POST requests
     });
+
 });
