@@ -124,41 +124,10 @@ function describeSections()
     }
 }
 
-function initRegistration()
-{
-    $('form[name="registration"]').submit(function()
-    {
-        return submitForm(
-            $(this),
-            function(json, data)
-            {
-                session = setCookie(
-                    'session', { sid: json.sid, username: data.username });
-                showSection("active-games");
-            }
-        );
-    });
-}
+function initRegistration() { }
 
 function initLobby()
 {
-    $("#left-game").click(function()
-    {
-        getJSON(addGame(addSid({cmd:"leaveGame"})), function()
-        {
-            delete session.gameName;
-            session = updateCookie("session", session);
-            $("#chat").html("");
-            showSection("active-games");
-        });
-        return false;
-    });
-    $('form[name="message"]').submit(function()
-    {
-        var form = $(this);
-        return submitForm(form,
-            function() { $('#message-text', form).val(''); });
-    });
     if(!session)
     {
         showSection("registration");
@@ -267,15 +236,6 @@ function initCreateGame()
     }
     updateSelect('getMapList', 'map');
     updateSelect('getFactionList', 'faction');
-
-    $('form[name="creation"]').submit(function()
-    {
-        return submitForm($(this), function(json, data)
-        {
-            session = updateCookie("session", {gameName: data.gameName});
-            showSection("lobby");
-        });
-    });
 }
 
 function initNavigation()
@@ -312,12 +272,22 @@ function initNavigation()
 
 function initHorzMenu()
 {
-    $("#menu #sign-out").click(function()
+    $("#sign-out").click(function()
     {
         getJSON(
             addSid({ cmd: "unregister" }),
             function(json) { showSection("registration"); }
         );
+    });
+    $("#left-game").click(function()
+    {
+        getJSON(addGame(addSid({cmd:"leaveGame"})), function()
+        {
+            delete session.gameName;
+            session = setCookie("session", session);
+            $("#chat").html("");
+            showSection("active-games");
+        });
     });
 }
 
@@ -371,11 +341,45 @@ function submitForm(form, handler)
     return false; // ban POST requests
 }
 
+function initBinds()
+{
+    // Registration
+    $('form[name="registration"]').submit(function()
+    {
+        return submitForm($(this), function(json, data)
+            {
+                session = setCookie(
+                    'session', { sid: json.sid, username: data.username });
+                showSection("active-games");
+            }
+        );
+    });
+
+    // Create Game
+    $('form[name="creation"]').submit(function()
+    {
+        return submitForm($(this), function(json, data)
+        {
+            session = updateCookie("session", {gameName: data.gameName});
+            showSection("lobby");
+        });
+    });
+
+    // Lobby
+    $('form[name="message"]').submit(function()
+    {
+        var form = $(this);
+        return submitForm(form,
+            function() { $('#message-text', form).val(''); });
+    });
+}
+
 $(document).ready(function()
 {
     globalAjaxCursorChange();
     initNavigation();
     initHorzMenu();
+    initBinds();
 
     $("input:submit, a.button").button();
 
