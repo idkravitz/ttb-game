@@ -167,7 +167,7 @@ form input[type="submit"] {
     margin: 0 auto;
 }
 
-#main .main-section {
+.main-section {
     width: 600px;
     height: 400px;
     margin: 0 0 20px 10px;
@@ -175,29 +175,29 @@ form input[type="submit"] {
     float: right;
 }
 
-#main form {
+.main-section form {
     width: 400px;
     padding: 0 15px;
 }
 
-#main form input[type="text"],
-#main form textarea {
+.main-section form input[type="text"],
+.main-section form textarea {
     width: 100%;
     padding: 5px;
     margin-bottom: 5px;
 }
 
-#main form .submit
+.main-section form .submit
 {
     display: block;
     text-align: right;
 }
 
-#main form textarea {
+.main-section form textarea {
     height: 100%;
 }
 
-#main form select {
+.main-section form select {
     width: 100%;
     height: 25px;
     margin-bottom: 5px;

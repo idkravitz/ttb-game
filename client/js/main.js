@@ -4,26 +4,35 @@ var session;  // session info, obtained from cookies
 function describeSections()
 {
     sections = {
-        registration: {                  // key for anchor
-            body: $("#registration"),    // what section to show (maybe move in 'show')
-            hide: [$("#menu")],          // elements to hide
-            show: [],                    // elements to show
-            init: function() {}          // actions to perform after showing
+        'registration': {                      // key for anchor
+            body: $("#registration"),          // what section to show (maybe move in 'show')
+            hide: [$("#menu"), $("nav")],      // elements to hide
+            show: [],                          // elements to show
+            init: initRegistration             // actions to perform after showing
         },
-        main: {
-            body: $('#main'),
-            show: [$('#menu')],
+        'about': {
+            body: $('#about'),
             hide: [],
-            init: function()
-            {
-                $("#menu #sign-out").click(function()
-                {
-                    getJSON(
-                        addSid({ cmd: "unregister" }),
-                        function(json) { showSection("registration"); }
-                    );
-                });
-            }
+            show: [$('#menu'), $("nav")],
+            init: function() {}
+        },
+        'active-games': {
+            body: $('#active-games'),
+            hide: [],
+            show: [$('#menu'), $("nav")],
+            init: initActiveGames,
+        },
+        'create-game': {
+            body: $('#create-game'),
+            hide: [],
+            show: [$('#menu'), $("nav")],
+            init: initCreateGame,
+        },
+        'upload-army': {
+            body: $('#upload-army'),
+            hide: [],
+            show: [$('#menu'), $("nav")],
+            init: function() {}
         }
     }
 }
@@ -54,10 +63,10 @@ function innerShowSection()
 
     section = sections[section_name];
     $("#content > section").hide();
+    section.init();
     section.body.show();
     $.each(section.show, function(i, v) { v.show(); });
     $.each(section.hide, function(i, v) { v.hide(); });
-    section.init();
 }
 
 function initNavigation()
@@ -68,14 +77,12 @@ function initNavigation()
     items.click(function()
     {
         var item = $(this);
+
         if (item.hasClass("nav-current")) return;
-
-        $(".main-section").hide();
-        target_id = item.text().toLowerCase().replace(" ", "-");
-        $(".main-section[id=" + target_id +"]").show();
-
         $.each(items, function() { $(this).removeClass("nav-current"); });
         item.addClass("nav-current");
+
+        showSection(item.text().toLowerCase().replace(" ", "-"));
     });
 
     // add animation
@@ -91,6 +98,66 @@ function initNavigation()
         {
             $(this).animate({ paddingLeft: pad_in }, 150);
         });
+    });
+}
+
+function initHorzMenu()
+{
+    $("#menu #sign-out").click(function()
+    {
+        getJSON(
+            addSid({ cmd: "unregister" }),
+            function(json) { showSection("registration"); }
+        );
+    });
+}
+
+function initRegistration()
+{
+    $('form[name="registration"]').submit(function()
+    {
+        return submitForm(
+            $(this),
+            function(json, data)
+            {
+                session = setCookie(
+                    'session', { sid: json.sid, username: data.username });
+                showSection("active-games");
+            }
+        );
+    });
+}
+
+function initActiveGames()
+{
+
+}
+
+function initCreateGame()
+{
+    function updateSelect(command, attr)
+    {
+        getJSON(
+            addSid({ cmd: command }),
+            function (json)
+            {
+                var array = attr + 's';
+                var select = $('#creation-' + attr);
+                select.empty();
+                for (i = 0; i < json[array].length; ++i)
+                {
+                    select.append(
+                       $('<option value="' + i + '">' + json[array][i][attr] + '</option>'));
+                }
+            }
+        );
+    }
+    updateSelect('getMapList', 'map');
+    updateSelect('getFactionList', 'faction');
+
+    $('form[name="creation"]').submit(function()
+    {
+        return submitForm($(this), function() { showSection("lobby"); });
     });
 }
 
@@ -113,14 +180,6 @@ function getJSON(data, handler, error_handler)
             }
         }
     );
-}
-
-function getCommand(form)
-{
-    commands = {
-        registration: { cmd: "register" }
-    }
-    return commands[form.attr("name")]
 }
 
 function addSid(data)
@@ -169,10 +228,30 @@ function readCookie(name)
     return JSON.parse($.cookie(name));
 }
 
+function submitForm(form, handler)
+{
+    var data = grabForm(form);
+    var commands = {
+        registration: function () { return { cmd: 'register' }; },
+        creation: function () { return addSid({ cmd: 'createGame' }); }
+    }
+
+    alert(JSON.stringify($.extend(data, commands[form.attr('name')]())));
+    getJSON(
+        $.extend(data, commands[form.attr('name')]()),
+        function (json) { handler(json, data); },
+        function (message) { formError(form, message); }
+    );
+
+    $('.error', form).hide();
+    return false; // ban POST requests
+}
+
 $(document).ready(function()
 {
     globalAjaxCursorChange();
     initNavigation();
+    initHorzMenu();
 
     describeSections();
     window.onhashchange = innerShowSection;
@@ -181,32 +260,4 @@ $(document).ready(function()
     {
         innerShowSection(); // force redraw to avoid artifacts
     }
-
-    $("form").submit(function()
-    {
-        var form = $(this);
-        var data = grabForm(form);
-        var command = getCommand(form);
-
-        $(".error", form).hide();
-
-        getJSON(
-            $.extend(data, command),
-            function (json)
-            {
-                session = setCookie(
-                    "session",
-                    {
-                        sid: json.sid,
-                        username: data.username
-                    }
-                );
-                showSection("main");
-            },
-            function (message) { formError(form, message); }
-        );
-
-        return false; // ban POST requests
-    });
-
 });
