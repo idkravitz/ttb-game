@@ -203,83 +203,20 @@ form input[type="submit"] {
     margin-bottom: 5px;
 }
 
-/*#main .section-nav-result textarea {
-    border: none;
-} */
-
-
-
-
-
-
-
-    
-
-/*p {
-    text-align: justify;
-} */
-
-/*h1 {
-    position: relative;
-    height: 40px;
-    width: 260px;
-    padding: 10px 0 0 15px;
-    margin-right: 10px;
-    font-size: 14px;
-    color: #333333;
-   /* background: url(images/header_h.jpg) right no-repeat;*
-} */
-
-h2 {
-    position: relative;
-    padding: 10px 0 0 10px;
-    margin: 0 10px 15px 0;
-    font-size: 15px;
-    color: #333;
+#active-games table td,
+#active-games table th {
+    border: 1px solid;
+    padding: 5px;
 }
 
-h3 {
-    float: left;
-    margin: 70px 0 0 0;
-    color: #ffffff;
-    font-size: 40px;
-    padding: 10px 0;
-}
-
-.menu-content {
-    display: none;
-}
-
-.section-main {
-    width: 550px;
-    padding: 0 15px;
-}
-
-.section-lobby {
-    float: left;
-    margin: 0 0 50px 10px;
-    width: 220px;
-}
-
-.section-lobby textarea, .section-lobby input {
+#active-games table {
     width: 100%;
+    border: 1px solid;
+    border-collapse: collapse;
 }
 
-.section-lobby textarea {
-    height: 250px;
-    border: none;
-}
-
-.section-lobby select {
-    width: 95%;
-}
-
-.line {
-    width: 1px;
-    height: 165px;
-    background-color: #000000;
-    overflow: hidden;
-    float: left;
+#active-games #empty-server {
+    text-align: center;
 }
 
 /* Lobby */
@@ -294,7 +231,8 @@ h3 {
 }
 
 #chat p {
-    display: block; float: left;
+    display: block;
+    float: left;
 }
 
 #chat div {

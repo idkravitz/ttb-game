@@ -78,9 +78,10 @@
         </section>
 
         <section id="active-games" class="main-section">
+            <h1 id="empty-server">Server is empty</h1>
             <table>
                 <tr>
-                    <th>Title</th>
+                    <th>Name</th>
                     <th>Status</th>
                     <th>Players</th>
                     <th>Map</th>
@@ -91,14 +92,12 @@
         </section>
 
         <section id="lobby">
-            <div id="chat">
-            </div>
-            <table id="players">
-            </table>
+            <div id="chat"></div>
+            <table id="players"></table>
             <form name="message">
                 <label for="message-text">Message</label>
                 <textarea id="message-text" name="text"></textarea>
-                <input type="submit"/>
+                <input type="submit" value="Send" />
             </form>
             <a class="button" href="/#lobby" id="ready">Ready</a>
         </section>

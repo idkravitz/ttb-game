@@ -18,9 +18,9 @@ function describeSections()
         },
         'active-games': {
             body: $('#active-games'),
-            hide: [],
+            hide: [$('#empty-server'), $('#active-games table')],
             show: [$('#menu'), $("nav")],
-            init: initActiveGames,
+            init: getGamesList,
         },
         'create-game': {
             body: $('#create-game'),
@@ -34,7 +34,7 @@ function describeSections()
             show: [$('#menu'), $("nav")],
             init: function() {}
         },
-        lobby: {
+        'lobby': {
             body: $("#lobby"),
             show: [$("#menu")],
             hide: [$("nav")],
@@ -48,7 +48,8 @@ function initLobby()
     $('form[name="message"]').submit(function()
     {
         var form = $(this);
-        return submitForm(form, function(){ $("textarea", form).val(""); });
+        return submitForm(form,
+            function() { $('#message-text', form).val(''); });
     });
     if(!session)
     {
@@ -56,7 +57,7 @@ function initLobby()
     }
     else if(!session.gameName)
     {
-        showSection("main");
+        showSection("active-games");
     }
     getLobbyState();
 }
@@ -188,9 +189,49 @@ function initRegistration()
     });
 }
 
-function initActiveGames()
+function getGamesList()
 {
+    getJSON(
+        addSid({ cmd: 'getGamesList' }),
+        function (json)
+        {
+            var table = $('#active-games table');
+            var empty_message = $('#active-games #empty-server');
+            if (!json.games.length)
+            {
+                table.hide();
+                empty_message.show();
+                return;
+            }
 
+            $('tr', table).not($('tr', table).first()).remove();
+            $.each(json.games, function(i, game)
+            {
+                if (game.gameStatus != 'finished')
+                {
+                    var row = document.createElement('tr');
+                    var players = game.connectedPlayersCount + ' / ' + game.playersCount;
+                    var order = [
+                        game.gameName,
+                        game.gameStatus,
+                        players,
+                        game.mapName,
+                        game.factionName,
+                        game.totalCost
+                    ];
+                    $.each(order,
+                        function(j, string){
+                            $(row).append('<td>' + string + '</td>');
+                        }
+                    );
+                    table.append(row);
+                }
+            });
+            empty_message.hide();
+            table.show();
+        }
+    );
+    setTimeout("getGamesList()", 3000);
 }
 
 function initCreateGame()
