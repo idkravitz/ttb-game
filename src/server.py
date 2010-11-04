@@ -25,4 +25,4 @@ def serve_root_statics(filename):
 def serve_ajax():
     return main.parse_request(request.GET['data'])
 
-run(host='localhost', port=PORT)
+run(reloader=True, host='127.0.0.1', port=PORT)

@@ -1,4 +1,5 @@
 var sections; // descriptions of toplevel sections (which behave like pages)
+var session; // session info, obtained from cookies
 
 function describeSections()
 {
@@ -20,15 +21,26 @@ function describeSections()
 
 function showSection(section_name)
 {
+    if(getCurrentSection() == section_name)
+    {
+        return false;
+    }
     window.location.hash = section_name;
+    return true;
+}
+
+function getCurrentSection()
+{
+    return window.location.hash.substr(1); // remove # symbol
 }
 
 function innerShowSection()
 {
-    var section_name = window.location.hash.substr(1); // remove # symbol
+    var section_name = getCurrentSection();
     if (!section_name || !(section_name in sections))
     {
-        section_name = "registration";
+        window.location.hash = "registration";
+        return;
     }
 
     section = sections[section_name];
@@ -70,7 +82,7 @@ function initNavigation()
 function getJSON(data, handler, error_handler)
 {
     $.getJSON(
-        '/ajax',
+        "/ajax",
         { data: JSON.stringify(data) },
         function (json)
         {
@@ -88,17 +100,17 @@ function getJSON(data, handler, error_handler)
     );
 }
 
-function globalAjaxCursorChange()   
-{  
+function globalAjaxCursorChange()
+{
     $("html").bind("ajaxStart", function()
-    {  
-        $(this).addClass('busy');  
+    {
+        $(this).addClass('busy');
     }).bind("ajaxStop", function()
-    {  
-        $(this).removeClass('busy');  
-    });  
-}  
-   
+    {
+        $(this).removeClass('busy');
+    });
+}
+
 function grabForm(form)
 {
     var obj = {};
@@ -118,6 +130,17 @@ function formError(form, text)
     form.prepend('<p class="error ui-corner-all">' + '<img src="/images/error.png">' + text + '</p>');
 }
 
+function setCookie(name, data)
+{
+    $.cookie(name, JSON.stringify(data));
+    return data;
+}
+
+function readCookie(name)
+{
+    return JSON.parse($.cookie(name));
+}
+
 $(document).ready(function()
 {
     globalAjaxCursorChange();
@@ -125,32 +148,41 @@ $(document).ready(function()
 
     describeSections();
     window.onhashchange = innerShowSection;
-    showSection("registration");
+
+    if(!showSection(getCurrentSection() || "registration"))
+    {
+        innerShowSection(); // force redraw to avoid artifacts
+    }
 
     $("form").submit(function()
     {
         var form = $(this);
         var data = grabForm(form);
-        
+
         var command = "";
-        
+
         if (form.attr("name") == "registration")
         {
             var command = { cmd: "register" };
         }
-        
+
         $(".error", form).hide();
 
         getJSON(
             $.extend(data, command),
             function (json)
-            { 
-                sid = json.sid;
+            {
+                session = setCookie("session",
+                    {
+                        sid: json.sid,
+                        username: data.username
+                    }
+                );
                 showSection("main");
             },
             function (message) { formError(form, message); }
         );
-        
+
         return false; // ban POST requests
     });
 });
