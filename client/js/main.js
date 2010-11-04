@@ -6,15 +6,24 @@ function describeSections()
     sections = {
         registration: {                  // key for anchor
             body: $("#registration"),    // what section to show (maybe move in 'show')
-            hide: [$("#menu-wrapper")],  // elements to hide
+            hide: [$("#menu")],          // elements to hide
             show: [],                    // elements to show
             init: function() {}          // actions to perform after showing
         },
         main: {
             body: $('#main'),
-            show: [$('#menu-wrapper')],
+            show: [$('#menu')],
             hide: [],
-            init: function() {}
+            init: function()
+            {
+                $("#menu #sign-out").click(function()
+                {
+                    getJSON(
+                        addSid({ cmd: "unregister" }),
+                        function(json) { showSection("registration"); }
+                    );
+                });
+            }
         }
     }
 }
@@ -100,6 +109,19 @@ function getJSON(data, handler, error_handler)
     );
 }
 
+function getCommand(form)
+{
+    commands = {
+        registration: { cmd: "register" }
+    }
+    return commands[form.attr("name")]
+}
+
+function addSid(data)
+{
+    return $.extend(data, { sid: session.sid });
+}
+
 function globalAjaxCursorChange()
 {
     $("html").bind("ajaxStart", function()
@@ -158,13 +180,7 @@ $(document).ready(function()
     {
         var form = $(this);
         var data = grabForm(form);
-
-        var command = "";
-
-        if (form.attr("name") == "registration")
-        {
-            var command = { cmd: "register" };
-        }
+        var command = getCommand(form);
 
         $(".error", form).hide();
 
