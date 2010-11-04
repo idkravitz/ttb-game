@@ -30,16 +30,19 @@
 {
     "chat": [
         {
+            "id": 1,
             "message": "...",
             "time": "2000-01-01 00:00:00",
             "username": "Gordon"
         },
         {
+            "id": 2,
             "message": "hihihihihihihihihihihi",
             "time": "2000-01-01 00:00:00",
             "username": "Addy"
         },
         {
+            "id": 3,
             "message": "spssps",
             "time": "2000-01-01 00:00:00",
             "username": "Gordon"

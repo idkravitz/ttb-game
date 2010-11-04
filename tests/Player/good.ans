@@ -36,9 +36,11 @@
 {
     "players": [
         {
+            "status": "in_lobby",
             "username": "Gordon"
         },
         {
+            "status": "in_lobby",
             "username": "headcrab"
         }
     ],

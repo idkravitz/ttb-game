@@ -271,8 +271,8 @@ def getPlayersList(sid):
 def getPlayersListForGame(sid, gameName):
     dbi().check_sid(sid)
     game = dbi().get_game(gameName)
-    players = [{"username": player.user.username} for player in\
-        dbi().query(Player).join(Game).filter(Game.id==game.id).all()]
+    players = [{"username": player.user.username, "status": player.state}
+        for player in game.players]
     return response_ok(players=players)
 
 @Command(str, str)

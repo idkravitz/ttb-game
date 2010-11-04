@@ -36,6 +36,7 @@
 {
     "players": [
         {
+            "status": "in_lobby",
             "username": "Gordon"
         }
     ],
