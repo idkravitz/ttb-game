@@ -121,7 +121,7 @@ function describeSections()
         'active-games': {
             body: $('#active-games'),
             hide: [$("#leave-game")],
-            show: [$("#nav-vertical-line"), $('#menu'), $("nav"), $("#menu li").not($("#leave-game"))],
+            show: [$("#nav-vertical-line"), $('#menu'), $("nav"), $("#menu li").not($("#leave-game")), $('menu-le')],
             init: getGamesList,
         },
         'create-game': {
@@ -381,7 +381,7 @@ function submitForm(form, handler)
         var obj = {};
         $("input[type!='submit'], textarea", form).each(function(i, v)
         {
-            obj[$(v).attr('name')] = $(v).attr('rel') == 'int' ? parseInt($(v).val()) : $(v).val();
+            obj[$(v).attr('name')] = $(v).hasClass('int-value') ? parseInt($(v).val()) : $(v).val();
         });
         $("select", form).each(function(i, v)
         {
@@ -421,6 +421,7 @@ function initBinds()
             {
                 session = setCookie(
                     'session', { sid: json.sid, username: data.username });
+                $("#menu le").html(data.username);
                 showSection("active-games");
             }
         );

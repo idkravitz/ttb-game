@@ -47,13 +47,18 @@ header p {
     background: url(images/menu_repeat.jpg) repeat-x;
 }
 
-#menu li {
+#menu li, #menu le {
     float: right;
     padding: 7px 30px 7px 30px;
     margin: 0 5px;
     font-size: 13px;
     font-weight: bold;
     color: #BBB;
+}
+
+#menu le {
+    float: left;
+    color: #ffff66;
 }
 
 #menu li:hover {
