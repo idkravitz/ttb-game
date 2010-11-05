@@ -154,17 +154,20 @@ function getLobbyState()
     {
         if (json.chat.length)
         {
-           sections.lobby.last_id = json.chat[json.chat.length-1].id;
-           $.each(json.chat, function(i, rec)
-           {
-               var name = $(document.createElement("p")).addClass("chat-name");
-               var message = $(document.createElement("p")).addClass("chat-message");
-               name.text(rec.username);
-               message.text(rec.message);
-               var record = $(document.createElement("div"));
-               record.append(name).append(message);
-               $("#chat").append(record);
-           });
+            sections.lobby.last_id = json.chat[json.chat.length-1].id;
+            $.each(json.chat, function(i, rec)
+            {
+                $('#chat').append($('<div></div>')
+                    .append($('<p></p>')
+                        .addClass('chat-name')
+                        .text(rec.username)
+                    )
+                    .append($('<p></p>')
+                        .addClass('chat-message')
+                        .text(rec.message)
+                    )
+                );
+            });
         }
         delayedSetTimeout();
     }, null, true);
@@ -173,13 +176,15 @@ function getLobbyState()
         $("#players").html("");
         $.each(json.players, function(i, rec)
         {
-            var row = $(document.createElement("tr"));
-            var user = $(document.createElement("td"));
-            var state = $(document.createElement("td"));
-            user.text(rec.username);
-            state.text(rec.status.replace("_", " ")).addClass("state");
-            row.append(user).append(state);
-            $("#players").append(row);
+            $('#players').append($('<tr></tr>')
+                .append($('<td></td>')
+                    .text(rec.username)
+                )
+                .append($('<td></td>')
+                    .addClass('state')
+                    .text(rec.status.replace('_', ' '))
+                )
+            );
         });
         delayedSetTimeout();
     }, null, true);
@@ -209,11 +214,19 @@ function getGamesList()
             {
                 if (game.gameStatus != 'finished')
                 {
-                    var row = document.createElement('tr');
+                    var row = $('<tr></tr>');
+
+                    var name = game.gameName;
+                    if (!session.gameName &&
+                        (game.connectedPlayersCount != game.playersCount) &&
+                        (game.gameStatus == 'not_started'))
+                    {
+                        name = $('<a></a>').attr('href', '#').text(name);
+                    }
+
                     var players = game.connectedPlayersCount + ' / ' + game.playersCount;
                     var order = [
-                        session.gameName ? game.gameName:
-                            '<a href="#">' + game.gameName + '</a>' ,
+                        name,
                         game.gameStatus.replace('_', ' '),
                         players,
                         game.mapName,
@@ -221,8 +234,10 @@ function getGamesList()
                         game.totalCost
                     ];
                     $.each(order,
-                        function(j, string){
-                            $(row).append('<td>' + string + '</td>');
+                        function(j, value){
+                            $(row).append($('<td></td>')
+                                .append(value)
+                            );
                         }
                     );
                     table.append(row);
@@ -255,15 +270,12 @@ function initCreateGame()
     {
         getJSON(
             addSid({ cmd: command }),
-            function (json)
-            {
+            function (json) {
                 var array = attr + 's';
                 var select = $('#creation-' + attr);
                 select.empty();
-                $.each(json[array], function(i, value)
-                {
-                    select.append(
-                       $('<option value="' + i + '">' + value[attr] + '</option>'));
+                $.each(json[array], function(i, option) {
+                    select.append(new Option(option[attr], i));
                 });
             }
         );

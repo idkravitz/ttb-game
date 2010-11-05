@@ -215,6 +215,7 @@ form input[type="submit"] {
 #active-games table th {
     border: 1px solid;
     padding: 5px;
+    text-align: center;
 }
 
 #active-games table {
