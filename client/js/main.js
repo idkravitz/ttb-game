@@ -85,68 +85,38 @@ function getCurrentSection()
 
 function innerShowSection()
 {
-    var section_name = getCurrentSection();
-    if (!section_name || !(section_name in sections))
+    var section = getCurrentSection();
+    if (!section || !(section in sections))
     {
         window.location.hash = "registration";
         return;
     }
 
-    section = sections[section_name];
-    $("#content > section").hide();
-    section.init();
-    section.body.show();
-    $.each(section.show, function(i, v) { v.show(); });
-    $.each(section.hide, function(i, v) { v.hide(); });
+    $('#content > *, #menu, #menu > li').hide();
+    $('#' + section).show();
+    if (section != 'registration' && section != 'lobby')
+    {
+        $('nav > p').removeClass('nav-current');
+        $('#nav-' + section).addClass('nav-current');
 
-    $('nav > p').removeClass('nav-current');
-    $('#nav-' + section_name).addClass('nav-current');
-    $("#current-user").html('Welcome, ' + session.username);
+        $("#current-user").html('Welcome, ' + session.username);
+
+        $('#menu, #menu li[id!="leave-game"], nav, #nav-vertical-line').show();
+    }
+    sections[section]();
 }
 
 function describeSections()
 {
     sections = {
-        'registration': {                                          // key for anchor
-            body: $("#registration"),                              // what section to show (maybe move in 'show')
-            hide: [$("#menu"), $("nav"), $("#nav-vertical-line")], // elements to hide
-            show: [],                                              // elements to show
-            init: initRegistration                                 // actions to perform after showing
-        },
-        'about': {
-            body: $('#about'),
-            hide: [],
-            show: [$('#menu'), $("nav"), $('#current-user')],
-            init: function() {}
-        },
-        'active-games': {
-            body: $('#active-games'),
-            hide: [$("#leave-game")],
-            show: [$("#nav-vertical-line"), $('#menu'), $("nav"), $("#menu li").not($("#leave-game")), $('#current-user')],
-            init: getGamesList,
-        },
-        'create-game': {
-            body: $('#create-game'),
-            hide: [$("#leave-game")],
-            show: [$("#nav-vertical-line"), $('#menu'), $("nav"), $('#current-user')],
-            init: initCreateGame,
-        },
-        'upload-army': {
-            body: $('#upload-army'),
-            hide: [],
-            show: [$("#nav-vertical-line"), $('#menu'), $("nav"), $('#current-user')],
-            init: function() {}
-        },
-        'lobby': {
-            body: $("#lobby"),
-            show: [$("#menu"), $("#leave-game")],
-            hide: [$("nav"), $("#nav-vertical-line"), $("#menu li").not($("#leave-game")), $('#current-user')],
-            init: initLobby
-        }
+        'registration': $.noop(),
+        'about': $.noop(),
+        'active-games': getGamesList,
+        'create-game': initCreateGame,
+        'upload-army': $.noop(),
+        'lobby': function () { $('#menu, #leave-game').show(); initLobby(); }
     }
 }
-
-function initRegistration() { }
 
 function initLobby()
 {
