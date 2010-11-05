@@ -121,7 +121,7 @@ function describeSections()
         'active-games': {
             body: $('#active-games'),
             hide: [$('#empty-server'), $('#active-games table'), $("#leave-game")],
-            show: [$('#menu'), $("nav"), $("#menu li").not($("#leave-game"))],
+            show: [$('#menu'), $("nav"), $("#menu li").not($("#leave-game")), $("#menu le")],
             init: getGamesList,
         },
         'create-game': {
@@ -403,6 +403,7 @@ function initBinds()
             {
                 session = setCookie(
                     'session', { sid: json.sid, username: data.username });
+                $("#menu le").html(data.username);
                 showSection("active-games");
             }
         );
