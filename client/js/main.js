@@ -368,7 +368,7 @@ function submitForm(form, handler)
         var obj = {};
         $("input[type!='submit'], textarea", form).each(function(i, v)
         {
-            obj[$(v).attr('name')] = $(v).attr('rel') == 'int' ? parseInt($(v).val()) : $(v).val();
+            obj[$(v).attr('name')] = $(v).hasClass('int-value') ? parseInt($(v).val()) : $(v).val();
         });
         $("select", form).each(function(i, v)
         {
