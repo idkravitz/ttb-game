@@ -231,11 +231,11 @@ function getGamesList()
             $('a', table).click(joinGame);
             empty_message.hide();
             table.show();
+            setTimeout("getGamesList()", 3000);
         },
         null,
         true
     );
-    setTimeout("getGamesList()", 3000);
 }
 
 function joinGame()
