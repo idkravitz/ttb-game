@@ -157,15 +157,9 @@ function getLobbyState()
             sections.lobby.last_id = json.chat[json.chat.length-1].id;
             $.each(json.chat, function(i, rec)
             {
-                $('#chat').append($('<div></div>')
-                    .append($('<p></p>')
-                        .addClass('chat-name')
-                        .text(rec.username)
-                    )
-                    .append($('<p></p>')
-                        .addClass('chat-message')
-                        .text(rec.message)
-                    )
+                $('#chat').append($('<div/>')
+                    .append($('<p/>', {class: 'chat-name', text: rec.username}))
+                    .append($('<p/>', {class: 'chat-message', text: rec.message}))
                 );
             });
         }
@@ -176,14 +170,9 @@ function getLobbyState()
         $("#players").html("");
         $.each(json.players, function(i, rec)
         {
-            $('#players').append($('<tr></tr>')
-                .append($('<td></td>')
-                    .text(rec.username)
-                )
-                .append($('<td></td>')
-                    .addClass('state')
-                    .text(rec.status.replace('_', ' '))
-                )
+            $('#players').append($('<tr/>')
+                .append($('<td/>', {text: rec.username}))
+                .append($('<td/>', {class: 'state', text: rec.status.replace('_', ' ')}))
             );
         });
         delayedSetTimeout();
@@ -214,14 +203,14 @@ function getGamesList()
             {
                 if (game.gameStatus != 'finished')
                 {
-                    var row = $('<tr></tr>');
+                    var row = $('<tr/>');
 
                     var name = game.gameName;
                     if (!session.gameName &&
                         (game.connectedPlayersCount != game.playersCount) &&
                         (game.gameStatus == 'not_started'))
                     {
-                        name = $('<a></a>').attr('href', '#').text(name);
+                        name = $('<a/>', {href: '#', text: name});
                     }
 
                     var players = game.connectedPlayersCount + ' / ' + game.playersCount;
@@ -235,8 +224,8 @@ function getGamesList()
                     ];
                     $.each(order,
                         function(j, value){
-                            $(row).append($('<td></td>')
-                                .append(value)
+                            $(row).append(
+                                $('<td/>').append(value)
                             );
                         }
                     );
@@ -355,11 +344,9 @@ function submitForm(form, handler)
     function formError(form, text)
     {
         $('.error', form).remove();
-        form.prepend($('<p></p>')
-            .addClass('error ui-corner-all')
-            .append($('<img/>')
-                .attr({ src: '/images/error.png' })
-            )
+        form.prepend(
+            $('<p/>', {class: 'error ui-corner-all'})
+            .append($('<img/>', { src: '/images/error.png' }))
             .append(text)
         );
     }
