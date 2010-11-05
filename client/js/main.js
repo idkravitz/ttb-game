@@ -109,11 +109,11 @@ function innerShowSection()
 function describeSections()
 {
     sections = {
-        'registration': $.noop(),
-        'about': $.noop(),
+        'registration': $.noop,
+        'about': $.noop,
         'active-games': getGamesList,
         'create-game': initCreateGame,
-        'upload-army': $.noop(),
+        'upload-army': $.noop,
         'lobby': function () { $('#menu, #leave-game').show(); initLobby(); }
     }
 }
