@@ -216,7 +216,7 @@ function getLobbyState()
 
 function getGamesList()
 {
-    if(!session)
+    if(getCurrentSection() != "active-games")
     {
         return;
     }
