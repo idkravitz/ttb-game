@@ -101,11 +101,11 @@ function innerShowSection()
 function describeSections()
 {
     sections = {
-        'registration': {                      // key for anchor
-            body: $("#registration"),          // what section to show (maybe move in 'show')
+        'registration': {                                          // key for anchor
+            body: $("#registration"),                              // what section to show (maybe move in 'show')
             hide: [$("#menu"), $("nav"), $("#nav-vertical-line")], // elements to hide
-            show: [],                          // elements to show
-            init: initRegistration             // actions to perform after showing
+            show: [],                                              // elements to show
+            init: initRegistration                                 // actions to perform after showing
         },
         'about': {
             body: $('#about'),
@@ -115,8 +115,8 @@ function describeSections()
         },
         'active-games': {
             body: $('#active-games'),
-            hide: [$('#empty-server'), $('#active-games table')],
-            show: [$('#menu'), $("nav")],
+            hide: [$('#empty-server'), $('#active-games table'), $("#leave-game")],
+            show: [$('#menu'), $("nav"), $("#menu li").not($("#leave-game"))],
             init: getGamesList,
         },
         'create-game': {
@@ -133,50 +133,17 @@ function describeSections()
         },
         'lobby': {
             body: $("#lobby"),
-            show: [$("#menu")],
-            hide: [$("nav"), $("#nav-vertical-line")],
+            show: [$("#menu"), $("#leave-game")],
+            hide: [$("nav"), $("#nav-vertical-line"), $("#menu li").not($("#leave-game"))],
             init: initLobby
         }
     }
 }
 
-function initRegistration()
-{
-    $('form[name="registration"]').submit(function()
-    {
-        return submitForm(
-            $(this),
-            function(json, data)
-            {
-                session = setCookie(
-                    'session', { sid: json.sid, username: data.username });
-                showSection("active-games");
-            }
-        );
-    });
-}
+function initRegistration() { }
 
 function initLobby()
 {
-    $("#menu li a").not($("#leave-game")).hide();
-    $("#leave-game").show();
-    $("#leave-game").click(function()
-    {
-        getJSON(addGame(addSid({cmd:"leaveGame"})), function()
-        {
-            delete session.gameName;
-            session = updateCookie("session", session);
-            $("#chat").html("");
-            showSection("active-games");
-        });
-        return false;
-    });
-    $('form[name="message"]').submit(function()
-    {
-        var form = $(this);
-        return submitForm(form,
-            function() { $('#message-text', form).val(''); });
-    });
     if(!session)
     {
         showSection("registration");
@@ -191,7 +158,7 @@ function initLobby()
 function getLobbyState()
 {
     var command = addSid(addGame({ cmd: 'getChatHistory' }));
-    if (!session.gameName)
+    if(!session.gameName) // Break loop, if we exit the game
     {
         return;
     }
@@ -222,12 +189,10 @@ function getLobbyState()
         null,
         true
     );
-    enableAjaxCursorChange();
 }
 
 function getGamesList()
 {
-    disableAjaxCursorChange();
     getJSON(
         addSid({ cmd: 'getGamesList' }),
         function (json)
@@ -271,7 +236,6 @@ function getGamesList()
         true
     );
     setTimeout("getGamesList()", 3000);
-    enableAjaxCursorChange();
 }
 
 function initCreateGame()
@@ -295,15 +259,6 @@ function initCreateGame()
     }
     updateSelect('getMapList', 'map');
     updateSelect('getFactionList', 'faction');
-
-    $('form[name="creation"]').submit(function()
-    {
-        return submitForm($(this), function(json, data)
-        {
-            session = updateCookie("session", {gameName: data.gameName});
-            showSection("lobby");
-        });
-    });
 }
 
 function initNavigation()
@@ -340,12 +295,22 @@ function initNavigation()
 
 function initHorzMenu()
 {
-    $("#menu #sign-out").click(function()
+    $("#sign-out").click(function()
     {
         getJSON(
             addSid({ cmd: "unregister" }),
             function(json) { showSection("registration"); }
         );
+    });
+    $("#left-game").click(function()
+    {
+        getJSON(addGame(addSid({cmd:"leaveGame"})), function()
+        {
+            delete session.gameName;
+            session = setCookie("session", session);
+            $("#chat").html("");
+            showSection("active-games");
+        });
     });
 }
 
@@ -399,11 +364,45 @@ function submitForm(form, handler)
     return false; // ban POST requests
 }
 
+function initBinds()
+{
+    // Registration
+    $('form[name="registration"]').submit(function()
+    {
+        return submitForm($(this), function(json, data)
+            {
+                session = setCookie(
+                    'session', { sid: json.sid, username: data.username });
+                showSection("active-games");
+            }
+        );
+    });
+
+    // Create Game
+    $('form[name="creation"]').submit(function()
+    {
+        return submitForm($(this), function(json, data)
+        {
+            session = updateCookie("session", {gameName: data.gameName});
+            showSection("lobby");
+        });
+    });
+
+    // Lobby
+    $('form[name="message"]').submit(function()
+    {
+        var form = $(this);
+        return submitForm(form,
+            function() { $('#message-text', form).val(''); });
+    });
+}
+
 $(document).ready(function()
 {
     enableAjaxCursorChange();
     initNavigation();
     initHorzMenu();
+    initBinds();
 
     $("input:submit, a.button").button();
 
