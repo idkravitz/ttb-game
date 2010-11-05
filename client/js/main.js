@@ -101,6 +101,7 @@ function innerShowSection()
 
     $('nav > p').removeClass('nav-current');
     $('#nav-' + section_name).addClass('nav-current');
+    $("#current-user").html('Welcome, ' + session.username);
 }
 
 function describeSections()
@@ -115,31 +116,31 @@ function describeSections()
         'about': {
             body: $('#about'),
             hide: [],
-            show: [$('#menu'), $("nav")],
+            show: [$('#menu'), $("nav"), $('#current-user')],
             init: function() {}
         },
         'active-games': {
             body: $('#active-games'),
             hide: [$("#leave-game")],
-            show: [$("#nav-vertical-line"), $('#menu'), $("nav"), $("#menu li").not($("#leave-game")), $('menu-le')],
+            show: [$("#nav-vertical-line"), $('#menu'), $("nav"), $("#menu li").not($("#leave-game")), $('#current-user')],
             init: getGamesList,
         },
         'create-game': {
             body: $('#create-game'),
             hide: [$("#leave-game")],
-            show: [$("#nav-vertical-line"), $('#menu'), $("nav")],
+            show: [$("#nav-vertical-line"), $('#menu'), $("nav"), $('#current-user')],
             init: initCreateGame,
         },
         'upload-army': {
             body: $('#upload-army'),
             hide: [],
-            show: [$("#nav-vertical-line"), $('#menu'), $("nav")],
+            show: [$("#nav-vertical-line"), $('#menu'), $("nav"), $('#current-user')],
             init: function() {}
         },
         'lobby': {
             body: $("#lobby"),
             show: [$("#menu"), $("#leave-game")],
-            hide: [$("nav"), $("#nav-vertical-line"), $("#menu li").not($("#leave-game"))],
+            hide: [$("nav"), $("#nav-vertical-line"), $("#menu li").not($("#leave-game")), $('#current-user')],
             init: initLobby
         }
     }
@@ -421,7 +422,6 @@ function initBinds()
             {
                 session = setCookie(
                     'session', { sid: json.sid, username: data.username });
-                $("#menu le").html(data.username);
                 showSection("active-games");
             }
         );

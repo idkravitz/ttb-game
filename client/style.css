@@ -47,7 +47,7 @@ header p {
     background: url(images/menu_repeat.jpg) repeat-x;
 }
 
-#menu li, #menu le {
+#menu li {
     float: right;
     padding: 7px 30px 7px 30px;
     margin: 0 5px;
@@ -56,12 +56,12 @@ header p {
     color: #BBB;
 }
 
-#menu le {
+#menu #current-user {
     float: left;
     color: #ffff66;
 }
 
-#menu li:hover {
+#menu li.menu-link:hover {
     background: #666;
     color: #FFF;
     cursor: pointer;
