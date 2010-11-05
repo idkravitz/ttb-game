@@ -7,6 +7,11 @@ function setCookie(name, data)
     return data;
 }
 
+function deleteCookie(name)
+{
+    $.cookie(name, null);
+}
+
 function readCookie(name)
 {
     return JSON.parse($.cookie(name));
@@ -17,8 +22,12 @@ function updateCookie(name, data)
     return setCookie(name, $.extend(readCookie(name), data));
 }
 
-function getJSON(data, handler, error_handler)
+function getJSON(data, handler, error_handler, disable_wait_cursor)
 {
+    if (disable_wait_cursor)
+    {
+        disableAjaxCursorChange();
+    }
     $.getJSON(
         "/ajax",
         { data: JSON.stringify(data) },
@@ -36,9 +45,18 @@ function getJSON(data, handler, error_handler)
             }
         }
     );
+    if (disable_wait_cursor)
+    {
+        enableAjaxCursorChange();
+    }
 }
 
-function globalAjaxCursorChange()
+function disableAjaxCursorChange()
+{
+    $("html").unbind("ajaxStart").unbind("ajaxStop");
+}
+
+function enableAjaxCursorChange()
 {
     $("html").bind("ajaxStart", function()
     {
@@ -80,6 +98,9 @@ function innerShowSection()
     section.body.show();
     $.each(section.show, function(i, v) { v.show(); });
     $.each(section.hide, function(i, v) { v.hide(); });
+
+    $('nav > p').removeClass('nav-current');
+    $('#nav-' + section_name).addClass('nav-current');
 }
 
 function describeSections()
@@ -99,8 +120,8 @@ function describeSections()
         },
         'active-games': {
             body: $('#active-games'),
-            hide: [$('#empty-server'), $('#active-games table'), $("#left-game").parent()],
-            show: [$('#menu'), $("nav"), $("#menu li").not($("#left-game").parent())],
+            hide: [$('#empty-server'), $('#active-games table'), $("#leave-game")],
+            show: [$('#menu'), $("nav"), $("#menu li").not($("#leave-game"))],
             init: getGamesList,
         },
         'create-game': {
@@ -117,8 +138,8 @@ function describeSections()
         },
         'lobby': {
             body: $("#lobby"),
-            show: [$("#menu"), $("#left-game").parent()],
-            hide: [$("nav"), $("#nav-vertical-line"), $("#menu li").not($("#left-game").parent())],
+            show: [$("#menu"), $("#leave-game")],
+            hide: [$("nav"), $("#nav-vertical-line"), $("#menu li").not($("#leave-game"))],
             init: initLobby
         }
     }
@@ -141,7 +162,7 @@ function initLobby()
 
 function getLobbyState()
 {
-    var command = {cmd: "getChatHistory", sid: session.sid, gameName: session.gameName};
+    var command = addSid(addGame({ cmd: 'getChatHistory' }));
     var calls = 2;
     function delayedSetTimeout()
     {
@@ -154,17 +175,17 @@ function getLobbyState()
     {
         return;
     }
-    if(sections.lobby.last_id)
+    if (sections.lobby.last_id)
     {
         $.extend(command, { since: sections.lobby.last_id });
     }
-    getJSON(command, function(json)
+    getJSON(command, function (json)
     {
-        if(json.chat.length)
+        if (json.chat.length)
         {
-            sections.lobby.last_id = json.chat[json.chat.length-1].id;
-            $.each(json.chat, function(i, rec)
-            {
+           sections.lobby.last_id = json.chat[json.chat.length-1].id;
+           $.each(json.chat, function(i, rec)
+           {
                var name = $(document.createElement("p")).addClass("chat-name");
                var message = $(document.createElement("p")).addClass("chat-message");
                name.text(rec.username);
@@ -172,10 +193,10 @@ function getLobbyState()
                var record = $(document.createElement("div"));
                record.append(name).append(message);
                $("#chat").append(record);
-            });
+           });
         }
         delayedSetTimeout();
-    });
+    }, null, true);
     getJSON(addGame(addSid({cmd:"getPlayersListForGame"})), function(json)
     {
         $("#players").html("");
@@ -190,11 +211,15 @@ function getLobbyState()
             $("#players").append(row);
         });
         delayedSetTimeout();
-    });
+    }, null, true);
 }
 
 function getGamesList()
 {
+    if(!session)
+    {
+        return;
+    }
     getJSON(
         addSid({ cmd: 'getGamesList' }),
         function (json)
@@ -233,9 +258,11 @@ function getGamesList()
             });
             empty_message.hide();
             table.show();
-        }
+        },
+        null,
+        true
     );
-    //setTimeout("getGamesList()", 3000);
+    setTimeout("getGamesList()", 3000);
 }
 
 function initCreateGame()
@@ -249,11 +276,11 @@ function initCreateGame()
                 var array = attr + 's';
                 var select = $('#creation-' + attr);
                 select.empty();
-                for (i = 0; i < json[array].length; ++i)
+                $.each(json[array], function(i, value)
                 {
                     select.append(
-                       $('<option value="' + i + '">' + json[array][i][attr] + '</option>'));
-                }
+                       $('<option value="' + i + '">' + value[attr] + '</option>'));
+                });
             }
         );
     }
@@ -274,7 +301,7 @@ function initNavigation()
         $.each(items, function() { $(this).removeClass("nav-current"); });
         item.addClass("nav-current");
 
-        showSection(item.text().toLowerCase().replace(" ", "-"));
+        showSection(item.attr('id').substring(4)); // strip 'nav-' prefix
     });
 
     // add animation
@@ -297,18 +324,21 @@ function initHorzMenu()
 {
     $("#sign-out").click(function()
     {
-        getJSON(
-            addSid({ cmd: "unregister" }),
-            function(json) { showSection("registration"); }
-        );
+        getJSON(addSid({ cmd: "unregister" }), function(json)
+        {
+            session = null;
+            deleteCookie("session");
+            showSection("registration"); 
+        });
     });
-    $("#left-game").click(function()
+    $("#leave-game").click(function()
     {
         getJSON(addGame(addSid({cmd:"leaveGame"})), function()
         {
             delete session.gameName;
             session = setCookie("session", session);
             $("#chat").html("");
+            $("#players").html("");
             showSection("active-games");
         });
     });
@@ -399,7 +429,7 @@ function initBinds()
 
 $(document).ready(function()
 {
-    globalAjaxCursorChange();
+    enableAjaxCursorChange();
     initNavigation();
     initHorzMenu();
     initBinds();
