@@ -120,20 +120,20 @@ function describeSections()
         },
         'active-games': {
             body: $('#active-games'),
-            hide: [$('#empty-server'), $('#active-games table'), $("#leave-game")],
-            show: [$('#menu'), $("nav"), $("#menu li").not($("#leave-game"))],
+            hide: [$("#leave-game")],
+            show: [$("#nav-vertical-line"), $('#menu'), $("nav"), $("#menu li").not($("#leave-game"))],
             init: getGamesList,
         },
         'create-game': {
             body: $('#create-game'),
-            hide: [],
-            show: [$('#menu'), $("nav")],
+            hide: [$("#leave-game")],
+            show: [$("#nav-vertical-line"), $('#menu'), $("nav")],
             init: initCreateGame,
         },
         'upload-army': {
             body: $('#upload-army'),
             hide: [],
-            show: [$('#menu'), $("nav")],
+            show: [$("#nav-vertical-line"), $('#menu'), $("nav")],
             init: function() {}
         },
         'lobby': {
