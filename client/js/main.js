@@ -399,12 +399,17 @@ function submitForm(form, handler)
 
     getJSON(
         $.extend(data, commands[form.attr('name')]()),
-        function (json) { handler(json, data); },
+        function (json) { handler(json, data); clearForm(form); },
         function (message) { formError(form, message); }
     );
 
-    $('.error', form).hide();
     return false; // ban POST requests
+}
+
+function clearForm(form)
+{
+    $('.error', form).hide();
+    $('input[type!="submit"]', form).val('');
 }
 
 function initBinds()
