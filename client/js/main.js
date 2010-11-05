@@ -342,9 +342,14 @@ function submitForm(form, handler)
 {
     function formError(form, text)
     {
-        form.prepend(
-            '<p class="error ui-corner-all">' +
-            '<img src="/images/error.png">' + text + '</p>');
+        $('.error', form).remove();
+        form.prepend($('<p></p>')
+            .addClass('error ui-corner-all')
+            .append($('<img/>')
+                .attr({ src: '/images/error.png' })
+            )
+            .append(text)
+        );
     }
 
     function grabForm(form)
@@ -379,7 +384,7 @@ function submitForm(form, handler)
 
 function clearForm(form)
 {
-    $('.error', form).hide();
+    $('.error', form).remove();
     $('input[type!="submit"]', form).val('');
 }
 
