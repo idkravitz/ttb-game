@@ -93,6 +93,9 @@ function innerShowSection()
     section.body.show();
     $.each(section.show, function(i, v) { v.show(); });
     $.each(section.hide, function(i, v) { v.hide(); });
+
+    $('nav > p').removeClass('nav-current');
+    $('#nav-' + section_name).addClass('nav-current');
 }
 
 function describeSections()
@@ -316,7 +319,7 @@ function initNavigation()
         $.each(items, function() { $(this).removeClass("nav-current"); });
         item.addClass("nav-current");
 
-        showSection(item.text().toLowerCase().replace(" ", "-"));
+        showSection(item.attr('id').substring(4)); // strip 'nav-' prefix
     });
 
     // add animation
