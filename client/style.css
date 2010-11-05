@@ -248,12 +248,20 @@ form input[type="submit"] {
     clear: both;
 }
 
-#players {
+#players-wrap {
     float: left;
     border: 1px solid;
-    width: 415px;
+    width: 413px;
     height: 200px;
     margin-left: 3px;
+}
+
+#players {
+    width: 100%;
+}
+
+#players .state{
+    width: 45px;
 }
 
 #chat, #lobby form {

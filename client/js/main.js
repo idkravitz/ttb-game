@@ -142,6 +142,14 @@ function initLobby()
 function getLobbyState()
 {
     var command = {cmd: "getChatHistory", sid: session.sid, gameName: session.gameName};
+    var calls = 2;
+    function delayedSetTimeout()
+    {
+        if(!--calls)
+        {
+            setTimeout("getLobbyState()", 3000);
+        }
+    }
     if(!session.gameName) // Break loop, if we exit the game
     {
         return;
@@ -166,7 +174,22 @@ function getLobbyState()
                $("#chat").append(record);
             });
         }
-        setTimeout("getLobbyState()", 3000);
+        delayedSetTimeout();
+    });
+    getJSON(addGame(addSid({cmd:"getPlayersListForGame"})), function(json)
+    {
+        $("#players").html("");
+        $.each(json.players, function(i, rec)
+        {
+            var row = $(document.createElement("tr"));
+            var user = $(document.createElement("td"));
+            var state = $(document.createElement("td"));
+            user.text(rec.username);
+            state.text(rec.status.replace("_", " ")).addClass("state");
+            row.append(user).append(state);
+            $("#players").append(row);
+        });
+        delayedSetTimeout();
     });
 }
 
