@@ -241,8 +241,9 @@ function getGamesList()
                     var row = document.createElement('tr');
                     var players = game.connectedPlayersCount + ' / ' + game.playersCount;
                     var order = [
-                        game.gameName,
-                        game.gameStatus,
+                        session.gameName ? game.gameName:
+                            '<a href="#">' + game.gameName + '</a>' ,
+                        game.gameStatus.replace('_', ' '),
                         players,
                         game.mapName,
                         game.factionName,
@@ -256,6 +257,7 @@ function getGamesList()
                     table.append(row);
                 }
             });
+            $('a', table).click(joinGame);
             empty_message.hide();
             table.show();
         },
@@ -263,6 +265,17 @@ function getGamesList()
         true
     );
     setTimeout("getGamesList()", 3000);
+}
+
+function joinGame()
+{
+    var gameName = $(this).text()
+    getJSON(addSid({cmd: "joinGame", gameName: gameName}), function(json)
+    {
+        session = updateCookie('session', {gameName: gameName});
+        showSection('lobby');
+    });
+    return false;
 }
 
 function initCreateGame()
