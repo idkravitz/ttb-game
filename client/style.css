@@ -58,7 +58,7 @@ header p {
 
 #menu #current-user {
     float: left;
-    color: #ffff66;
+    color: #ffdb83;
 }
 
 #menu li.menu-link:hover {
@@ -95,13 +95,13 @@ nav p {
 }
 
 nav p:hover {
-    color: #ffff66;
+    color: #ffdb83;
     cursor: pointer;
     text-decoration: underline;
 }
 
 nav p.nav-current {
-    color: #ffff66;
+    color: #ffdb83;
     text-decoration: underline;
 }
 
@@ -115,6 +115,15 @@ nav p.nav-current:hover {
     background-color: #000;
     overflow: hidden;
     float: left;
+}
+
+td a {
+	color: #dc5616;
+	text-decoration: none;
+}
+
+td a:hover {
+	text-decoration: underline;
 }
 
 footer {
