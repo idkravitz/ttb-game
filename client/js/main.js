@@ -83,6 +83,11 @@ function getCurrentSection()
     return window.location.hash.substr(1); // remove # symbol
 }
 
+function showCurrentUser(s)
+{
+    $("#current-user").html(s + session.username);
+}
+
 function innerShowSection()
 {
     var section = getCurrentSection();
@@ -99,7 +104,7 @@ function innerShowSection()
         $('nav > p').removeClass('nav-current');
         $('#nav-' + section).addClass('nav-current');
 
-        $("#current-user").html('Welcome, ' + session.username);
+        showCurrentUser('Welcome, ');
 
         $('#menu, #menu li[id!="leave-game"], nav, #nav-vertical-line').show();
     }
@@ -114,7 +119,12 @@ function describeSections()
         'active-games': getGamesList,
         'create-game': initCreateGame,
         'upload-army': $.noop,
-        'lobby': function () { $('#menu, #leave-game').show(); initLobby(); }
+        'lobby': function()
+        {
+            $('#menu, #leave-game, #current-user').show();
+            showCurrentUser('');
+            initLobby();
+        }
     }
 }
 

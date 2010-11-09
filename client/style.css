@@ -128,8 +128,6 @@ td a:hover {
 
 footer {
     clear: both;
-    position: absolute;
-    bottom: 0px;
     width: 100%;
     background: url(images/footer_repeat.jpg) repeat-x;
 }
@@ -204,8 +202,7 @@ form input[type="submit"] {
     margin-bottom: 5px;
 }
 
-.main-section form .submit
-{
+.main-section form .submit {
     display: block;
     text-align: right;
 }
