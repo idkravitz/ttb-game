@@ -7,13 +7,43 @@
     <link href="style.css" rel="stylesheet" type="text/css">
 </head>
 
-<body>
+<script language="JavaScript">
+    function drawMap()
+    {
+        var cellDiv = document.createElement("div");
+        cellDiv.className = "fullMap";
+
+        var field = this.document.getElementById("field");
+        field.appendChild(cellDiv);
+
+        var tableMap = document.getElementById("tableMap");
+        var row = tableMap.insertRow(0);
+
+        for (var i = 0; i < 10; i++)
+        {
+            var row = tableMap.insertRow(i);
+            for (var j = 0; j < 10; j++)
+            {
+                var cell = row.insertCell(j);
+            }
+        }
+        cellDiv.appendChild(tableMap);
+    }
+</script>
+
+<body onLoad="drawMap()">
     <ul id="menu">
         <li id="current-game">Game name</li>
     </ul>
 
     <section id="content">
-        <div id="field"></div>
+        <div id="field">
+
+        <div class="fullMap">
+        	<table id="tableMap"></table>
+        </div>
+
+        </div>
         <div id="control-panel"><p>Control panel</p></div>
     </section>
 

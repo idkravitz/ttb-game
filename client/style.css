@@ -332,6 +332,13 @@ form input[type="submit"] {
     margin: 0 0 60px 20px;
 }
 
+table#tableMap td {
+    height: 25px;
+    width: 25px;
+    padding: 2px;
+    background: green;
+}
+
 #control-panel {
     float: right;
     width: 280px;
