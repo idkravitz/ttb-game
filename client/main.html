@@ -89,6 +89,12 @@
 
         <section id="lobby">
             <div id="chat"></div>
+            <div id="army-wrap">
+                <form name="army">
+                    <label for="creation-map">Army:</label>
+                    <select id="creation-army" name="armyName"></select>
+                </form>
+            </div>
             <div id="players-wrap">
                 <table id="players"></table>
             </div>
@@ -97,7 +103,10 @@
                 <textarea id="message-text" name="text"></textarea>
                 <input type="submit" value="Send" />
             </form>
-            <a class="button" href="/#lobby" id="ready">Ready</a>
+            <div id="ready"
+                <p>Ready:</p>
+                <input type="checkbox" name="status" id="set-status" />
+            </div>
         </section>
 
     </section>
