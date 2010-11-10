@@ -11,22 +11,56 @@
 
 <script language="JavaScript">
 
- $(document).ready(function(){
-        var tableMap = document.getElementById("tableMap");
-        var row = tableMap.insertRow(0);
+$(document).ready(function()
+{
 
-        for (var i = 0; i < 10; i++)
+    var strMap='11111.x1x...x...x2x.22222';
+
+    var n = Math.sqrt(strMap.length);
+    map = new Array();
+    var k = 0;
+    for(var i = 0; i < n; i++)
+    {
+        map[i] = new Array();
+        for(var j = 0; j < n; j++)
         {
-            var row = tableMap.insertRow(i);
-            for (var j = 0; j < 10; j++)
+            map[i][j] = strMap.charAt(k);
+            k++;
+        }
+    }
+
+    var tableMap = document.getElementById("tableMap");
+    var row = tableMap.insertRow(0);
+    for (var i = 0; i < n; i++)
+    {
+        var row = tableMap.insertRow(i);
+        for (var j = 0; j < n; j++){
+            var cell = row.insertCell(j);
+		    cell.id='Map'+i+'_'+j;
+            if(map[i][j] == 'x')
             {
-                var cell = row.insertCell(j);
+                cell.style.backgroundColor = "#666666";
+            }
+ 		    else if(map[i][j] == '1')
+ 		    {
+ 		        cell.style.backgroundColor = "#ff6666";
+ 		    }
+            else if(map[i][j] == '.')
+            {
+                cell.style.backgroundColor="#66cc00";
+            }
+            else
+            {
+                cell.style.backgroundColor="#6666ff";
             }
         }
-        var dw = $('#field').offset().left + ($('#field').width() - $('#fullMap').width())/2;
-       	var dh = $('#field').offset().top + ($('#field').height() - $('#fullMap').height())/2;
-       	$('#fullMap').offset({top:dh, left:dw});
-   });
+    }
+
+    var dw = $('#field').offset().left + ($('#field').width() - $('#fullMap').width())/2;
+    var dh = $('#field').offset().top + ($('#field').height() - $('#fullMap').height())/2;
+    $('#fullMap').offset({top:dh, left:dw});
+
+});
 
 </script>
 
