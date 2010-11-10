@@ -404,19 +404,15 @@ function initBinds()
     {
         return submitForm($(this), function(json, data)
             {
-                if(session)
+                if(session && session.username == data.username &&
+                    session.gameName)
                 {
-                    if(session.gameName)
-                    {
-                        showSection("lobby");
-                    }
-                    else
-                    {
-                        session = setCookie(
-                            'session', { sid: json.sid, username: data.username });
-                        showSection("active-games");
-                    }
+                    showSection("lobby");
+                    return;
                 }
+                session = setCookie(
+                    'session', { sid: json.sid, username: data.username });
+                showSection("active-games");
             }
         );
     });
