@@ -332,6 +332,10 @@ form input[type="submit"] {
     margin: 0 0 60px 20px;
 }
 
+#fullMap {
+    position: absolute;
+}
+
 table#tableMap td {
     height: 25px;
     width: 25px;
