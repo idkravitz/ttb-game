@@ -114,9 +114,6 @@ def check_fields(fields, u):
     if not(isinstance(u, dict) and all(f in u for f in fields)):
         raise BadCommand("Bad objects in units")
 
-def split_str(text, width):
-    return [list(text[i:i+width]) for i in range(0, len(text), width)]
-
 @Command(str, str)
 def register(username, password):
     if not username.replace('_', '').isalnum():
@@ -329,9 +326,7 @@ def uploadMap(sid, name, terrain):
 def getMap(sid, name):
     dbi().check_sid(sid)
     map_ = dbi().get_map(name)
-    width, terrain = map_.width, map_.terrain
-    return response_ok(
-        map=[terrain[i:i+width] for i in range(0, len(terrain), width)])
+    return response_ok(map=map_.to_list(keep_strings=True))
 
 @Command(str)
 def getMapList(sid):
@@ -457,7 +452,7 @@ def placeUnits(sid, units):
     player = dbi().get_player(user.id)
     game = player.game
     check_game_is_started(game.state)
-    land = split_str(game.map.terrain, game.map.width)
+    land = game.map.to_list()
     if get_current_turn_number(game):
         raise BadTurn("Unit placing allowed only on zero turn")
     process = dbi().query(GameProcess).filter_by(game_id=game.id).one()
@@ -473,7 +468,7 @@ def move(sid, turn, units):
     user = dbi().get_user(sid)
     game = dbi().get_player(user.id).game
     check_game_is_started(game.state)
-    land = split_str(game.map.terrain, game.map.width)
+    land = game.map.to_list()
     processes = dbi().query(GameProcess).filter_by(game_id=game.id)\
         .order_by(desc(GameProcess.turnNumber)).limit(2).all()
     latest_process = processes[0]
