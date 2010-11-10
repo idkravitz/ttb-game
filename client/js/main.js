@@ -118,7 +118,7 @@ function describeSections()
         'about': $.noop,
         'active-games': getGamesList,
         'create-game': initCreateGame,
-        'upload-army': $.noop,
+        'upload-army': initUploadArmy,
         'lobby': function()
         {
             $('#menu, #leave-game, #current-user').show();
@@ -263,24 +263,30 @@ function joinGame()
     return false;
 }
 
+function updateSelect(command, attr, id)
+{
+    getJSON(
+        addSid({ cmd: command }),
+        function (json) {
+            var array = attr + 's';
+            var select = $(id + attr);
+            select.empty();
+            $.each(json[array], function(i, option) {
+                select.append(new Option(option[attr], i));
+            });
+        }
+    );
+}
+
 function initCreateGame()
 {
-    function updateSelect(command, attr)
-    {
-        getJSON(
-            addSid({ cmd: command }),
-            function (json) {
-                var array = attr + 's';
-                var select = $('#creation-' + attr);
-                select.empty();
-                $.each(json[array], function(i, option) {
-                    select.append(new Option(option[attr], i));
-                });
-            }
-        );
-    }
-    updateSelect('getMapList', 'map');
-    updateSelect('getFactionList', 'faction');
+    updateSelect('getMapList', 'map', '#creation-');
+    updateSelect('getFactionList', 'faction', '#creation-');
+}
+
+function initUploadArmy()
+{
+    updateSelect('getFactionList', 'faction', '#upload-a-');
 }
 
 function initNavigation()
