@@ -137,7 +137,9 @@ def reconstruct_path(target_node):
 
 def movement_phase(latest_process, land):
     repeat = dbi().query(Turn).filter_by(gameProcess_id=latest_process.id).all()
+    rand_state = random.getstate()
     random.shuffle(repeat)
+    random.setstate(rand_state)
     repeat.sort()
     sorted_moves = repeat
     for turn in repeat:

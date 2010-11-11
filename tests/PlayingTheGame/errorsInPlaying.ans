@@ -111,22 +111,11 @@
     "status": "ok"
 }
 {
-    "players": {
-        "Barney": {
-            "units": [
-                {
-                    "HP": 1, 
-                    "X": 1, 
-                    "Y": 2, 
-                    "name": "brown"
-                }
-            ]
-        }
-    }, 
+    "players": {}, 
     "status": "ok", 
     "turnNumber": 3
 }
 {
-    "message": "Game is finished",
+    "message": "Game is finished", 
     "status": "badGame"
 }

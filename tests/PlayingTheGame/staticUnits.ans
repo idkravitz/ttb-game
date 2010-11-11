@@ -115,18 +115,6 @@
         "Barney": {
             "units": [
                 {
-                    "HP": 6, 
-                    "X": 1, 
-                    "Y": 3, 
-                    "name": "poisoned"
-                }, 
-                {
-                    "HP": 6, 
-                    "X": 3, 
-                    "Y": 3, 
-                    "name": "poisoned"
-                }, 
-                {
                     "HP": 5, 
                     "X": 2, 
                     "Y": 4, 
@@ -136,6 +124,18 @@
         }, 
         "Gordon": {
             "units": [
+                {
+                    "HP": 5, 
+                    "X": 1, 
+                    "Y": 1, 
+                    "name": "regular"
+                }, 
+                {
+                    "HP": 5, 
+                    "X": 3, 
+                    "Y": 1, 
+                    "name": "regular"
+                }, 
                 {
                     "HP": 5, 
                     "X": 2, 
@@ -161,21 +161,17 @@
     "turnNumber": 2
 }
 {
-    "status": "ok"
+    "message": "Can't attack dummy target", 
+    "status": "breakRules"
 }
 {
-    "status": "ok"
+    "message": "No unit in that cell", 
+    "status": "breakRules"
 }
 {
     "players": {
         "Barney": {
             "units": [
-                {
-                    "HP": 6, 
-                    "X": 3, 
-                    "Y": 3, 
-                    "name": "poisoned"
-                }, 
                 {
                     "HP": 5, 
                     "X": 2, 
@@ -188,21 +184,47 @@
             "units": [
                 {
                     "HP": 5, 
+                    "X": 1, 
+                    "Y": 1, 
+                    "name": "regular"
+                }, 
+                {
+                    "HP": 5, 
+                    "X": 3, 
+                    "Y": 1, 
+                    "name": "regular"
+                }, 
+                {
+                    "HP": 5, 
                     "X": 2, 
                     "Y": 0, 
                     "name": "regular"
+                }, 
+                {
+                    "HP": 4, 
+                    "X": 0, 
+                    "Y": 0, 
+                    "name": "speedy"
+                }, 
+                {
+                    "HP": 4, 
+                    "X": 4, 
+                    "Y": 0, 
+                    "name": "speedy"
                 }
             ]
         }
     }, 
     "status": "ok", 
-    "turnNumber": 3
+    "turnNumber": 2
 }
 {
-    "status": "ok"
+    "message": "Not actual turn number", 
+    "status": "badTurn"
 }
 {
-    "status": "ok"
+    "message": "Not actual turn number", 
+    "status": "badTurn"
 }
 {
     "players": {
@@ -215,8 +237,42 @@
                     "name": "regular"
                 }
             ]
+        }, 
+        "Gordon": {
+            "units": [
+                {
+                    "HP": 5, 
+                    "X": 1, 
+                    "Y": 1, 
+                    "name": "regular"
+                }, 
+                {
+                    "HP": 5, 
+                    "X": 3, 
+                    "Y": 1, 
+                    "name": "regular"
+                }, 
+                {
+                    "HP": 5, 
+                    "X": 2, 
+                    "Y": 0, 
+                    "name": "regular"
+                }, 
+                {
+                    "HP": 4, 
+                    "X": 0, 
+                    "Y": 0, 
+                    "name": "speedy"
+                }, 
+                {
+                    "HP": 4, 
+                    "X": 4, 
+                    "Y": 0, 
+                    "name": "speedy"
+                }
+            ]
         }
     }, 
     "status": "ok", 
-    "turnNumber": 4
+    "turnNumber": 2
 }

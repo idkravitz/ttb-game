@@ -49,24 +49,15 @@
     "status": "ok"
 }
 {
-    "status": "ok"
+    "message": "Game is finished", 
+    "status": "badGame"
 }
 {
-    "status": "ok"
+    "message": "Game is finished", 
+    "status": "badGame"
 }
 {
-    "players": {
-        "Gordon": {
-            "units": [
-                {
-                    "HP": 1, 
-                    "X": 0, 
-                    "Y": 0, 
-                    "name": "white"
-                }
-            ]
-        }
-    }, 
+    "players": {}, 
     "status": "ok", 
-    "turnNumber": 3
+    "turnNumber": 2
 }
