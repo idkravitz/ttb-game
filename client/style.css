@@ -349,12 +349,17 @@ table#tableMap td {
     border: 1px solid grey;
 }
 
+#help {
+    width: 100%;
+    height: 10%;
+}
+
 #control-panel {
     width: 100%;
     height: 50%;
 }
 
-#control-panel p, #info p {
+#control-panel p, #info p, #help p {
     padding: 5px;
     color: #dc5616;
     font-size: 18px;
