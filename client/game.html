@@ -51,6 +51,26 @@ $(document).ready(function()
     var dh = $('#field').offset().top + ($('#field').height() - $('#fullMap').height())/2;
     $('#fullMap').offset({top:dh, left:dw});
 
+    var i = 3;
+    fragment = document.createDocumentFragment();
+    div = document.createElement('div');
+    div.className ='factDiv';
+    pic = document.createElement('img');
+    pic.src='images/person1.bmp';
+    div.appendChild(pic);
+    while (i--)
+    {
+        fragment.appendChild(div.cloneNode(true));
+    }
+    pic.src='images/house.bmp';
+    pic.width = 40;
+    i = 3;
+    while (i--)
+    {
+        fragment.appendChild(div.cloneNode(true));
+    }
+    $('#control-panel').append(fragment);
+
 });
 
 </script>
