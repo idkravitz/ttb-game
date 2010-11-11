@@ -7,7 +7,8 @@
     <link href="style.css" rel="stylesheet" type="text/css">
 </head>
 
-<script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js'></script>
+<script type="text/javascript" src="js/jquery-1.4.3.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.8.5.custom.min.js"></script>
 
 <script language="JavaScript">
 
@@ -70,6 +71,49 @@ $(document).ready(function()
         fragment.appendChild(div.cloneNode(true));
     }
     $('#control-panel').append(fragment);
+
+    $('.factDiv').draggable({});
+    $('#fullMap').droppable({
+        drop: function(event, ui)
+        {
+            var cell, newCell, x, y, posX, posY
+            cell = document.getElementById("tableMap").rows[0].cells[0];
+            //number of cell, where we drop the element
+            x = Math.round((ui.draggable.offset().top - $(cell).offset().top + 2)/$(cell).width());
+            y = Math.round((ui.draggable.offset().left - $(cell).offset().left + 2)/$(cell).width());
+            //don't have n cell (n-1 the last)
+            if (x == n)
+            {
+                x--;
+            }
+            if (y == n)
+            {
+                y--;
+            }
+            newCell = document.getElementById("tableMap").rows[x].cells[y];
+      	    posY = $(newCell).offset().top;
+		    if(map[x][y] == '1')
+		    {
+                posX = $(newCell).offset().left;
+                //put that smth is in that cell
+        		map[x][y] = '11';
+            }
+            else
+            {
+                //put away from field if we cannot place in cells
+                if(y > n/2)
+                {
+                    posX = $(cell).offset().left + (n + 0.5)*$(cell).width();
+                }
+				else
+				{
+				    posX = $(cell).offset().left - 1.5*$(cell).width();
+				}
+			    posY = ui.draggable.offset().top;
+            }
+            ui.draggable.offset({top:posY+4, left:posX+4});
+        }
+    });
 
 });
 
