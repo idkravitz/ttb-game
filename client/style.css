@@ -342,18 +342,28 @@ table#tableMap td {
     padding: 2px;
 }
 
-#control-panel {
+#panel {
     float: right;
     width: 280px;
     height: 550px;
     border: 1px solid grey;
 }
 
-#control-panel p {
-    padding: 5px;
-    color: #dc5616;
+#control-panel {
+    width: 100%;
+    height: 50%;
 }
 
+#control-panel p, #info p {
+    padding: 5px;
+    color: #dc5616;
+    font-size: 18px;
+}
+
+#info p {
+    font-size: 16px;
+}
+    
 .factDiv {
     float: left;
     border: solid 1px #333333;
