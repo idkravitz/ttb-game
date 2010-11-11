@@ -356,6 +356,11 @@
 }
 
 {
+    "cmd": "getGameState",
+    "name": "BlackMesa"
+}
+
+{
     "cmd": "move",
     "sid": "GordonFreeman",
     "turn": 4,

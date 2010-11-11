@@ -7,6 +7,7 @@ import functools
 import random
 import hashlib
 from functools import reduce
+from collections import namedtuple
 
 import sqlalchemy.orm.exc
 from sqlalchemy import or_, desc
@@ -15,7 +16,7 @@ from sqlalchemy.orm import join
 from common import *
 from exceptions import *
 from db import db_instance as dbi
-from db import User, Map, Game, Player, Message, Faction, Unit, Army, UnitArmy, GameProcess, Turn
+from db import User, Map, Game, Player, Message, Faction, Unit, Army, UnitArmy
 from db import UNIT_ATTRS, HUMAN_READABLE_TYPES
 from logics import *
 
@@ -81,15 +82,6 @@ def check_len(obj, max_len, descr, cls):
 def check_emptiness(obj, descr, cls):
     if not len(obj):
         raise cls(descr)
-
-def check_game_is_started(state):
-    check_game_is_started_or_finished(state)
-    if state == 'finished':
-        raise BadGame('Game is finished')
-
-def check_game_is_started_or_finished(state):
-    if state == 'not_started':
-        raise BadGame('Game is not started')
 
 def ready_players_query(process):
     return (dbi().query(User.id).select_from(reduce(join, [Turn, UnitArmy, Army, User]))
@@ -242,10 +234,18 @@ def getChatHistory(sid, gameName, **opt):
         for msg in messages]
     return response_ok(chat=chat)
 
+def get_winner(game):
+    try:
+        return dbi().query(User.username).join(Player).filter(Player.game_id==game.id).filter(Player.is_winner==True).one()[0]
+    except sqlalchemy.orm.exc.NoResultFound:
+        return "[DRAW]"
+
 @Command(str)
 def getGamesList(sid):
     user = dbi().get_user(sid)
-    games = [{
+    games = []
+    for game in dbi().query(Game).all():
+        rec = {
                   "gameName": game.name,
                   "mapName": game.map.name,
                   "factionName": game.faction.name,
@@ -255,7 +255,9 @@ def getGamesList(sid):
                     dbi().query(Player).filter_by(game_id=game.id).count(),
                   "totalCost": game.total_cost,
              }
-        for game in dbi().query(Game).all()]
+        if game.state == 'finished':
+            rec["winner"] = get_winner(game)
+        games.append(rec)
     return response_ok(games=games)
 
 @Command(str)
@@ -290,7 +292,7 @@ def setPlayerStatus(sid, status):
             p.state = 'in_game'
             p.player_number = index
         player.game.state = 'started'
-        dbi().add(GameProcess(player.game.id, 0)) # Zero turn is when players place their units on terrain
+        GameProcess(player.game)
     dbi().commit()
     return response_ok()
 
@@ -450,116 +452,81 @@ def chooseArmy(sid, armyName):
 def placeUnits(sid, units):
     user = dbi().get_user(sid)
     player = dbi().get_player(user.id)
-    game = player.game
-    check_game_is_started(game.state)
-    land = game.map.to_list()
-    if get_current_turn_number(game):
+    process = GameProcess.get(player.game)
+    if process.turn:
         raise BadTurn("Unit placing allowed only on zero turn")
-    process = dbi().query(GameProcess).filter_by(game_id=game.id).one()
-    store = { squad.unit.name: [squad.count, squad] for squad in player.army.unitArmy }
-    placements = placements_from_units(units, land, store, player, process)
-    dbi().add_all(placements)
-    if is_turn_completed(game, process):
-        dbi().add(GameProcess(game.id, 1))
+    store = { squad.unit.name: squad.count for squad in player.army.unitArmy }
+    fields = ["name", "posX", "posY"]
+    to_place = []
+    for u in units:
+        check_fields(fields, u)
+        height, width = process.get_map_dimensions()
+        if not (0 <= u["posX"] < width and 0 <= u["posY"] < height):
+            raise BadCommand("Outside the map limits")
+        x, y, name = u["posX"], u["posY"], u["name"]
+        if not(name in store and store[name]):
+            raise BadUnit("No such units in army")
+        to_place += [(name, x, y, player.player_number)]
+        store[name] -= 1
+    for placement in to_place:
+        process.place_unit(*placement)
+    process.placement_finished()
     return response_ok()
 
 @Command(str, int, list)
 def move(sid, turn, units):
     user = dbi().get_user(sid)
-    game = dbi().get_player(user.id).game
-    check_game_is_started(game.state)
-    land = game.map.to_list()
-    processes = dbi().query(GameProcess).filter_by(game_id=game.id)\
-        .order_by(desc(GameProcess.turnNumber)).limit(2).all()
-    latest_process = processes[0]
-    if turn != latest_process.turnNumber or not turn:
+    player = dbi().get_player(user.id)
+    process = GameProcess.get(player.game)
+    if turn != process.turn or not turn:
         raise BadTurn("Not actual turn number")
-    prev_process = processes[1]
 
-    moves = turns_from_units(units, land, prev_process, latest_process)
-    moved = set(turn.pos for turn in moves)
-    skips = [ construct_turn_from_previous(t, latest_process, *(t.dest + t.dest + NO_TARGET))
-        for t in prev_process.alive_units(user.id) if t.dest not in moved ]
-    dbi().add_all(moves + skips)
-
-    if is_turn_completed(game, latest_process):
-        attack_phase(movement_phase(latest_process, land))
-
-        dbi().add(GameProcess(game.id, latest_process.turnNumber + 1))
-        if len(latest_process.alive_players()) <= 1:
-            game.state = 'finished'
-            dbi().commit()
+    fields = ["posX", "posY", "destX", "destY", "attackX", "attackY"]
+    actions = []
+    for u in units:
+        check_fields(fields, u)
+        pos = u["posX"], u["posY"]
+        attack = u["attackX"], u["attackY"]
+        dest = u["destX"], u["destY"]
+        if pos not in process.previous_placements or process.previous_placements[pos].player != player.player_number:
+            raise BreakRules('No unit in that cell')
+        if attack != NO_TARGET and attack not in process.previous_placements:
+            raise BreakRules("Can't attack dummy target")
+        path = find_shortest_path(process.map, pos, dest)
+        if path is None:
+            raise BreakRules("Target cell is unreachable")
+        if len(path) > process.get_unit(pos).MP:
+            raise BreakRules("Not enough MP")
+        actions += [Action(pos, dest, attack)]
+        #moves.append(construct_turn_from_previous(prevTurn, latest_process, *[u[f] for f in fields]))
+    moved = set(a.pos for a in actions)
+    actions += [Action(pos, pos, NO_TARGET)
+        for pos in process.player_previous_placements[player.player_number]
+        if pos not in moved]
+    #dbi().add_all(moves + skips)
+    process.current_actions += actions
+    process.turn_finished()
     return response_ok()
 
 @Command(str)
 def getGameState(name):
-    game = dbi().get_game(name, False)
-    check_game_is_started_or_finished(game.state)
-    turn_number = get_current_turn_number(game)
-    if not turn_number:
+    game = dbi().get_game(name)
+    process = GameProcess.get(game)
+    if not process.turn:
         raise BadTurn("You can't request game status before everyone place their units")
-    process = dbi().query(GameProcess).filter_by(turnNumber=(turn_number - 1), game_id=game.id).one()
-    result = gameState_result(process)
-    return response_ok(players=result, turnNumber=turn_number)
-
-def placements_from_units(units, land, store, player, process):
-    placements = []
-    for u in units:
-        fields = ["name", "posX", "posY"]
-        check_fields(fields, u)
-        height, width = len(land), len(land[0])
-        if not (0 <= u["posX"] < width and 0 <= u["posY"] < height):
-            raise BadCommand("Outside the map limits")
-        x, y, name = u["posX"], u["posY"], u["name"]
-        if not(name in store and store[name][0]):
-            raise BadUnit("No such units in army")
-        cell = land[y][x]
-        if cell != str(player.player_number):
-            raise BreakRules("Wrong cell")
-        land[y][x] = "0"
-        store[name][0] -= 1
-        ua = store[name][1]
-        placements.append(Turn(ua.id, process.id, x, y, x, y, 0, 0, ua.unit.HP))
-    return placements
-
-def turns_from_units(units, land, prev_process, latest_process):
-    fields = ["posX", "posY", "destX", "destY", "attackX", "attackY"]
-    moves = []
-    for u in units:
-        check_fields(fields, u)
-        try:
-            prevTurn = dbi().query(Turn)\
-                .filter_by(gameProcess_id=prev_process.id, destX=u["posX"], destY=u["posY"])\
-                .filter(Turn.HP!=0)\
-                .one()
-        except sqlalchemy.orm.exc.NoResultFound:
-            raise BreakRules('No unit in that cell')
-        if ((u["attackX"], u["attackY"]) != NO_TARGET and
-            not dbi().query(Turn).filter_by(gameProcess_id=prev_process.id, destX=u["attackX"], destY=u["attackY"])
-            .filter(Turn.HP!=0).count()
-        ):
-            raise BreakRules("Can't attack dummy target")
-        path = find_shortest_path(land, (u["posX"], u["posY"]), (u["destX"], u["destY"]))
-        if path is None:
-            raise BreakRules("Target cell is unreachable")
-        if len(list(path)) > prevTurn.unitArmy.unit.MP:
-            raise BreakRules("Not enough MP")
-        moves.append(construct_turn_from_previous(prevTurn, latest_process, *[u[f] for f in fields]))
-    return moves
-
-def gameState_result(process):
     result = {
-        name: {
+        process.get_username(player_number): {
                 "units": [
                             {
-                                "name": turn.unitArmy.unit.name,
-                                "HP": turn.HP,
-                                "X": turn.destX,
-                                "Y": turn.destY
+                                "name": process.previous_placements[pos].unit,
+                                "HP": process.previous_placements[pos].HP,
+                                "X": pos[0],
+                                "Y": pos[1]
                             }
-                            for turn in process.alive_units(id)
+                            for pos in placements
                          ]
               }
-        for id, name in process.alive_players()
+        for player_number, placements in process.player_previous_placements.items()
     }
-    return result
+    return response_ok(players=result, turnNumber=process.turn)
+

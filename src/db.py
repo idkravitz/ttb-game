@@ -52,6 +52,12 @@ class Map(Base):
     def __repr__(self):
         return "<Map({0},{1})>".format(self.name, self.terrain)
 
+    def to_list(self, keep_strings=False):
+        line_processing = (lambda x: x) if keep_strings else list
+        return [line_processing(self.terrain[i:i+self.width])
+            for i in range(0, len(self.terrain), self.width)]
+
+
 class Faction(Base):
     __tablename__ = 'factions'
 
@@ -81,6 +87,18 @@ class Game(Base):
     def __repr__(self):
         return '<Game({0},{1})>'.format(self.name, self.gameState)
 
+    def is_started(self, quite=False):
+        r = self.state != 'not_started'
+        if not (r or quite):
+            raise BadGame('Game is not started')
+        return r
+
+    def is_started_stricktly(self, quite=False):
+        r = self.is_started(quite=False) and self.state != 'finished'
+        if not (r or quite):
+            raise BadGame('Game is finished')
+        return r
+
 class Army(Base):
     __tablename__ = 'armies'
 
@@ -101,6 +119,7 @@ class Player(Base):
     army_id = fkey('armies.id')
     player_number = Column(Integer)
     is_creator = Column(Boolean, default=False)
+    is_winner = Column(Boolean, default=False)
     state = Column(Enum('in_game', 'in_lobby', 'ready', 'left'), default='in_lobby')
     user = relationship(User, backref=backref('players'))
     game = relationship(Game, backref=backref('players'))
@@ -196,65 +215,65 @@ class UnitArmy(Base):
     @copy_args
     def __init__(self, unit_id, army_id, count): pass
 
-class GameProcess(Base):
-    __tablename__ = 'gameProcess'
+#class GameProcess(Base):
+#    __tablename__ = 'gameProcess'
 
-    id = pkey()
-    game_id = fkey('games.id')
-    turnNumber = requiredInteger()
-    game = relationship(Game, backref=backref('gameProcess'))
+#    id = pkey()
+#    game_id = fkey('games.id')
+#    turnNumber = requiredInteger()
+#    game = relationship(Game, backref=backref('gameProcess'))
 
-    @copy_args
-    def __init__(self, game_id, turnNumber): pass
+#    @copy_args
+#    def __init__(self, game_id, turnNumber): pass
 
-    def alive_players(self):
-        return (db_instance().query(User.id, User.username).select_from(reduce(join, [Turn, UnitArmy, Army, User]))
-            .filter(Turn.gameProcess_id==self.id).filter(Turn.HP!=0).distinct().all())
+#    def alive_players(self):
+#        return (db_instance().query(User.id, User.username).select_from(reduce(join, [Turn, UnitArmy, Army, User]))
+#            .filter(Turn.gameProcess_id==self.id).filter(Turn.HP!=0).distinct().all())
 
-    def alive_units(self, user_id):
-        return (db_instance().query(Turn).filter_by(gameProcess_id=self.id).join(UnitArmy).join(Army).join(User).filter(Turn.HP!=0)
-            .filter(User.id==user_id).all())
+#    def alive_units(self, user_id):
+#        return (db_instance().query(Turn).filter_by(gameProcess_id=self.id).join(UnitArmy).join(Army).join(User).filter(Turn.HP!=0)
+#            .filter(User.id==user_id).all())
 
-class Turn(Base):
-    __tablename__ = 'turns'
+#class Turn(Base):
+#    __tablename__ = 'turns'
 
-    id = pkey()
-    unitArmy_id = fkey('unitArmy.id')
-    gameProcess_id = fkey('gameProcess.id')
-    posX = requiredInteger()
-    posY = requiredInteger()
-    destX = requiredInteger()
-    destY = requiredInteger()
-    attackX = requiredInteger()
-    attackY = requiredInteger()
-    unitArmy = relationship(UnitArmy, backref=backref('turns'))
-    gameProcess = relationship(GameProcess, backref=backref('turns'))
-    HP = Column(Integer)
+#    id = pkey()
+#    unitArmy_id = fkey('unitArmy.id')
+#    gameProcess_id = fkey('gameProcess.id')
+#    posX = requiredInteger()
+#    posY = requiredInteger()
+#    destX = requiredInteger()
+#    destY = requiredInteger()
+#    attackX = requiredInteger()
+#    attackY = requiredInteger()
+#    unitArmy = relationship(UnitArmy, backref=backref('turns'))
+#    gameProcess = relationship(GameProcess, backref=backref('turns'))
+#    HP = Column(Integer)
 
-    @copy_args
-    def __init__(self, unitArmy_id, gameProcess_id, posX, posY, destX, destY, attackX, attackY, HP): pass
+#    @copy_args
+#    def __init__(self, unitArmy_id, gameProcess_id, posX, posY, destX, destY, attackX, attackY, HP): pass
 
-    def __lt__(self, turn):
-        return self.unitArmy.unit.initiative < turn.unitArmy.unit.initiative
+#    def __lt__(self, turn):
+#        return self.unitArmy.unit.initiative < turn.unitArmy.unit.initiative
 
-    def __repr__(self):
-        return "<Turn {0}>".format(self.id)
+#    def __repr__(self):
+#        return "<Turn {0}>".format(self.id)
 
-    @property
-    def dest(self):
-        return self.destX, self.destY
+#    @property
+#    def dest(self):
+#        return self.destX, self.destY
 
-    @dest.setter
-    def dest(self, val):
-        self.destX, self.destY = val
+#    @dest.setter
+#    def dest(self, val):
+#        self.destX, self.destY = val
 
-    @property
-    def pos(self):
-        return self.posX, self.posY
+#    @property
+#    def pos(self):
+#        return self.posX, self.posY
 
-    @pos.setter
-    def pos(self, val):
-        self.posX, self.posY = val
+#    @pos.setter
+#    def pos(self, val):
+#        self.posX, self.posY = val
 
 class Database:
     instance = None

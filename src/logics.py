@@ -2,10 +2,12 @@ import random
 import heapq
 import itertools
 from common import *
+from exceptions import *
+from collections import namedtuple
 
-from db import db_instance as dbi, Turn
+from db import db_instance as dbi, User, Player, Game
 
-__all__ = ["gen3d6", "find_shortest_path", "attack_phase", "movement_phase"]
+__all__ = ["gen3d6", "find_shortest_path", "attack_phase", "movement_phase", "Placement", "Action", "GameProcess"]
 
 def gen3d6():
     return sum([random.randint(1,6) for i in range(3)])
@@ -132,53 +134,180 @@ def reconstruct_path(target_node):
     while hasattr(node, '_came_from'):
         path.append(node)
         node = node._came_from
-    return reversed(path)
+    return path
 
+Movement = namedtuple('Movement', 'action, path')
+Placement = namedtuple('Placement', 'player, unit, HP')
+Action = namedtuple('Action', 'pos, dest, attack')
 
-def movement_phase(latest_process, land):
-    repeat = dbi().query(Turn).filter_by(gameProcess_id=latest_process.id).all()
+import logging
+logger = logging.getLogger('logics')
+logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+ch.setFormatter(logging.Formatter("%(message)s"))
+
+logger.addHandler(ch)
+
+class Action(Action):
+    @classmethod
+    def set_process(cls, process):
+        cls.process = process
+
+    def __lt__(self, a):
+        try:
+            return self.process.get_unit(self.pos).initiative < self.process.get_unit(a.pos).initiative
+        except:
+            logger.debug("In: {0} < {1}".format(self.pos, a.pos))
+            logger.debug("process.previous_placements: " + str(self.process.previous_placements))
+            raise
+
+class GameProcess(object):
+    games = {}
+    factions = {}
+
+    def __init__(self, game):
+        self.game = game
+        self.map = game.map.to_list()
+        self.games[game.name] = self
+        self.faction = game.faction.name
+        self.current_placements = {}
+        self.player_current_placements = {}
+        self.turn = 0
+        self.ready_players = 0
+        if self.faction not in self.factions:
+            self.factions[self.faction] = {unit.name: unit for unit in game.faction.units}
+        self.usernames = [rec[0] for rec in dbi().query(User.username).join(Player)
+            .filter(Player.game_id==game.id).order_by(Player.player_number).all()]
+
+    def get_map_dimensions(self):
+        return len(self.map), len(self.map[0])
+
+    def get_username(self, i):
+        return self.usernames[i-1]
+
+    def get_unit(self, unit):
+        if type(unit) == str:
+            name = unit
+        else:
+            name = self.previous_placements[unit].unit
+        return self.factions[self.faction][name]
+
+    def place_unit(self, unit, x, y, player):
+        if self.map[y][x] != str(player) or (x, y) in self.current_placements:
+            raise BreakRules("Wrong cell")
+        self.current_placements[(x, y)] = Placement(player, unit, self.get_unit(unit).HP)
+        if player in self.player_current_placements:
+            self.player_current_placements[player].append((x, y))
+        else:
+            self.player_current_placements[player] = [(x, y)]
+
+    def turn_finished(self):
+        self.ready_players += 1
+        if(self.turn and self.ready_players == self.game.players_count):
+            attack_phase(movement_phase(self), self)
+            self._next_turn()
+
+    def _next_turn(self):
+        self.turn += 1
+        self.previous_placements = self.current_placements
+        self.current_placements = {}
+        self.player_previous_placements = self.player_current_placements
+        self.player_current_placements = {}
+        self.current_actions = []
+        self.ready_players -= len(self.player_previous_placements) # defeated players are always ready
+        if len(self.player_previous_placements) <= 1:
+            for winner in self.player_previous_placements:
+                player = dbi().query(Player).filter(Player.game_id==self.game.id).filter(Player.player_number==winner).first()
+                player.is_winner = True
+            del self.games[self.game.name]
+            self.game.state = 'finished'
+            dbi().commit()
+
+    def placement_finished(self):
+        self.ready_players += 1
+        if(not self.turn and self.ready_players == self.game.players_count):
+            self._next_turn()
+            logger.debug("Placed: " + str(self.player_previous_placements))
+
+    @classmethod
+    def get(cls, game):
+        name = game.name if type(game) == Game else game
+        if name not in cls.games:
+            raise BadGame("No started game with that name")
+        return cls.games[name]
+
+def movement_phase(process):
+    logger.debug("Movement phase {0}".format(process.turn))
+    repeat = process.current_actions#dbi().query(Turn).filter_by(gameProcess_id=latest_process.id).all()
+    logger.debug("Actions at this phase:\n" + str(repeat))
+    #raise BadCommand(" ".join(str(a) for a in repeat) + " : " + " ".join(str(b) for b in process.previous_placements))
+    Action.set_process(process)
     random.shuffle(repeat)
     repeat.sort()
-    sorted_moves = repeat
-    for turn in repeat:
-        turn.path = list(find_shortest_path(land, turn.pos, turn.dest))
+    sorted_moves = []
+    repeat = [Movement(a, find_shortest_path(process.map, a.pos, a.dest)) for a in repeat]
     occupied, que = set(), []
     while len(repeat) != len(que):
         que, repeat = repeat, []
         for turn in que:
-            if turn.path and turn.path[-1] not in occupied:
-                occupied.add(turn.path[-1])
+            if turn.path and turn.path[0] not in occupied:
+                occupied.add(turn.path[0])
+                sorted_moves.append(turn.action)
             else:
                 repeat.append(turn)
     for turn in repeat:
-        for node in reversed(turn.path):
+        for node in turn.path:
             if node not in occupied:
                 occupied.add(node)
-                turn.dest = node
+                sorted_moves.append(Action(turn.action.pos, node, turn.action.attack))
                 break
         else:
-            turn.dest = turn.pos
+            sorted_moves.append(Action(turn.action.pos, turn.action.pos, turn.action.attack))
     return sorted_moves
 
 def attack(our_unit, their_unit, their_trgt):
     attack_chance = our_unit.attack + gen3d6()
     defence_chance = their_unit.defence + gen3d6()
+    HP = their_trgt.HP
     if attack_chance > defence_chance:
-        their_trgt.HP -= our_unit.damage - their_unit.protection + gen3d6()
-        their_trgt.HP = 0 if their_trgt.HP < 0 else their_trgt.HP
+        HP -= our_unit.damage - their_unit.protection + gen3d6()
+        HP = 0 if HP < 0 else HP
+    return Placement(their_trgt.player, their_trgt.unit, HP)
 
-def attack_phase(sorted_moves):
-    attackable = { turn.pos: turn for turn in sorted_moves }
-    for turn in sorted_moves:
-        attack_pos = turn.attackX, turn.attackY
-        if attack_pos == NO_TARGET:
+def attack_phase(sorted_moves, process):
+    attackable = { m.pos: m for m in sorted_moves }
+    for action in sorted_moves:
+        if action.dest not in process.current_placements:
+            p = process.previous_placements[action.pos]
+            process.current_placements[action.dest] = p
+            if p.player in process.player_current_placements:
+                process.player_current_placements[p.player] += [action.dest]
+            else:
+                process.player_current_placements[p.player] = [action.dest]
+        if action.attack == NO_TARGET:
             continue
-        their_trgt = attackable[attack_pos]
-        new_trgt = their_trgt.dest
-        our_unit = turn.unitArmy.unit
-        their_unit = their_trgt.unitArmy.unit
-        if in_range(turn.dest, new_trgt, our_unit.range):
-            attack(our_unit, their_unit, their_trgt)
+        target = attackable[action.attack]
+        unit = process.get_unit(action.pos)
+        target_unit = process.get_unit(target.pos)
+        if in_range(action.dest, target.dest, unit.range):
+            if target.dest not in process.current_placements:
+                p = process.previous_placements[target.pos]
+                process.current_placements[target.dest] = p
+                if p.player in process.player_current_placements:
+                    process.player_current_placements[p.player] += [target.dest]
+                else:
+                    process.player_current_placements[p.player] = [target.dest]
+            p = process.current_placements[target.dest]
+            p = attack(unit, target_unit, p)
+            if p.HP:
+                process.current_placements[target.dest] = p
+            else:
+                del process.current_placements[target.dest]
+                t = process.previous_placements[target.pos]
+                process.player_current_placements[t.player].remove(target.dest)
+                if not len(process.player_current_placements[t.player]):
+                    del process.player_current_placements[t.player]
 
 def in_range(pos1, pos2, range):
     return sum(abs(x1 - x2) ** 2 for x1, x2 in zip(pos1, pos2)) <= range ** 2

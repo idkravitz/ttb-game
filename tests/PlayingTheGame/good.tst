@@ -214,6 +214,6 @@
 }
 
 {
-    "cmd": "getGameState",
-    "name": "BlackMesa"
+    "cmd": "getGamesList",
+    "sid": "BarneyColhoun"
 }
