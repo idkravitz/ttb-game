@@ -363,6 +363,10 @@ table#tableMap td {
 #info p {
     font-size: 16px;
 }
+
+#about {
+    display: none;
+}
     
 .factDiv {
     float: left;

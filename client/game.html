@@ -72,6 +72,14 @@ $(document).ready(function()
     }
     $('#control-panel').append(fragment);
 
+    $('.factDiv').dblclick(function(){
+        $('#about').show();
+    });
+
+    $('#content').click(function(){
+        $('#about').hide();
+    });
+
     $('.factDiv').draggable({});
     $('#fullMap').droppable({
         drop: function(event, ui)
@@ -139,6 +147,7 @@ $(document).ready(function()
             <div id="info">
                 <hr></hr>
                 <p>Name of Unit:</p>
+                <div id="about">About!</div>
             </div>
         </div>
     </section>
