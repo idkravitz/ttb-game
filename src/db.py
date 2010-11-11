@@ -215,66 +215,6 @@ class UnitArmy(Base):
     @copy_args
     def __init__(self, unit_id, army_id, count): pass
 
-#class GameProcess(Base):
-#    __tablename__ = 'gameProcess'
-
-#    id = pkey()
-#    game_id = fkey('games.id')
-#    turnNumber = requiredInteger()
-#    game = relationship(Game, backref=backref('gameProcess'))
-
-#    @copy_args
-#    def __init__(self, game_id, turnNumber): pass
-
-#    def alive_players(self):
-#        return (db_instance().query(User.id, User.username).select_from(reduce(join, [Turn, UnitArmy, Army, User]))
-#            .filter(Turn.gameProcess_id==self.id).filter(Turn.HP!=0).distinct().all())
-
-#    def alive_units(self, user_id):
-#        return (db_instance().query(Turn).filter_by(gameProcess_id=self.id).join(UnitArmy).join(Army).join(User).filter(Turn.HP!=0)
-#            .filter(User.id==user_id).all())
-
-#class Turn(Base):
-#    __tablename__ = 'turns'
-
-#    id = pkey()
-#    unitArmy_id = fkey('unitArmy.id')
-#    gameProcess_id = fkey('gameProcess.id')
-#    posX = requiredInteger()
-#    posY = requiredInteger()
-#    destX = requiredInteger()
-#    destY = requiredInteger()
-#    attackX = requiredInteger()
-#    attackY = requiredInteger()
-#    unitArmy = relationship(UnitArmy, backref=backref('turns'))
-#    gameProcess = relationship(GameProcess, backref=backref('turns'))
-#    HP = Column(Integer)
-
-#    @copy_args
-#    def __init__(self, unitArmy_id, gameProcess_id, posX, posY, destX, destY, attackX, attackY, HP): pass
-
-#    def __lt__(self, turn):
-#        return self.unitArmy.unit.initiative < turn.unitArmy.unit.initiative
-
-#    def __repr__(self):
-#        return "<Turn {0}>".format(self.id)
-
-#    @property
-#    def dest(self):
-#        return self.destX, self.destY
-
-#    @dest.setter
-#    def dest(self, val):
-#        self.destX, self.destY = val
-
-#    @property
-#    def pos(self):
-#        return self.posX, self.posY
-
-#    @pos.setter
-#    def pos(self, val):
-#        self.posX, self.posY = val
-
 class Database:
     instance = None
     engine = create_engine(get_db_string(), echo=False)
