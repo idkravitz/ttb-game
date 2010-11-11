@@ -140,27 +140,13 @@ Movement = namedtuple('Movement', 'action, path')
 Placement = namedtuple('Placement', 'player, unit, HP')
 Action = namedtuple('Action', 'pos, dest, attack')
 
-import logging
-logger = logging.getLogger('logics')
-logger.setLevel(logging.DEBUG)
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
-ch.setFormatter(logging.Formatter("%(message)s"))
-
-logger.addHandler(ch)
-
 class Action(Action):
     @classmethod
     def set_process(cls, process):
         cls.process = process
 
     def __lt__(self, a):
-        try:
-            return self.process.get_unit(self.pos).initiative < self.process.get_unit(a.pos).initiative
-        except:
-            logger.debug("In: {0} < {1}".format(self.pos, a.pos))
-            logger.debug("process.previous_placements: " + str(self.process.previous_placements))
-            raise
+        return self.process.get_unit(self.pos).initiative < self.process.get_unit(a.pos).initiative
 
 class GameProcess(object):
     games = {}
@@ -175,8 +161,7 @@ class GameProcess(object):
         self.player_current_placements = {}
         self.turn = 0
         self.ready_players = 0
-        if self.faction not in self.factions:
-            self.factions[self.faction] = {unit.name: unit for unit in game.faction.units}
+        self.factions[self.faction] = {unit.name: unit for unit in game.faction.units}
         self.usernames = [rec[0] for rec in dbi().query(User.username).join(Player)
             .filter(Player.game_id==game.id).order_by(Player.player_number).all()]
 
@@ -228,7 +213,6 @@ class GameProcess(object):
         self.ready_players += 1
         if(not self.turn and self.ready_players == self.game.players_count):
             self._next_turn()
-            logger.debug("Placed: " + str(self.player_previous_placements))
 
     @classmethod
     def get(cls, game):
@@ -238,12 +222,11 @@ class GameProcess(object):
         return cls.games[name]
 
 def movement_phase(process):
-    logger.debug("Movement phase {0}".format(process.turn))
-    repeat = process.current_actions#dbi().query(Turn).filter_by(gameProcess_id=latest_process.id).all()
-    logger.debug("Actions at this phase:\n" + str(repeat))
-    #raise BadCommand(" ".join(str(a) for a in repeat) + " : " + " ".join(str(b) for b in process.previous_placements))
+    repeat = process.current_actions
     Action.set_process(process)
+    rand_state = random.getstate()
     random.shuffle(repeat)
+    random.setstate(rand_state)
     repeat.sort()
     sorted_moves = []
     repeat = [Movement(a, find_shortest_path(process.map, a.pos, a.dest)) for a in repeat]

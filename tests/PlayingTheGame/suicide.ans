@@ -49,24 +49,14 @@
     "status": "ok"
 }
 {
-    "status": "ok"
+    "message": "No started game with that name", 
+    "status": "badGame"
 }
 {
-    "status": "ok"
+    "message": "No started game with that name", 
+    "status": "badGame"
 }
 {
-    "players": {
-        "Gordon": {
-            "units": [
-                {
-                    "HP": 1, 
-                    "X": 0, 
-                    "Y": 0, 
-                    "name": "white"
-                }
-            ]
-        }
-    }, 
-    "status": "ok", 
-    "turnNumber": 3
+    "message": "No unfinished game with that name", 
+    "status": "badGame"
 }

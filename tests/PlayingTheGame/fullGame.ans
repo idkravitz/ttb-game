@@ -61,6 +61,50 @@
     "status": "ok"
 }
 {
+    "players": {
+        "Barney": {
+            "units": [
+                {
+                    "HP": 1, 
+                    "X": 0, 
+                    "Y": 3, 
+                    "name": "white"
+                }, 
+                {
+                    "HP": 1, 
+                    "X": 1, 
+                    "Y": 3, 
+                    "name": "white"
+                }
+            ]
+        }, 
+        "Gordon": {
+            "units": [
+                {
+                    "HP": 1, 
+                    "X": 0, 
+                    "Y": 2, 
+                    "name": "brown"
+                }, 
+                {
+                    "HP": 1, 
+                    "X": 1, 
+                    "Y": 2, 
+                    "name": "white"
+                }, 
+                {
+                    "HP": 1, 
+                    "X": 0, 
+                    "Y": 1, 
+                    "name": "brown"
+                }
+            ]
+        }
+    }, 
+    "status": "ok", 
+    "turnNumber": 4
+}
+{
     "status": "ok"
 }
 {
@@ -68,6 +112,16 @@
 }
 {
     "players": {
+        "Barney": {
+            "units": [
+                {
+                    "HP": 1, 
+                    "X": 0, 
+                    "Y": 3, 
+                    "name": "white"
+                }
+            ]
+        }, 
         "Gordon": {
             "units": [
                 {

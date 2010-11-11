@@ -138,8 +138,14 @@
             "units": [
                 {
                     "HP": 5, 
-                    "X": 2, 
-                    "Y": 0, 
+                    "X": 1, 
+                    "Y": 1, 
+                    "name": "regular"
+                }, 
+                {
+                    "HP": 5, 
+                    "X": 3, 
+                    "Y": 1, 
                     "name": "regular"
                 }, 
                 {
@@ -153,6 +159,12 @@
                     "X": 4, 
                     "Y": 0, 
                     "name": "speedy"
+                }, 
+                {
+                    "HP": 5, 
+                    "X": 2, 
+                    "Y": 0, 
+                    "name": "regular"
                 }
             ]
         }
@@ -181,6 +193,12 @@
                     "X": 2, 
                     "Y": 4, 
                     "name": "regular"
+                }, 
+                {
+                    "HP": 6, 
+                    "X": 1, 
+                    "Y": 3, 
+                    "name": "poisoned"
                 }
             ]
         }, 
@@ -188,8 +206,20 @@
             "units": [
                 {
                     "HP": 5, 
+                    "X": 1, 
+                    "Y": 1, 
+                    "name": "regular"
+                }, 
+                {
+                    "HP": 5, 
                     "X": 2, 
                     "Y": 0, 
+                    "name": "regular"
+                }, 
+                {
+                    "HP": 5, 
+                    "X": 3, 
+                    "Y": 1, 
                     "name": "regular"
                 }
             ]
@@ -212,6 +242,28 @@
                     "HP": 5, 
                     "X": 2, 
                     "Y": 4, 
+                    "name": "regular"
+                }, 
+                {
+                    "HP": 6, 
+                    "X": 1, 
+                    "Y": 3, 
+                    "name": "poisoned"
+                }, 
+                {
+                    "HP": 6, 
+                    "X": 3, 
+                    "Y": 3, 
+                    "name": "poisoned"
+                }
+            ]
+        }, 
+        "Gordon": {
+            "units": [
+                {
+                    "HP": 5, 
+                    "X": 1, 
+                    "Y": 1, 
                     "name": "regular"
                 }
             ]
