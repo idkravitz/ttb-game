@@ -12,6 +12,21 @@
 
 <script language="JavaScript">
 
+function changeCell(th, map)
+{
+    var fMap = document.getElementById("fullMap");
+    var w = document.getElementById("tableMap").rows[0].cells[0];
+    var y = Math.round(($(th).position().top - $(fMap).position().top)/$(w).width());
+    var x = Math.round(($(th).position().left - $(fMap).position().left)/$(w).width());
+    if ((x >= 0) && (x < map.length) && (y >= 0) && (y < map.length))
+    {
+        if (map[y][x] == '11')
+        {
+            map[y][x] = '1';
+        };
+    }
+}
+
 $(document).ready(function()
 {
 
@@ -61,14 +76,22 @@ $(document).ready(function()
     div.appendChild(pic);
     while (i--)
     {
-        fragment.appendChild(div.cloneNode(true));
+           var t = div.cloneNode(true);
+           $(t).mousedown(function(){
+               changeCell(this,map);
+           });
+           fragment.appendChild(t);
     }
     pic.src='images/house.bmp';
     pic.width = 40;
     i = 3;
     while (i--)
     {
-        fragment.appendChild(div.cloneNode(true));
+           var t = div.cloneNode(true);
+           $(t).mousedown(function(){
+               changeCell(this,map);
+           });
+           fragment.appendChild(t);
     }
     $('#control-panel').append(fragment);
 
