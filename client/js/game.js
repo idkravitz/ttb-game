@@ -17,7 +17,6 @@ function changeCell(th, map)
 
 function drawMap(map)
 {
-    alert(map);
     var n = map[0].length;
 
     var tableMap = document.getElementById("tableMap");

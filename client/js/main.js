@@ -1,6 +1,5 @@
 var sections; // descriptions of toplevel sections (which behave like pages)
 var session;  // session info, obtained from cookies
-var mapname;
 
 function setCookie(name, data)
 {
@@ -133,16 +132,16 @@ function describeSections()
             getJSON(addSid({ cmd: 'getGamesList' }),
                 function (json)
                 {
-                    nameGameMap = json.games[0].mapName;
-                    //nameGameMap = json.games[session.gameName].mapName;
+                    var i = 0;
+                    while (json.games[i].gameName != session.gameName) i++;
+                    nameGameMap = json.games[i].mapName;
                     getJSON(addSid({cmd:"getMap", name: nameGameMap}),
                         function(json)
                         {
                             map = json.map;
+                            drawMap(map);
                         }, null, true);
                 }, null, true);
-            alert(map);
-            drawMap(map);
         }
     }
 }
