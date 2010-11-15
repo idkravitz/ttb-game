@@ -124,6 +124,11 @@ function describeSections()
             $('#menu, #leave-game, #current-user').show();
             showCurrentUser('');
             initLobby();
+        },
+        'game': function()
+        {
+            $('nav, #nav-vertical-line, #current-user, #sign-out').hide();
+            $('#menu, #current-game, #leave-game').show();
         }
     }
 }

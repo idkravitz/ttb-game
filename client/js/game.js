@@ -1,17 +1,3 @@
-<!DOCTYPE html>
-
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Tactical turn-based game</title>
-    <link href="style.css" rel="stylesheet" type="text/css">
-</head>
-
-<script type="text/javascript" src="js/jquery-1.4.3.min.js"></script>
-<script type="text/javascript" src="js/jquery-ui-1.8.5.custom.min.js"></script>
-
-<script language="JavaScript">
-
 function changeCell(th, map)
 {
     var fMap = document.getElementById("fullMap");
@@ -25,7 +11,7 @@ function changeCell(th, map)
             map[y][x] = '1';
         };
     }
-}
+};
 
 $(document).ready(function()
 {
@@ -147,40 +133,3 @@ $(document).ready(function()
     });
 
 });
-
-</script>
-
-<body>
-    <ul id="menu">
-        <li id="current-game">Game name</li>
-    </ul>
-
-    <section id="content">
-        <div id="field">
-
-        <div id="fullMap">
-        	<table id="tableMap"></table>
-        </div>
-
-        </div>
-        <div id="panel">
-            <div id="help">
-                <p>Place units on red cell</p>
-            </div>
-            <div id="control-panel">
-                <hr></hr>
-                <p>Units</p>
-            </div>
-            <div id="info">
-                <hr></hr>
-                <p>Name of Unit:</p>
-                <div id="about">About!</div>
-            </div>
-        </div>
-    </section>
-
-    <footer>
-        <p>FEFU IMCS, 2010</p>
-    </footer>    
-</body>
-</html>

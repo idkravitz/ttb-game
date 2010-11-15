@@ -11,6 +11,7 @@
     <script type="text/javascript" src="js/json2.js"></script>
     <script type="text/javascript" src="js/jquery.cookie.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
+    <script type="text/javascript" src="js/game.js"></script>
 </head>
 
 <body>
@@ -22,6 +23,7 @@
         <li id="current-user"></li>
         <li id="sign-out" class="menu-link">Sign out</li>
         <li id="leave-game" class="menu-link">Leave game</li>
+        <li id="current-game"></li>
     </ul>
 
     <section id="content">
@@ -114,8 +116,33 @@
                 <input type="submit" value="Send" />
             </form>
             <div id="ready"
-                <p>Ready:</p>
-                <input type="checkbox" name="status" id="set-status" />
+                <p>
+                    Ready:
+                    <input type="checkbox" name="status" id="set-status" />
+                </p>
+            </div>
+        </section>
+
+        <section id="game">
+            <div id="field">
+                <div id="fullMap">
+        	        <table id="tableMap"></table>
+                </div>
+            </div>
+
+            <div id="panel">
+                <div id="help">
+                    <p>Place units on red cell</p>
+                </div>
+                <div id="control-panel">
+                    <hr></hr>
+                    <p>Units</p>
+                </div>
+                <div id="info">
+                    <hr></hr>
+                    <p>Name of Unit:</p>
+                    <div id="about">About!</div>
+                </div>
             </div>
         </section>
 
