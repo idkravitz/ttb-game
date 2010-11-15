@@ -1,5 +1,6 @@
 var sections; // descriptions of toplevel sections (which behave like pages)
 var session;  // session info, obtained from cookies
+var mapname;
 
 function setCookie(name, data)
 {
@@ -99,7 +100,7 @@ function innerShowSection()
 
     $('#content > *, #menu, #menu > li').hide();
     $('#' + section).show();
-    if (section != 'registration' && section != 'lobby')
+    if (section != 'registration' && section != 'lobby' && section != 'game')
     {
         $('nav > p').removeClass('nav-current');
         $('#nav-' + section).addClass('nav-current');
@@ -127,8 +128,21 @@ function describeSections()
         },
         'game': function()
         {
-            $('nav, #nav-vertical-line, #current-user, #sign-out').hide();
             $('#menu, #current-game, #leave-game').show();
+            var map;
+            getJSON(addSid({ cmd: 'getGamesList' }),
+                function (json)
+                {
+                    nameGameMap = json.games[0].mapName;
+                    //nameGameMap = json.games[session.gameName].mapName;
+                    getJSON(addSid({cmd:"getMap", name: nameGameMap}),
+                        function(json)
+                        {
+                            map = json.map;
+                        }, null, true);
+                }, null, true);
+            alert(map);
+            drawMap(map);
         }
     }
 }
@@ -259,7 +273,7 @@ function getGamesList()
 
 function joinGame()
 {
-    var gameName = $(this).text()
+    var gameName = $(this).text();
     getJSON(addSid({cmd: "joinGame", gameName: gameName}), function(json)
     {
         session = updateCookie('session', {gameName: gameName});

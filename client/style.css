@@ -330,6 +330,7 @@ form input[type="submit"] {
     height: 550px;
     border: 1px solid grey;
     margin: 0 0 60px 20px;
+    position: absolute;
 }
 
 #fullMap {
@@ -369,7 +370,7 @@ table#tableMap td {
     font-size: 16px;
 }
 
-#about {
+#about-fact {
     display: none;
 }
     

@@ -4,6 +4,8 @@ function changeCell(th, map)
     var w = document.getElementById("tableMap").rows[0].cells[0];
     var y = Math.round(($(th).position().top - $(fMap).position().top)/$(w).width());
     var x = Math.round(($(th).position().left - $(fMap).position().left)/$(w).width());
+    if (x == map.length) x--;
+    if (y == map.length) y--;
     if ((x >= 0) && (x < map.length) && (y >= 0) && (y < map.length))
     {
         if (map[y][x] == '11')
@@ -13,23 +15,10 @@ function changeCell(th, map)
     }
 };
 
-$(document).ready(function()
+function drawMap(map)
 {
-
-    var strMap='11111.x1x...x...x2x.22222';
-
-    var n = Math.sqrt(strMap.length);
-    map = new Array();
-    var k = 0;
-    for(var i = 0; i < n; i++)
-    {
-        map[i] = new Array();
-        for(var j = 0; j < n; j++)
-        {
-            map[i][j] = strMap.charAt(k);
-            k++;
-        }
-    }
+    alert(map);
+    var n = map[0].length;
 
     var tableMap = document.getElementById("tableMap");
     var row = tableMap.insertRow(0);
@@ -82,11 +71,11 @@ $(document).ready(function()
     $('#control-panel').append(fragment);
 
     $('.factDiv').dblclick(function(){
-        $('#about').show();
+        $('#about-fact').show();
     });
 
     $('#content').click(function(){
-        $('#about').hide();
+        $('#about-fact').hide();
     });
 
     $('.factDiv').draggable({});
@@ -99,14 +88,8 @@ $(document).ready(function()
             x = Math.round((ui.draggable.offset().top - $(cell).offset().top + 2)/$(cell).width());
             y = Math.round((ui.draggable.offset().left - $(cell).offset().left + 2)/$(cell).width());
             //don't have n cell (n-1 the last)
-            if (x == n)
-            {
-                x--;
-            }
-            if (y == n)
-            {
-                y--;
-            }
+            if (x == n) x--;
+            if (y == n) y--;
             newCell = document.getElementById("tableMap").rows[x].cells[y];
       	    posY = $(newCell).offset().top;
 		    if(map[x][y] == '1')
@@ -132,4 +115,4 @@ $(document).ready(function()
         }
     });
 
-});
+};
