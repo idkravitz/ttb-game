@@ -116,7 +116,11 @@ function describeSections()
     sections = {
         'registration': $.noop,
         'about': $.noop,
-        'active-games': getGamesList,
+        'active-games': function()
+        {
+            $('#active-games > *').hide();
+            getGamesList();
+        },
         'create-game': initCreateGame,
         'upload-army': initUploadArmy,
         'lobby': function()
@@ -229,36 +233,32 @@ function getGamesList()
             $('tr', table).not($('tr', table).first()).remove();
             $.each(json.games, function(i, game)
             {
-                if (game.gameStatus != 'finished')
+                var row = $('<tr/>');
+
+                var name = game.gameName;
+                if (!session.gameName &&
+                    (game.connectedPlayersCount != game.playersCount) &&
+                    (game.gameStatus == 'not_started'))
                 {
-                    var row = $('<tr/>');
-
-                    var name = game.gameName;
-                    if (!session.gameName &&
-                        (game.connectedPlayersCount != game.playersCount) &&
-                        (game.gameStatus == 'not_started'))
-                    {
-                        name = $('<a/>', {href: '#', text: name});
-                    }
-
-                    var players = game.connectedPlayersCount + ' / ' + game.playersCount;
-                    var order = [
-                        name,
-                        game.gameStatus.replace('_', ' '),
-                        players,
-                        game.mapName,
-                        game.factionName,
-                        game.totalCost
-                    ];
-                    $.each(order,
-                        function(j, value){
-                            $(row).append(
-                                $('<td/>').append(value)
-                            );
-                        }
-                    );
-                    table.append(row);
+                    name = $('<a/>', {href: '#', text: name});
                 }
+
+                var players = game.connectedPlayersCount + ' / ' + game.playersCount;
+                var order = [
+                    name,
+                    game.gameStatus.replace('_', ' '),
+                    players,
+                    game.mapName,
+                    game.factionName,
+                    game.totalCost
+                ];
+                $.each(order, function(j, value)
+                {
+                    $(row).append(
+                        $('<td/>').append(value)
+                    );
+                });
+                table.append(row);
             });
             $('a', table).click(joinGame);
             empty_message.hide();

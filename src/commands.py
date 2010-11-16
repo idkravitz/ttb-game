@@ -244,19 +244,19 @@ def get_winner(game):
 def getGamesList(sid):
     user = dbi().get_user(sid)
     games = []
-    for game in dbi().query(Game).all():
+    for game in dbi().query(Game).filter(Game.state != 'finished'):
         rec = {
-                  "gameName": game.name,
-                  "mapName": game.map.name,
-                  "factionName": game.faction.name,
-                  "gameStatus": game.state,
-                  "playersCount": game.players_count,
-                  "connectedPlayersCount":
-                    dbi().query(Player).filter_by(game_id=game.id).count(),
-                  "totalCost": game.total_cost,
-             }
-        if game.state == 'finished':
-            rec["winner"] = get_winner(game)
+            "gameName": game.name,
+            "mapName": game.map.name,
+            "factionName": game.faction.name,
+            "gameStatus": game.state,
+            "playersCount": game.players_count,
+            "connectedPlayersCount":
+              dbi().query(Player).filter_by(game_id=game.id).count(),
+            "totalCost": game.total_cost,
+        }
+        #if game.state == 'finished':
+        #    rec["winner"] = get_winner(game)
         games.append(rec)
     return response_ok(games=games)
 
