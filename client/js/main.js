@@ -304,7 +304,7 @@ function initCreateGame()
 
 function initUploadArmy()
 {
-    updateSelect('getFactionList', 'faction', '#upload-a-');
+    updateSelect('getFactionList', 'faction', '#upload-');
 }
 
 function initNavigation()
@@ -401,9 +401,10 @@ function submitForm(form, handler)
 
     var data = grabForm(form);
     var commands = {
-        registration: function () { return { cmd: 'register' }; },
-        creation: function () { return addSid({ cmd: 'createGame' }); },
-        message: function() { return addGame(addSid({cmd: 'sendMessage'})); }
+        registration: function() { return { cmd: 'register' }; },
+        creation: function() { return addSid({ cmd: 'createGame' }); },
+        upload: function() { return addSid({ cmd: 'uploadArmy' }); },
+        message: function() { return addGame(addSid({ cmd: 'sendMessage'})); }
     }
 
     getJSON(
@@ -457,6 +458,34 @@ function initBinds()
         var form = $(this);
         return submitForm(form,
             function() { $('#message-text', form).val(''); });
+    });
+
+    // Upload Army
+    $('form[name="upload"]').submit(function()
+    {
+        var form = $(this);
+        return submitForm($(this), function(json, data)
+        {
+        });
+    });
+
+    $('#upload-faction', 'form[name="upload"]').click(function()
+    {
+        var fName = $(this).text();
+            getJSON(addSid({ cmd: 'getFaction', factionName: fName }),
+                function (json)
+                {
+                    var uList = document.getElementById("upload-armyUnits");
+                    var row = uList.insertRow(0);
+                    for (var i = 0; i < json.unitList.length; i++)
+                    {
+                        var row = uList.insertRow(i);
+                        var cell = row.insertCell(0);
+                        $(cell).html('<input type="text" name="name" value="'+json.unitList[i].name+'">');
+                        cell = row.insertCell(1);
+                        $(cell).html('<input type="text" name="count">');
+                    }
+                }, null, true);
     });
 }
 

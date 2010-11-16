@@ -72,12 +72,18 @@
         </section>
 
         <section id="upload-army" class="main-section">
-            <form name="upload-a" action="/" method="post">
-                <label for="upload-a-title">Name</label>
-                <input type="text" id="upload-a-title" name="armyName">
+            <form name="upload" action="/" method="post">
+                <label for="upload-armyName">Name</label>
+                <input type="text" id="upload-armyName" name="armyName">
 
-                <label for="upload-a-faction">Faction</label>
-                <select id="upload-a-faction" name="factionName"></select>
+                <label for="upload-faction">Faction</label>
+                <select id="upload-faction" name="factionName"></select>
+
+                <table id="upload-armyUnits" name="armyUnits"></table>
+
+                <div class="submit">
+                    <input type="submit" value="Ok">
+                </div>
             </form>
         </section>
 
