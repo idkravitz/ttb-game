@@ -388,22 +388,27 @@ function submitForm(form, handler)
     function grabForm(form)
     {
         var obj = {};
-        var chobj = {};
+        var listobj =[];
+        var chobj ={};
         $("input[type!='submit'], textarea", form).each(function(i, v)
         {
             if((form.attr('name') == 'upload') && (($(v).attr('name') == 'name') || ($(v).attr('name') == 'count')))
+            {
+                if(chobj.length == 2) {
+                    listobj.push(chobj);
+                    chobj={};
+                }
                 chobj[$(v).attr('name')] = $(v).hasClass('int-value') ? parseInt($(v).val()) : $(v).val();
+            }
             else
-                 obj[$(v).attr('name')] = $(v).hasClass('int-value') ? parseInt($(v).val()) : $(v).val();
+                obj[$(v).attr('name')] = $(v).hasClass('int-value') ? parseInt($(v).val()) : $(v).val();
         });
         $("select", form).each(function(i, v)
         {
             obj[$(v).attr('name')] = $(':selected', v).text();
         });
         if(form.attr('name') == 'upload')
-        {
-             obj['armyUnits'] = [chobj];
-        }
+            obj['armyUnits'] = listobj;
         return obj;
     }
 
