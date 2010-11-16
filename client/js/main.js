@@ -487,24 +487,20 @@ function initBinds()
         return false;
     });
 
-    //$('#upload-faction', 
     function fill_units()
     {
         var fName = $('#upload-army-faction :selected').text();
-        getJSON(addSid({ cmd: 'getFaction', factionName: fName }),
-            function (json)
-            {
-                var uList = document.getElementById("upload-armyUnits");
-                $(uList).empty();
-                //var row = uList.insertRow(0);
-                for (var i = 0; i < json.unitList.length; i++)
-                {
-                    var row = uList.insertRow(i);
-                    var cell = row.insertCell(0);
-                    $(cell).html('<input type="text" name="name" value="'+json.unitList[i].name+'">');
-                    cell = row.insertCell(1);
-                    $(cell).html('<input type="text" name="count">');
-                }
+        getJSON(addSid({ cmd: 'getFaction', factionName: fName }), function (json) {
+                var uList = $("#upload-armyUnits").empty();
+                $.each(json.unitList, function(i, v) {
+                    uList.append(
+                        $('<tr/>').append(
+                            $('<td/>').append($('<input/>', { type: "text", name: "name", value: v.name}))
+                        ).append(
+                            $('<td/>').append($('<input/>', { type: "text", name: "count"}))
+                        )
+                    );
+                });
             }, null, true);
     }
 
