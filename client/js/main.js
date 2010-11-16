@@ -470,18 +470,16 @@ function initBinds()
             alert(json);
         },
         function(form) {
-            var obj = {};
-            obj.armyName = $('input[name="armyName"]', form).val();
-            obj.factionName = $('#upload-army-faction :selected').text();
-            var units = new Array();
-            $('table tr', form).each(function(i, v) {
-                units.push({
-                    name: $('input[name="name"]', v).val(), 
-                    count: $('input[name="count"]', v).val() 
-                });
-            });
-            obj.armyUnits = units;
-            return obj
+            return {
+                'armyName': $('input[name="armyName"]', form).val(),
+                'factionName': $('#upload-army-faction :selected').text(),
+                'armyUnits': $.map($('table tr', form), function(v, i) {
+                    return {
+                        'name': $('input[name="name"]', v).val(), 
+                        'count': $('input[name="count"]', v).val() 
+                    };
+                })
+            };
         });
         return false;
     });
@@ -490,17 +488,17 @@ function initBinds()
     {
         var fName = $('#upload-army-faction :selected').text();
         getJSON(addSid({ cmd: 'getFaction', factionName: fName }), function (json) {
-                var uList = $("#upload-armyUnits").empty();
-                $.each(json.unitList, function(i, v) {
-                    uList.append(
-                        $('<tr/>').append(
-                            $('<td/>').append($('<input/>', { type: "text", name: "name", value: v.name}))
-                        ).append(
-                            $('<td/>').append($('<input/>', { type: "text", name: "count"}))
-                        )
-                    );
-                });
-            }, null, true);
+            var uList = $("#upload-armyUnits").empty();
+            $.each(json.unitList, function(i, v) {
+                uList.append(
+                    $('<tr/>').append(
+                        $('<td/>').append($('<input/>', { type: "text", name: "name", value: v.name}))
+                    ).append(
+                        $('<td/>').append($('<input/>', { type: "text", name: "count"}))
+                    )
+                );
+            });
+        }, null, true);
     }
 
     $('#upload-army-faction').change(fill_units);
