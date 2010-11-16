@@ -72,14 +72,14 @@
         </section>
 
         <section id="upload-army" class="main-section">
-            <form name="upload" action="/" method="post">
-                <label for="upload-armyName">Name</label>
-                <input type="text" id="upload-armyName" name="armyName">
+            <form name="upload-army" action="/" method="post">
+                <label>Name</label>
+                <input type="text" name="armyName">
 
-                <label for="upload-faction">Faction</label>
-                <select id="upload-faction" name="factionName"></select>
+                <label>Faction</label>
+                <select id="upload-army-faction" name="factionName"></select>
 
-                <table id="upload-armyUnits" name="armyUnits"></table>
+                <table id="upload-armyUnits"></table>
 
                 <div class="submit">
                     <input type="submit" value="Ok">
@@ -121,11 +121,11 @@
                 <textarea id="message-text" name="text"></textarea>
                 <input type="submit" value="Send" />
             </form>
-            <div id="ready"
+            <div id="ready">
                 <p>
                     Ready:
                     <input type="checkbox" name="status" id="set-status" />
-                    <input type="button" value='game' onClick="showSection('game')">
+                    <input type="button" value='game' onClick="showSection('game')" />
                 </p>
             </div>
         </section>

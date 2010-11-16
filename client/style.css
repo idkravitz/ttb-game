@@ -312,7 +312,7 @@ form input[type="submit"] {
     display: block;
 }
 
-table#upload-armyUnits td input {
+#upload-army form table td input {
     width: 50px;
     margin: 5px;
     padding: 5px;

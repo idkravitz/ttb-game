@@ -281,7 +281,7 @@ function joinGame()
     return false;
 }
 
-function updateSelect(command, attr, id)
+function updateSelect(command, attr, id, extra_success)
 {
     getJSON(
         addSid({ cmd: command }),
@@ -292,6 +292,7 @@ function updateSelect(command, attr, id)
             $.each(json[array], function(i, option) {
                 select.append(new Option(option[attr], i));
             });
+            extra_success(json);
         }
     );
 }
@@ -304,7 +305,9 @@ function initCreateGame()
 
 function initUploadArmy()
 {
-    updateSelect('getFactionList', 'faction', '#upload-');
+    updateSelect('getFactionList', 'faction', '#upload-army-', function() {
+        $('#upload-army-faction').change();
+    });
 }
 
 function initNavigation()
@@ -373,7 +376,7 @@ function addGame(data)
     return $.extend(data, { gameName: session.gameName });
 }
 
-function submitForm(form, handler)
+function submitForm(form, handler, grabber)
 {
     function formError(form, text)
     {
@@ -388,35 +391,22 @@ function submitForm(form, handler)
     function grabForm(form)
     {
         var obj = {};
-        var listobj =[];
-        var chobj ={};
         $("input[type!='submit'], textarea", form).each(function(i, v)
         {
-            if((form.attr('name') == 'upload') && (($(v).attr('name') == 'name') || ($(v).attr('name') == 'count')))
-            {
-                if(chobj.length == 2) {
-                    listobj.push(chobj);
-                    chobj={};
-                }
-                chobj[$(v).attr('name')] = $(v).hasClass('int-value') ? parseInt($(v).val()) : $(v).val();
-            }
-            else
-                obj[$(v).attr('name')] = $(v).hasClass('int-value') ? parseInt($(v).val()) : $(v).val();
+            obj[$(v).attr('name')] = $(v).hasClass('int-value') ? parseInt($(v).val()) : $(v).val();
         });
         $("select", form).each(function(i, v)
         {
             obj[$(v).attr('name')] = $(':selected', v).text();
         });
-        if(form.attr('name') == 'upload')
-            obj['armyUnits'] = listobj;
         return obj;
     }
 
-    var data = grabForm(form);
+    var data = grabber ? grabber(form): grabForm(form);
     var commands = {
         registration: function() { return { cmd: 'register' }; },
         creation: function() { return addSid({ cmd: 'createGame' }); },
-        upload: function() { return addSid({ cmd: 'uploadArmy' }); },
+        'upload-army': function() { return addSid({ cmd: 'uploadArmy' }); },
         message: function() { return addGame(addSid({ cmd: 'sendMessage'})); }
     }
 
@@ -474,32 +464,51 @@ function initBinds()
     });
 
     // Upload Army
-    $('form[name="upload"]').submit(function()
+    $('form[name="upload-army"]').submit(function()
     {
         var form = $(this);
-        return submitForm($(this), function(json, data)
-        {
+        submitForm(form, function(json, data) { 
+            alert(json);
+        },
+        function(form) {
+            var obj = {};
+            obj.armyName = $('input[name="armyName"]', form).val();
+            obj.factionName = $('#upload-army-faction :selected').text();
+            var units = new Array();
+            $('table tr', form).each(function(i, v) {
+                units.push({
+                    name: $('input[name="name"]', v).val(), 
+                    count: $('input[name="count"]', v).val() 
+                });
+            });
+            obj.armyUnits = units;
+            return obj
         });
+        return false;
     });
 
-    $('#upload-faction', 'form[name="upload"]').click(function()
+    //$('#upload-faction', 
+    function fill_units()
     {
-        var fName = $(this).text();
-            getJSON(addSid({ cmd: 'getFaction', factionName: fName }),
-                function (json)
+        var fName = $('#upload-army-faction :selected').text();
+        getJSON(addSid({ cmd: 'getFaction', factionName: fName }),
+            function (json)
+            {
+                var uList = document.getElementById("upload-armyUnits");
+                $(uList).empty();
+                //var row = uList.insertRow(0);
+                for (var i = 0; i < json.unitList.length; i++)
                 {
-                    var uList = document.getElementById("upload-armyUnits");
-                    var row = uList.insertRow(0);
-                    for (var i = 0; i < json.unitList.length; i++)
-                    {
-                        var row = uList.insertRow(i);
-                        var cell = row.insertCell(0);
-                        $(cell).html('<input type="text" name="name" value="'+json.unitList[i].name+'">');
-                        cell = row.insertCell(1);
-                        $(cell).html('<input type="text" name="count">');
-                    }
-                }, null, true);
-    });
+                    var row = uList.insertRow(i);
+                    var cell = row.insertCell(0);
+                    $(cell).html('<input type="text" name="name" value="'+json.unitList[i].name+'">');
+                    cell = row.insertCell(1);
+                    $(cell).html('<input type="text" name="count">');
+                }
+            }, null, true);
+    }
+
+    $('#upload-army-faction').change(fill_units);
 }
 
 $(document).ready(function()
