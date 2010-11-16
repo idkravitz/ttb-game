@@ -43,12 +43,12 @@ function getJSON(data, handler, error_handler, disable_wait_cursor)
                     error_handler = alert;
                 error_handler(json.message);
             }
+            if (disable_wait_cursor)
+            {
+                enableAjaxCursorChange();
+            }
         }
     );
-    if (disable_wait_cursor)
-    {
-        enableAjaxCursorChange();
-    }
 }
 
 function disableAjaxCursorChange()
@@ -264,9 +264,7 @@ function getGamesList()
             empty_message.hide();
             table.show();
             setTimeout("getGamesList()", 3000);
-        },
-        null,
-        true
+        }, null, true
     );
 }
 
