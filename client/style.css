@@ -302,9 +302,8 @@ form .error img {
     width: 100%;
 }
 
-#ready {
+#status {
     float: right;
-    top: -32px;
     display: block;
 }
 

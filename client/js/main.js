@@ -67,7 +67,6 @@ function enableAjaxCursorChange()
     });
 }
 
-
 function showSection(section_name)
 {
     if (getCurrentSection() == section_name)
@@ -503,6 +502,13 @@ function initBinds()
     $('#creation-army').change(function () {
         var aName = $('#creation-army :selected').text();
         getJSON(addSid({ cmd: 'chooseArmy', armyName: aName }), function (json) {}, null, true);
+    });
+
+    $('#set-status').click(function(){
+        if ($('#set-status').is(':checked'))
+            getJSON(addSid({ cmd: 'setPlayerStatus', status: 'ready' }), function (json) {}, null, true)
+        else
+            getJSON(addSid({ cmd: 'setPlayerStatus', status: 'in_lobby' }), function (json) {}, null, true);
     });
 
     $('#upload-army-faction').change(function () {
