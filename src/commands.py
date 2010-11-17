@@ -434,6 +434,12 @@ def getArmiesList(sid):
     for army in user.armies ]
     return response_ok(armies=result)
 
+@Command(str)
+def getArmies(sid):
+    dbi().check_sid(sid)
+    armies = [{"army": name} for name in dbi().query(Army.name).all()]
+    return response_ok(armies=armies)
+
 @Command(str, str)
 def deleteArmy(sid, armyName):
     user = dbi().get_user(sid)

@@ -57,3 +57,8 @@
     "cmd": "getArmiesList",
     "sid": "GordonFreeman"
 }
+
+{
+    "cmd": "getArmies",
+    "sid": "GordonFreeman"
+}

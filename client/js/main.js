@@ -152,6 +152,7 @@ function describeSections()
 
 function initLobby()
 {
+    updateSelect('getArmies', 'army', '#creation-');
     if(!session)
     {
         showSection("registration");
@@ -284,7 +285,9 @@ function updateSelect(command, attr, id, extra_success)
     getJSON(
         addSid({ cmd: command }),
         function (json) {
-            var array = attr + 's';
+            var array;
+            if (attr == 'army') array = 'armies'
+            else array = attr + 's';
             var select = $(id + attr);
             select.empty();
             $.each(json[array], function(i, option) {
