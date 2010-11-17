@@ -500,6 +500,11 @@ function initBinds()
         });
     });
 
+    $('#creation-army').change(function () {
+        var aName = $('#creation-army :selected').text();
+        getJSON(addSid({ cmd: 'chooseArmy', armyName: aName }), function (json) {}, null, true);
+    });
+
     $('#upload-army-faction').change(function () {
         var fName = $('#upload-army-faction :selected').text();
         $('#unit-info').empty();
