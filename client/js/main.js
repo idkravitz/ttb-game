@@ -137,7 +137,7 @@ function initGame()
 function initLobby()
 {
     getArmiesList();
-    if(!cookie.isEmpty())
+    if(cookie.isEmpty())
     {
         showSection("registration");
     }

@@ -33,7 +33,7 @@ Cookie.prototype = {
     },
     isEmpty: function ()
     {
-        return this.fields != {};
+        return this.fields == {};
     }
 };
 cookie = new Cookie();
