@@ -128,25 +128,27 @@ function describeSections()
             showCurrentUser('');
             initLobby();
         },
-        'game': function()
-        {
-            $('#menu, #current-game, #leave-game').show();
-            var map;
-            getJSON(addSid({ cmd: 'getGamesList' }),
-                function (json)
-                {
-                    var i = 0;
-                    while (json.games[i].gameName != session.gameName) i++;
-                    nameGameMap = json.games[i].mapName;
-                    getJSON(addSid({cmd:"getMap", name: nameGameMap}),
-                        function(json)
-                        {
-                            map = json.map;
-                            drawMap(map);
-                        }, null, true);
-                }, null, true);
-        }
+        'game': initGame
     }
+}
+
+function initGame()
+{
+    $('#menu, #current-game, #leave-game').show();
+    var map;
+    getJSON(addSid({ cmd: 'getGamesList' }),
+        function (json)
+        {
+            var i = 0;
+            while (json.games[i].gameName != session.gameName) i++;
+            nameGameMap = json.games[i].mapName;
+            getJSON(addSid({cmd:"getMap", name: nameGameMap}),
+                function(json)
+                {
+                    map = json.map;
+                    drawMap(map);
+                }, null, true);
+        }, null, true);
 }
 
 function initLobby()
