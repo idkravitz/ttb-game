@@ -50,7 +50,6 @@ function enableAjaxCursorChange()
     });
 }
 
-
 function showSection(section_name)
 {
     if (getCurrentSection() == section_name)
@@ -112,30 +111,32 @@ function describeSections()
             showCurrentUser('');
             initLobby();
         },
-        'game': function()
-        {
-            $('#menu, #current-game, #leave-game').show();
-            var map;
-            getJSON(addSid({ cmd: 'getGamesList' }),
-                function (json)
-                {
-                    var i = 0;
-                    while (json.games[i].gameName != Cookie.fields.gameName) i++;
-                    nameGameMap = json.games[i].mapName;
-                    getJSON(addSid({cmd:"getMap", name: nameGameMap}),
-                        function(json)
-                        {
-                            map = json.map;
-                            drawMap(map);
-                        }, null, true);
-                }, null, true);
-        }
+        'game': initGame
     }
+}
+
+function initGame()
+{
+    $('#menu, #current-game, #leave-game').show();
+    var map;
+    getJSON(addSid({ cmd: 'getGamesList' }),
+        function (json)
+        {
+            var i = 0;
+            while (json.games[i].gameName != session.gameName) i++;
+            nameGameMap = json.games[i].mapName;
+            getJSON(addSid({cmd:"getMap", name: nameGameMap}),
+                function(json)
+                {
+                    map = json.map;
+                    drawMap(map);
+                }, null, true);
+        }, null, true);
 }
 
 function initLobby()
 {
-    updateSelect('getArmies', 'army', '#creation-');
+    getArmiesList();
     if(!Cookie.isEmpty())
     {
         showSection("registration");
@@ -145,6 +146,31 @@ function initLobby()
         showSection("active-games");
     }
     getLobbyState();
+}
+
+function getArmiesList()
+{
+    getJSON(addSid({ cmd: 'getGamesList'}), function (json)
+    {
+        var nFaction;
+        var nCost;
+        for (var i = 0; i < json.games.length; i++)
+        {
+            if (json.games[i].gameName == session.gameName)
+            {
+                nFaction = json.games[i].factionName;
+                nCost = json.games[i].totalCost;
+            }
+        }
+        getJSON(addSid({ cmd: 'getArmiesList'}), function (json)
+        {
+            for (var i = 0; i < json.armies.length; i++)
+            {
+                if ((json.armies[i].cost <= nCost) && (json.armies[i].faction == nFaction))
+                    $('#creation-army').append($("<option value="+i+">"+json.armies[i].name+"</option>") );
+            }
+        }, null, true);
+    }, null, true);
 }
 
 function getLobbyState()
@@ -191,6 +217,12 @@ function getLobbyState()
                 .append($('<td/>', {class: 'state', text: rec.status.replace('_', ' ')}))
             );
         });
+        var startGame = true;
+        for (var i = 0; i < json.players.length; i++)
+        {
+            if (json.players[i].status == 'in_lobby') startGame = false;
+        }
+        if (startGame) showSection("game");
         delayedSetTimeout();
     }, null, true);
 }
@@ -268,9 +300,7 @@ function updateSelect(command, attr, id, extra_success)
     getJSON(
         addSid({ cmd: command }),
         function (json) {
-            var array;
-            if (attr == 'army') array = 'armies'
-            else array = attr + 's';
+            var array = attr + 's';
             var select = $(id + attr);
             select.empty();
             $.each(json[array], function(i, option) {
@@ -483,6 +513,11 @@ function initBinds()
     $('#creation-army').change(function () {
         var aName = $('#creation-army :selected').text();
         getJSON(addSid({ cmd: 'chooseArmy', armyName: aName }), function (json) {}, null, true);
+    });
+
+    $('#set-status').click(function(){
+        var status = $('#set-status').is(':checked') ? 'ready' : 'in_lobby';
+        getJSON(addSid({ cmd: 'setPlayerStatus', status: status }), function (json) {}, null, true)
     });
 
     $('#upload-army-faction').change(function () {

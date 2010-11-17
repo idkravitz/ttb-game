@@ -136,13 +136,14 @@
                 <textarea id="message-text" name="text"></textarea>
                 <input type="submit" value="Send" />
             </form>
-            <div id="ready">
+
+            <form id="status" name="status">
                 <p>
                     Ready:
-                    <input type="checkbox" name="status" id="set-status" />
+                    <input type="checkbox" id="set-status" name="status" />
                     <input type="button" value='game' onClick="showSection('game')" />
                 </p>
-            </div>
+            </form>
         </section>
 
         <section id="game">
