@@ -209,6 +209,12 @@ function getLobbyState()
                 .append($('<td/>', {class: 'state', text: rec.status.replace('_', ' ')}))
             );
         });
+        var startGame = true;
+        for (var i = 0; i < json.players.length; i++)
+        {
+            if (json.players[i].status == 'in_lobby') startGame = false;
+        }
+        if (startGame) showSection("game");
         delayedSetTimeout();
     }, null, true);
 }
