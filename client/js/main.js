@@ -308,14 +308,14 @@ function initManageArmies()
     getJSON(addSid({ cmd: 'getArmiesList' }), function (json) {
         $('#army-view > *').hide();
         $('#army-view').show();
-        if(json.armies) {
+        if(json.armies.length) {
             var table = $('#army-view table');
             $('tr', table).not($('tr', table).first()).remove();
-            $.each(json.armies, function (name, params) {
+            $.each(json.armies, function (i, army) {
                 table.append($('<tr/>')
-                    .append($('<td/>').text(name))
-                    .append($('<td/>').text(params.faction))
-                    .append($('<td/>').text(params.cost)));
+                    .append($('<td/>').text(army.name))
+                    .append($('<td/>').text(army.faction))
+                    .append($('<td/>').text(army.cost)));
             });
             table.show();
         }

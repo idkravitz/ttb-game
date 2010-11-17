@@ -426,12 +426,12 @@ def getArmy(sid, armyName):
 @Command(str)
 def getArmiesList(sid):
     user = dbi().get_user(sid)
-    result = {
-        army.name: {
+    result = [ {
+            'name': army.name,
             'cost': sum(squad.unit.cost * squad.count for squad in army.unitArmy),
             'faction': army.unitArmy[0].unit.faction.name,
         }
-    for army in user.armies }
+    for army in user.armies ]
     return response_ok(armies=result)
 
 @Command(str, str)
