@@ -505,10 +505,8 @@ function initBinds()
     });
 
     $('#set-status').click(function(){
-        if ($('#set-status').is(':checked'))
-            getJSON(addSid({ cmd: 'setPlayerStatus', status: 'ready' }), function (json) {}, null, true)
-        else
-            getJSON(addSid({ cmd: 'setPlayerStatus', status: 'in_lobby' }), function (json) {}, null, true);
+        var status = $('#set-status').is(':checked') ? 'ready' : 'in_lobby';
+        getJSON(addSid({ cmd: 'setPlayerStatus', status: status }), function (json) {}, null, true)
     });
 
     $('#upload-army-faction').change(function () {
