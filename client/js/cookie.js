@@ -1,44 +1,39 @@
-cookie = new function Cookie() {
-
-    this.get = function (field)
-    {
-        return this.fields[field];
-    };
-    
-    this.store = function (data)
-    {
-        this.fields = $.extend(read(), data);
-        write(this.fields);
-    };
-
-    this.remove = function (field)
-    {
-        delete this.fields[field];
-        write(this.fields);
-    };
-
-    this.clear = function ()
-    {
-        this.fields = {};
-        write(this.fields);
-    };
-
-    this.isEmpty = function ()
-    {
-        return this.fields != {};
-    };
-
+function Cookie() {
+    this.fields = this._read();
+};
+Cookie.prototype = {
     // internal functions
-
-    function read()
+    _read: function ()
     {
         return JSON.parse($.cookie('session'));
-    }
-
-    function write(data)
+    },
+    _write: function (data)
     {
         $.cookie('session', JSON.stringify(data));
+    },
+    // Public
+    get: function (field)
+    {
+        return this.fields[field];
+    },
+    store: function (data)
+    {
+        this.fields = $.extend(this._read(), data);
+        this._write(this.fields);
+    },
+    remove: function (field)
+    {
+        delete this.fields[field];
+        this._write(this.fields);
+    },
+    clear: function ()
+    {
+        this.fields = {};
+        this._write(this.fields);
+    },
+    isEmpty: function ()
+    {
+        return this.fields != {};
     }
-
-    this.fields = read();
 };
+cookie = new Cookie();
