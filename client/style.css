@@ -312,12 +312,6 @@ form input[type="submit"] {
     display: block;
 }
 
-#upload-army form table td input {
-    width: 50px;
-    margin: 5px;
-    padding: 5px;
-}
-
 #ready p {
     padding: 5px;
 }
@@ -387,4 +381,13 @@ table#tableMap td {
     background-color: #eeeeee;
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
+}
+
+/* Manage Armies  */
+#manage-armies {
+    text-align: center;
+}
+
+#army-edit form, #unit-info {
+    float: left;
 }

@@ -43,7 +43,7 @@
         <nav>
             <p id="nav-create-game">Create game</p>
             <p id="nav-active-games">Active games</p>
-            <p id="nav-upload-army">Upload army</p>
+            <p id="nav-manage-armies">Manage armies</p>
             <p id="nav-about">About</p>
         </nav>
         <div id="nav-vertical-line"></div>
@@ -71,20 +71,33 @@
             </form>
         </section>
 
-        <section id="upload-army" class="main-section">
-            <form name="upload-army" action="/" method="post">
-                <label>Name</label>
-                <input type="text" name="armyName">
+        <section id="manage-armies" class="main-section">
+            <section id="army-view">
+                <table>
+                    <tr>
+                        <th>Name</th>
+                        <th>Faction</th>
+                        <th>Cost</th>
+                    </tr>
+                </table>
+                <a href="#" class="button" id="add-army">Add army</a>
+            </section>
+            <section id="army-edit">
+                <form name="upload-army" action="/" method="post">
+                    <label for="upload-army-name">Name</label>
+                    <input id="upload-army-name" type="text" name="armyName"/>
 
-                <label>Faction</label>
-                <select id="upload-army-faction" name="factionName"></select>
+                    <label for="upload-army-faction">Faction</label>
+                    <select id="upload-army-faction" name="factionName"></select>
 
-                <table id="upload-armyUnits"></table>
+                    <ul id="upload-army-units"></ul>
 
-                <div class="submit">
-                    <input type="submit" value="Ok">
-                </div>
-            </form>
+                    <div class="submit">
+                        <input type="submit" value="Save"/>
+                    </div>
+                </form>
+                <table id="unit-info"></table>
+            </section>
         </section>
 
         <section id="about" class="main-section">

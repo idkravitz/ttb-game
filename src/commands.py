@@ -399,6 +399,7 @@ def uploadArmy(sid, armyName, factionName, armyUnits):
     if dbi().query(Army).filter_by(user_id=user.id, name=armyName).count():
         raise BadArmy('You have army with such name')
     squads = {}
+    check_emptiness(armyUnits, 'Empty army', BadArmy)
     for unit in armyUnits:
         if not(isinstance(unit, dict) and len(unit) == 2 and
             'name' in unit and 'count'  in unit
@@ -421,6 +422,17 @@ def getArmy(sid, armyName):
     dbi().check_sid(sid)
     army = dbi().get_army(armyName)
     return response_ok(units=[dict(name=squad.unit.name, count=squad.count) for squad in army.unitArmy])
+
+@Command(str)
+def getArmiesList(sid):
+    user = dbi().get_user(sid)
+    result = {
+        army.name: {
+            'cost': sum(squad.unit.cost * squad.count for squad in army.unitArmy),
+            'faction': army.unitArmy[0].unit.faction.name,
+        }
+    for army in user.armies }
+    return response_ok(armies=result)
 
 @Command(str, str)
 def deleteArmy(sid, armyName):

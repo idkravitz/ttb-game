@@ -122,7 +122,7 @@ function describeSections()
             getGamesList();
         },
         'create-game': initCreateGame,
-        'upload-army': initUploadArmy,
+        'manage-armies': initManageArmies,
         'lobby': function()
         {
             $('#menu, #leave-game, #current-user').show();
@@ -302,8 +302,25 @@ function initCreateGame()
     updateSelect('getFactionList', 'faction', '#creation-');
 }
 
-function initUploadArmy()
+function initManageArmies()
 {
+    $('#manage-armies > *').hide();
+    getJSON(addSid({ cmd: 'getArmiesList' }), function (json) {
+        $('#army-view > *').hide();
+        $('#army-view').show();
+        if(json.armies) {
+            var table = $('#army-view table');
+            $('tr', table).not($('tr', table).first()).remove();
+            $.each(json.armies, function (name, params) {
+                table.append($('<tr/>')
+                    .append($('<td/>').text(name))
+                    .append($('<td/>').text(params.faction))
+                    .append($('<td/>').text(params.cost)));
+            });
+            table.show();
+        }
+        $('#army-view a.button').show();
+    });
     updateSelect('getFactionList', 'faction', '#upload-army-', function() {
         $('#upload-army-faction').change();
     });
@@ -466,42 +483,73 @@ function initBinds()
     $('form[name="upload-army"]').submit(function()
     {
         var form = $(this);
-        submitForm(form, function(json, data) { 
-            alert(json);
-        },
-        function(form) {
+        return submitForm(form, initManageArmies, function(form) {
             return {
                 'armyName': $('input[name="armyName"]', form).val(),
                 'factionName': $('#upload-army-faction :selected').text(),
-                'armyUnits': $.map($('table tr', form), function(v, i) {
+                'armyUnits': $.map($('li', form), function(v, i) {
                     return {
-                        'name': $('input[name="name"]', v).val(), 
-                        'count': $('input[name="count"]', v).val() 
+                        'name': $('label', v).text(),
+                        'count': parseInt($('input', v).val())
                     };
                 })
             };
         });
-        return false;
     });
 
-    function fill_units()
-    {
+    $('#upload-army-faction').change(function () {
         var fName = $('#upload-army-faction :selected').text();
+        $('#unit-info').empty();
         getJSON(addSid({ cmd: 'getFaction', factionName: fName }), function (json) {
-            var uList = $("#upload-armyUnits").empty();
+            var uList = $("#upload-army-units").empty();
             $.each(json.unitList, function(i, v) {
-                uList.append(
-                    $('<tr/>').append(
-                        $('<td/>').append($('<input/>', { type: "text", name: "name", value: v.name}))
-                    ).append(
-                        $('<td/>').append($('<input/>', { type: "text", name: "count"}))
-                    )
-                );
+                var unit = $('<li/>');
+                var unit_id = 'unit-army-' + v.name;
+                unit.append($('<label/>', { 'for': unit_id }).text(v.name).data(v))
+                    .append($('<input/>', { type: 'text', id: unit_id, value: 0 }))
+                    .append($('<p/>', { class: 'cost' }))
+                    .append($('<div/>', { class: 'slider-count' }));
+                $('.slider-count', unit).slider({
+                    range: 'min',
+                    value: 0,
+                    min: 0,
+                    max: 50,
+                    slide: function (event, ui) {
+                        $('input', unit).val(ui.value);
+                        $('.cost', unit).text('$' + ui.value * v.cost);
+                    }
+                });
+                uList.append(unit);
+            });
+            $('label', uList).click(function() {
+                $('#unit-info').empty();
+                var info = $(this).data();
+                const fields = {
+                    'name': 'Name',
+                    'HP': 'Health',
+                    'attack': 'Attack',
+                    'defence': 'Defence',
+                    'range': 'Range',
+                    'damage': 'Damage',
+                    'protection': 'Protection',
+                    'initiative': 'Initiative',
+                    'MP': 'Speed',
+                    'cost': 'Cost'
+                };
+                $.each(fields, function(i, v) {
+                    $('#unit-info').append(
+                        $('<tr/>').append($('<th/>').text(v))
+                                  .append($('<td/>').text(info[i])));
+                });
             });
         }, null, true);
-    }
+    });
 
-    $('#upload-army-faction').change(fill_units);
+    $('#add-army').click(function() {
+        $('#army-view').hide();
+        $('#army-edit').show();
+        return false;
+    });
 }
 
 $(document).ready(function()
