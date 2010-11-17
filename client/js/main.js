@@ -2,7 +2,7 @@ var sections; // descriptions of toplevel sections (which behave like pages)
 
 function inGame()
 {
-    return Cookie.fields.gameName;
+    return cookie.fields.gameName;
 }
 
 function getJSON(data, handler, error_handler, disable_wait_cursor)
@@ -67,7 +67,7 @@ function getCurrentSection()
 
 function showCurrentUser(s)
 {
-    $("#current-user").html(s + Cookie.fields.username);
+    $("#current-user").html(s + cookie.fields.username);
 }
 
 function innerShowSection()
@@ -137,7 +137,7 @@ function initGame()
 function initLobby()
 {
     getArmiesList();
-    if(!Cookie.isEmpty())
+    if(!cookie.isEmpty())
     {
         showSection("registration");
     }
@@ -289,7 +289,7 @@ function joinGame()
     var gameName = $(this).text();
     getJSON(addSid({cmd: "joinGame", gameName: gameName}), function(json)
     {
-        Cookie.store({ gameName: gameName });
+        cookie.store({ gameName: gameName });
         showSection('lobby');
     });
     return false;
@@ -380,7 +380,7 @@ function initHorzMenu()
     {
         getJSON(addSid({ cmd: "unregister" }), function(json)
         {
-            Cookie.clear();
+            cookie.clear();
             showSection("registration");
         });
     });
@@ -388,7 +388,7 @@ function initHorzMenu()
     {
         getJSON(addGame(addSid({cmd:"leaveGame"})), function()
         {
-            Cookie.remove('gameName');
+            cookie.remove('gameName');
             $("#chat").html("");
             $("#players").html("");
             showSection("active-games");
@@ -398,12 +398,12 @@ function initHorzMenu()
 
 function addSid(data)
 {
-    return $.extend(data, { sid: Cookie.fields.sid });
+    return $.extend(data, { sid: cookie.fields.sid });
 }
 
 function addGame(data)
 {
-    return $.extend(data, { gameName: Cookie.fields.gameName });
+    return $.extend(data, { gameName: cookie.fields.gameName });
 }
 
 function submitForm(form, handler, grabber)
@@ -462,13 +462,13 @@ function initBinds()
     {
         return submitForm($(this), function(json, data)
             {
-                if(!Cookie.isEmpty() && Cookie.fields.username == data.username &&
+                if(!cookie.isEmpty() && cookie.fields.username == data.username &&
                     inGame())
                 {
                     showSection("lobby");
                     return;
                 }
-                Cookie.store({ sid: json.sid, username: data.username });
+                cookie.store({ sid: json.sid, username: data.username });
                 showSection("active-games");
             }
         );
@@ -479,7 +479,7 @@ function initBinds()
     {
         return submitForm($(this), function(json, data)
         {
-            Cookie.store({ gameName: data.gameName });
+            cookie.store({ gameName: data.gameName });
             showSection("lobby");
         });
     });

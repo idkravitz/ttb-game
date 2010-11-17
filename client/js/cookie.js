@@ -1,33 +1,32 @@
-Cookie = function () {
-    var session = read();
+cookie = new function Cookie() {
 
-    function get(field)
+    this.get = function (field)
     {
-        return session[field];
-    }
+        return this.fields[field];
+    };
     
-    function store(data)
+    this.store = function (data)
     {
-        session = $.extend(read(), data);
-        write(session);
-    }
+        this.fields = $.extend(read(), data);
+        write(this.fields);
+    };
 
-    function remove(field)
+    this.remove = function (field)
     {
-        delete session[field];
-        write(session);
-    }
+        delete this.fields[field];
+        write(this.fields);
+    };
 
-    function clear()
+    this.clear = function ()
     {
-        session = {};
-        write(session);
-    }
+        this.fields = {};
+        write(this.fields);
+    };
 
-    function isEmpty()
+    this.isEmpty = function ()
     {
-        return session != {};
-    }
+        return this.fields != {};
+    };
 
     // internal functions
 
@@ -41,12 +40,5 @@ Cookie = function () {
         $.cookie('session', JSON.stringify(data));
     }
 
-    return { 
-        fields: session,
-        get: get,
-        store: store,
-        remove: remove,
-        clear: clear,
-        isEmpty: isEmpty
-     };
+    this.fields = read();
 }();
