@@ -41,4 +41,4 @@ cookie = new function Cookie() {
     }
 
     this.fields = read();
-}();
+};
