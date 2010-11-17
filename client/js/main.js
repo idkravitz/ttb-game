@@ -153,7 +153,7 @@ function initGame()
 
 function initLobby()
 {
-    updateSelect('getArmies', 'army', '#creation-');
+    getArmiesList();
     if(!session)
     {
         showSection("registration");
@@ -163,6 +163,31 @@ function initLobby()
         showSection("active-games");
     }
     getLobbyState();
+}
+
+function getArmiesList()
+{
+    getJSON(addSid({ cmd: 'getGamesList'}), function (json)
+    {
+        var nFaction;
+        var nCost;
+        for (var i = 0; i < json.games.length; i++)
+        {
+            if (json.games[i].gameName == session.gameName)
+            {
+                nFaction = json.games[i].factionName;
+                nCost = json.games[i].totalCost;
+            }
+        }
+        getJSON(addSid({ cmd: 'getArmiesList'}), function (json)
+        {
+            for (var i = 0; i < json.armies.length; i++)
+            {
+                if ((json.armies[i].cost <= nCost) && (json.armies[i].faction == nFaction))
+                    $('#creation-army').append($("<option value="+i+">"+json.armies[i].name+"</option>") );
+            }
+        }, null, true);
+    }, null, true);
 }
 
 function getLobbyState()
@@ -292,9 +317,7 @@ function updateSelect(command, attr, id, extra_success)
     getJSON(
         addSid({ cmd: command }),
         function (json) {
-            var array;
-            if (attr == 'army') array = 'armies'
-            else array = attr + 's';
+            var array = attr + 's';
             var select = $(id + attr);
             select.empty();
             $.each(json[array], function(i, option) {
