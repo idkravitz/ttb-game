@@ -4,7 +4,6 @@ function gameInterface(map,army)
     getJSON(addSid({cmd:"getArmy", armyName: army}),
         function(json){
             unitsGame = json.units;
-            alert(unitsGame[0]);
             showUnits(map, unitsGame);
         });
 };
