@@ -28,12 +28,12 @@ Cookie.prototype = {
     },
     clear: function ()
     {
-        this.fields = {};
+        this.fields = null;
         this._write(this.fields);
     },
     isEmpty: function ()
     {
-        return this.fields == {};
+        return this.fields == null;
     }
 };
 cookie = new Cookie();

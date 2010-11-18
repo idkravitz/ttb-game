@@ -123,7 +123,7 @@ function initGame()
         function (json)
         {
             var i = 0;
-            while (json.games[i].gameName != session.gameName) i++;
+            while (json.games[i].gameName != cookie.fields.gameName) i++;
             nameGameMap = json.games[i].mapName;
             getJSON(addSid({cmd:"getMap", name: nameGameMap}),
                 function(json)
@@ -156,7 +156,7 @@ function getArmiesList()
         var nCost;
         for (var i = 0; i < json.games.length; i++)
         {
-            if (json.games[i].gameName == session.gameName)
+            if (json.games[i].gameName == cookie.fields.gameName)
             {
                 nFaction = json.games[i].factionName;
                 nCost = json.games[i].totalCost;
@@ -468,6 +468,7 @@ function initBinds()
                     showSection("lobby");
                     return;
                 }
+                cookie.clear();
                 cookie.store({ sid: json.sid, username: data.username });
                 showSection("active-games");
             }
