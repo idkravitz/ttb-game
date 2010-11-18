@@ -227,17 +227,16 @@ function getArmiesList()
 
 function getLobbyState()
 {
-    var timer;
     var command = addSid(addGame({ cmd: 'getChatHistory' }));
     var calls = 2;
     function delayedSetTimeout()
     {
         if(!--calls)
         {
-            timer = setTimeout("getLobbyState()", 3000);
+            setTimeout("getLobbyState()", 3000);
         }
     }
-    if(!inGame())
+    if(getCurrentSectionName() != 'lobby')
     {
         return;
     }
@@ -278,9 +277,8 @@ function getLobbyState()
         if (startGame)
         {
             showSection('game');
-            clearTimeout(timer);
         }
-        else delayedSetTimeout();
+        delayedSetTimeout();
     });
 }
 
