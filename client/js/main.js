@@ -406,27 +406,36 @@ function editArmy(event)
     $('#army-edit, #del-army').show();
     var subsec = $('#army-edit');
     var armyname = event.currentTarget.text;
-    var units = $('li', subsec);
     getJSON(addSid({armyName: armyname, cmd: 'getArmy'}), function(json) {
         $('input[name="armyName"]', subsec).val(armyname);
-        $.each(json.units, function(i, v) {
-            $('div.slider-count', units[i]).slider('value', v.count);
-            unitCountSlide(units[i], v.count, $('label', units[i]).data().cost);
-        });
+        sections['manage-armies'].afterSelectChange = function () {
+            $.each(json.units, function(i, v) {
+                var units = $('li', subsec);
+                $('div.slider-count', units[i]).slider('value', v.count);
+                unitCountSlide(units[i], v.count, $('label', units[i]).data().cost);
+            });
+        }
+        var i = $('option', subsec).filter(function() { return this.text == json.factionName }).val();
+        $('#upload-army-faction').val(i).trigger('change');
         var form = $('form[name="upload-army"]');
-        var storedSubmit = $.extend(true, {}, form.data());
+        sections['manage-armies'].storedSubmit = $.extend(true, {}, form.data());
         form.unbind('submit');
         form.submit(function() {
             return submitForm(form,function() {
-                form.data(storedSubmit);
                 initManageArmies();
             }, function(form) {
                 var res = uploadArmyGrabber(form);
                 res.newArmyName = res.armyName;
                 res.armyName = armyname;
-                DBG = res;
                 return res;
             }, addSid({cmd: "editArmy"}));
+        });
+        $('#del-army').unbind('click');
+        $('#del-army').click(function() {
+            getJSON(addSid({cmd: 'deleteArmy', armyName: armyname}), function() {
+                initManageArmies();
+            });
+            return false;
         });
     });
     return false;
@@ -435,6 +444,12 @@ function editArmy(event)
 function initManageArmies()
 {
     $('#manage-armies > *').hide();
+    if(sections['manage-armies'].storedSubmit)
+    {
+        $('form[name="upload-army"]').data(sections['manage-armies'].storedSubmit);
+        delete sections['manage-armies'].storedSubmit;
+        $('#army-edit input[name="armyName"]').val('');
+    }
     getJSON(addSid({ cmd: 'getArmiesList' }), function (json) {
         $('#army-view > *').hide();
         $('#army-view').show();
@@ -685,6 +700,11 @@ function initBinds()
                                   .append($('<td/>').text(info[i])));
                 });
             });
+            if(sections['manage-armies'].afterSelectChange)
+            {
+                sections['manage-armies'].afterSelectChange();
+                delete sections['manage-armies'].afterSelectChange;
+            }
         });
     });
 
