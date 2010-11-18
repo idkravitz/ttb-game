@@ -10,20 +10,13 @@ function getJSON(data, handler, error_handler)
 {
     $.getJSON('/ajax', { data: JSON.stringify(data) }, function (json)
     {
-        if (json.status == 'ok')
-        {
-            handler(json);
-        }
-        else
-        {
-            (error_handler || alert)(json.message);
-        }
+        (json.status == 'ok') ? handler(json) : (error_handler || alert)(json.message);
     });
 }
 
-function showCurrentUser(s)
+function showCurrentUser(prefix)
 {
-    $("#current-user").html(s + cookie.fields.username);
+    $("#current-user").html(prefix + cookie.fields.username);
 }
 
 function showSection(name)
