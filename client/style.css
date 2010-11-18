@@ -68,7 +68,7 @@ header p {
 }
 
 #content {
-    width: 920px;
+    width: 980px;
     height: 450px;
     margin: 0 auto;
     padding: 40px 10px 20px 0;
@@ -237,84 +237,137 @@ form .error img {
 }
 
 /* Lobby */
-#chat {
-    border: 1px solid grey;
-    width: 300px;
-    height: 300px;
+
+#lobby section {
+    height: 440px;
     float: left;
-    overflow: auto;
-}
-.chat-message:before {
-    content: ">"
-}
-
-#chat p {
-    display: block;
-    float: left;
-}
-
-#chat div {
-    width: 100%;
-    clear: both;
-}
-
-#players-wrap {
-    float: right;
-    width: 200px;
-    height: 200px;
-    margin-left: 20px;
+    margin: 10px;
 }
 
 #players {
+    width: 210px;
+}
+
+#chat {
+    width: 350px;
+}
+
+#game-info {
+    width: 320px;
+}
+
+#chat-window {
     width: 100%;
+    height: 390px;
+    border: 1px solid grey;
+    overflow: auto;
 }
 
-#players .state{
-    width: 50px;
-    color: #dc5616;
-}
-
-#army-wrap {
-    float: left;
-    width: 200px;
-    height: 200px;
-    margin-left: 20px;
-}
-
-#army-wrap form label {
-    padding-bottom: 5px;
-}
-
-#army-wrap form select {
+#chat-window div {
     width: 100%;
-    height: 20px;
-    margin-bottom: 5px;
+    clear: both;
+    overflow: auto;
 }
 
-#chat, #lobby form {
-    width: 300px;
+#chat-window .chat-header {
+    text-align: right;
 }
 
-#lobby form {
-    clear: left;
-    margin-top: 6px;
+#chat-window .chat-username {
+    font-weight: bold;
 }
 
-#lobby form label {
-    display: block;
+#chat-window .chat-message {
+   margin-bottom: 10px;
 }
 
-#lobby form textarea {
-    width: 100%;
+#chat-window p {
+    margin: 0 5px;
+    word-wrap: break-word;
 }
 
-#status {
-    float: right;
-    display: block;
+#chat form {
+    margin-top: 5px;
 }
 
-#ready p {
+#send-message-text {
+    height: 24px;
+    width: 260px;
+    padding: 0px 2px;
+    margin: 0 5px;
+}
+
+#chat form input[type="submit"] {
+    padding: 3px 10px;
+}
+
+#players-list {
+    margin: 5px 0px;
+}
+
+#players-list td {
     padding: 5px;
+}
+
+#players-list .username {
+    min-width: 50px;
+    text-align: right;
+}
+
+#players-list .status {
+    min-height: 16px;
+    min-width: 16px;
+}
+
+#players-list .ready {
+    background: url(images/accept.png) no-repeat center center;
+}
+
+#players-list .in-lobby {
+    background: url(images/hourglass.png) no-repeat center center;
+}
+
+#map-thumbnail {
+    margin: 0 auto;
+    border: 1px solid grey;
+}
+
+#map-thumbnail td {
+    width: 15px;
+    height: 15px;
+    padding: 1px;
+}
+
+#map-thumbnail .free {
+    background-color: #6c0;
+}
+
+#map-thumbnail .occupied {
+    background-color: #666;
+}
+
+#map-thumbnail .player-1 { background-color: #ff1717; }
+#map-thumbnail .player-2 { background-color: #0042ff; }
+#map-thumbnail .player-3 { background-color: #1ce6b9; }
+#map-thumbnail .player-4 { background-color: #540081; }
+#map-thumbnail .player-5 { background-color: #fffc01; }
+#map-thumbnail .player-6 { background-color: #fe8a0e; }
+#map-thumbnail .player-7 { background-color: #959697; }
+#map-thumbnail .player-8 { background-color: #e55bb0; }
+#map-thumbnail .player-9 { background-color: #7ebff1; }
+
+#game-info label {
+    margin-top: 10px;
+    display: block;
+}
+
+#game-info #ready-label {
+    margin-left: 5px;
+}
+
+#choose-army {
+    width: 100%;
+    margin-bottom: 10px;
 }
 
 /*game*/

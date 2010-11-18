@@ -1,6 +1,16 @@
 var sections; // descriptions of toplevel sections (which behave like pages)
 window.onhashchange = innerShowSection;
 
+function enable(selector)
+{
+    $(selector).removeAttr('disabled');
+}
+
+function disable(selector)
+{
+    $(selector).attr('disabled', 'disabled');
+}
+
 function inGame()
 {
     return cookie.fields.gameName;
@@ -190,50 +200,71 @@ function initLobby()
     {
         showSection('active-games');
     }
-    getArmiesList();
-    getLobbyState();
-}
 
-function getArmiesList()
-{
     getJSON(addSid({ cmd: 'getGamesList' }), function (json)
     {
-        var gameFaction;
-        var gameCost;
+        var currentGame;
         $.each(json.games, function (i, game) {
             if (game.gameName == cookie.fields.gameName)
             {
-                gameFaction = game.factionName;
-                gameCost = game.totalCost;
+                currentGame = game;
                 return;
             }
         });
+
         getJSON(addSid({ cmd: 'getArmiesList' }), function (json)
         {
-            var select = $('#creation-army').empty();
+            var select = $('#choose-army').empty();
+            select.append(new Option('', 0));
+            disable('#set-status');
             $.each(json.armies, function (i, army) {
-                if (army.cost <= gameCost && army.faction == gameFaction)
-                    select.append(new Option(army.name, i));
+                if (army.cost <= currentGame.totalCost && army.faction == currentGame.factionName)
+                    select.append(new Option(army.name, i + 1));
+            });
+        });
+
+        getJSON(addSid({ cmd: 'getMap', name: currentGame.mapName }), function (json)
+        {
+            function getCellClass(cell)
+            {
+                cell_classes = {
+                    'x': 'occupied',
+                    '.': 'free'
+                }
+                return cell_classes[cell] || 'player-' + cell;
+            }
+
+            var table = $('#map-thumbnail').empty();
+            $.each(json.map, function (i, map_row) {
+                var table_row = $('<tr/>');
+                $.each(map_row, function (i, map_cell) {
+                    var cell_class = getCellClass(map_cell);
+                    table_row.append($('<td/>', { class: cell_class }));
+                });
+                table.append(table_row);
             });
         });
     });
+    getLobbyState();
 }
 
 function getLobbyState()
 {
-    var command = addSid(addGame({ cmd: 'getChatHistory' }));
+    if(!inGame())
+    {
+        return;
+    }
+
     var calls = 2;
     function delayedSetTimeout()
     {
         if(!--calls)
         {
-            setTimeout("getLobbyState()", 3000);
+            setTimeout('getLobbyState()', 3000);
         }
     }
-    if(!inGame())
-    {
-        return;
-    }
+
+    var command = addSid(addGame({ cmd: 'getChatHistory' }));
     if (sections.lobby.last_id)
     {
         $.extend(command, { since: sections.lobby.last_id });
@@ -243,32 +274,39 @@ function getLobbyState()
         if (json.chat.length)
         {
             sections.lobby.last_id = json.chat[json.chat.length-1].id;
-            $.each(json.chat, function(i, rec)
+            $.each(json.chat, function(i, entry)
             {
-                $('#chat').append($('<div/>')
-                    .append($('<p/>', {class: 'chat-name', text: rec.username}))
-                    .append($('<p/>', {class: 'chat-message', text: rec.message}))
+                // example: 2010-11-18 13:06:08.071000
+                var match = entry.time.match(/^[\d-]+\s(\d\d):(\d\d).*$/);
+                var hours = (parseInt(match[1]) - (new Date()).getTimezoneOffset() / 60) % 24;
+                var minutes = match[2];
+                var time = '[' + hours + ':' + minutes + ']';
+                $('#chat-window').append($('<div/>')
+                    .append($('<p/>', { class: 'chat-header' })
+                        .append(time)
+                        .append($('<br/>'))
+                        .append($('<p/>', { class: 'chat-username', text: entry.username })))
+                    .append($('<p/>', { class: 'chat-message', text: entry.message }))
                 );
             });
         }
         delayedSetTimeout();
     });
-    getJSON(addGame(addSid({cmd:"getPlayersListForGame"})), function(json)
+
+    getJSON(addGame(addSid({ cmd: 'getPlayersListForGame' })), function(json)
     {
-        $("#players").html("");
-        $.each(json.players, function(i, rec)
+        var all_ready = true;
+        var players_list = $('#players-list').empty();
+        $.each(json.players, function(i, player)
         {
-            $('#players').append($('<tr/>')
-                .append($('<td/>', {text: rec.username}))
-                .append($('<td/>', {class: 'state', text: rec.status.replace('_', ' ')}))
-            );
+            var status = player.status.replace('_', '-');
+            var ready = status == 'ready';
+            all_ready = all_ready && ready;
+            players_list
+                .append($('<tr/>')
+                    .append($('<td/>', { class: 'username' }).text(player.username))
+                    .append($('<td/>').addClass(status).addClass('status')))
         });
-        var startGame = true;
-        for (var i = 0; i < json.players.length; i++)
-        {
-            if (json.players[i].status == 'in_lobby') startGame = false;
-        }
-        if (startGame) showSection('game');
         delayedSetTimeout();
     });
 }
@@ -509,10 +547,10 @@ function submitForm(form, handler, grabber)
 
     var data = grabber ? grabber(form): grabForm(form);
     var commands = {
-        registration: function() { return { cmd: 'register' }; },
-        creation: function() { return addSid({ cmd: 'createGame' }); },
+        'registration': function() { return { cmd: 'register' }; },
+        'creation': function() { return addSid({ cmd: 'createGame' }); },
         'upload-army': function() { return addSid({ cmd: 'uploadArmy' }); },
-        message: function() { return addGame(addSid({ cmd: 'sendMessage'})); }
+        'send-message': function() { return addGame(addSid({ cmd: 'sendMessage' })); }
     }
 
     getJSON(
@@ -561,11 +599,16 @@ function initBinds()
     });
 
     // Lobby
-    $('form[name="message"]').submit(function()
+    $('form[name="send-message"]').submit(function()
     {
         var form = $(this);
-        return submitForm(form,
-            function() { $('#message-text', form).val(''); });
+        var message = $('#send-message-text', form);
+        if (message.val() != '')
+        {
+            return submitForm(form,
+                function() { message.val(''); });
+        }
+        return false;
     });
 
     // Upload Army
@@ -586,13 +629,31 @@ function initBinds()
         });
     });
 
-    $('#creation-army').change(function () {
-        var aName = $('#creation-army :selected').text();
-        getJSON(addSid({ cmd: 'chooseArmy', armyName: aName }), $.noop);
+    $('#choose-army').change(function () {
+        var army = $('#choose-army :selected').text();
+        if (army != '')
+        {
+            enable('#set-status');
+            getJSON(addSid({ cmd: 'chooseArmy', armyName: army }), $.noop);
+        }
+        else
+        {
+            disable('#set-status');
+        }
     });
 
     $('#set-status').click(function(){
-        var status = $('#set-status').is(':checked') ? 'ready' : 'in_lobby';
+        var status;
+        if ($('#set-status').is(':checked'))
+        {
+            status = 'ready';
+            disable('#choose-army');
+        }
+        else
+        {
+            status = 'in_lobby';
+            enable('#choose-army');
+        }
         getJSON(addSid({ cmd: 'setPlayerStatus', status: status }), $.noop)
     });
 
@@ -657,7 +718,8 @@ $(document).ready(function()
     initHorzMenu();
     initBinds();
 
-    $("input:submit, a.button").button();
+    $('input:submit, a.button').button();
+    $('input:text').addClass('ui-widget');
 
     describeSections();
     showSection(getCurrentSectionName() || "registration");
