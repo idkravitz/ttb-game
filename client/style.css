@@ -391,6 +391,28 @@ table#tableMap td {
 
 #army-edit form, #unit-info {
     float: left;
+    text-align: left;
+}
+
+#army-edit ul label, #army-edit ul input {
+    width: 100px;
+    display: block;
+    float: left;
+}
+
+#army-edit label, #army-edit p{
+    display: inline;
+}
+
+#army-edit div { clear: both; }
+
+#army-edit p {
+    float: right;
+    color: #f6931f;
+}
+
+#army-edit ul input {
+    width: 30px;
 }
 
 #unit-info td, #unit-info th {
