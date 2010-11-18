@@ -56,6 +56,11 @@ function showCurrentUser(s)
     $("#current-user").html(s + cookie.fields.username);
 }
 
+function showSection(name)
+{
+    window.location.hash = name;
+}
+
 function getCurrentSectionName()
 {
     return window.location.hash.substr(1); // remove # symbol
@@ -84,9 +89,6 @@ function inherit(child, super)
 
 Section.prototype = {
     show: function() {
-        window.onhashchange = undefined;
-        window.location.hash = this.name;
-        window.onhashchange = innerShowSection;
         $('#content > *, #menu, #menu > li').hide();
         $('#' + this.name).show();
     }
@@ -215,11 +217,11 @@ function initLobby()
     getArmiesList();
     if(cookie.isEmpty())
     {
-        sections.registration.show();
+        showSection('registration');
     }
     else if(!inGame())
     {
-        sections["active-games"].show();
+        showSection('active-games');
     }
     getLobbyState();
 }
@@ -298,7 +300,7 @@ function getLobbyState()
         {
             if (json.players[i].status == 'in_lobby') startGame = false;
         }
-        if (startGame) sections.game.show();
+        if (startGame) showSection('game');
         delayedSetTimeout();
     }, null, true);
 }
@@ -366,7 +368,7 @@ function joinGame()
     getJSON(addSid({cmd: "joinGame", gameName: gameName}), function(json)
     {
         cookie.store({ gameName: gameName });
-        sections.lobby.show();
+        showSection('lobby');
     });
     return false;
 }
@@ -431,7 +433,7 @@ function initNavigation()
         $.each(items, function() { $(this).removeClass("nav-current"); });
         item.addClass("nav-current");
 
-        sections[item.attr('id').substring(4)].show(); // strip 'nav-' prefix
+        showSection(item.attr('id').substring(4)); // strip 'nav-' prefix
     });
 
     // add animation
@@ -457,7 +459,7 @@ function initHorzMenu()
         getJSON(addSid({ cmd: "unregister" }), function(json)
         {
             cookie.clear();
-            sections.registration.show();
+            showSection('registration');
         });
     });
     $("#leave-game").click(function()
@@ -467,7 +469,7 @@ function initHorzMenu()
             cookie.remove('gameName');
             $("#chat").html("");
             $("#players").html("");
-            sections["active-games"].show();
+            showSection('active-games');
         });
     });
 }
@@ -541,12 +543,12 @@ function initBinds()
                 if(!cookie.isEmpty() && cookie.fields.username == data.username &&
                     inGame())
                 {
-                    sections.lobby.show();
+                    showSection('lobby');
                     return;
                 }
                 cookie.clear();
                 cookie.store({ sid: json.sid, username: data.username });
-                sections["active-games"].show();
+                showSection('active-games');
             }
         );
     });
@@ -557,7 +559,7 @@ function initBinds()
         return submitForm($(this), function(json, data)
         {
             cookie.store({ gameName: data.gameName });
-            sections.lobby.show();
+            showSection('lobby');
         });
     });
 
@@ -662,5 +664,5 @@ $(document).ready(function()
     $("input:submit, a.button").button();
 
     describeSections();
-    sections[getCurrentSectionName() || "registration"].show();
+    showSection(getCurrentSectionName() || "registration");
 });
