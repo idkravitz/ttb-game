@@ -1,0 +1,23 @@
+{
+    "sid": "GordonFreeman", 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "armies": [
+        {
+            "cost": 3, 
+            "faction": "People", 
+            "name": "Numbers"
+        }
+    ], 
+    "status": "ok"
+}
