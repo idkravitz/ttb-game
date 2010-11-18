@@ -5,48 +5,18 @@ function inGame()
     return cookie.fields.gameName;
 }
 
-function getJSON(data, handler, error_handler, disable_wait_cursor)
+function getJSON(data, handler, error_handler)
 {
-    if (disable_wait_cursor)
+    $.getJSON('/ajax', { data: JSON.stringify(data) }, function (json)
     {
-        disableAjaxCursorChange();
-    }
-    $.getJSON(
-        "/ajax",
-        { data: JSON.stringify(data) },
-        function (json)
+        if (json.status == 'ok')
         {
-            if (json.status == 'ok')
-            {
-                handler(json);
-            }
-            else
-            {
-                if (error_handler == null)
-                    error_handler = alert;
-                error_handler(json.message);
-            }
-            if (disable_wait_cursor)
-            {
-                enableAjaxCursorChange();
-            }
+            handler(json);
         }
-    );
-}
-
-function disableAjaxCursorChange()
-{
-    $("html").unbind("ajaxStart").unbind("ajaxStop");
-}
-
-function enableAjaxCursorChange()
-{
-    $("html").bind("ajaxStart", function()
-    {
-        $(this).addClass('busy');
-    }).bind("ajaxStop", function()
-    {
-        $(this).removeClass('busy');
+        else
+        {
+            (error_handler || alert)(json.message);
+        }
     });
 }
 
@@ -130,8 +100,8 @@ function initGame()
                 {
                     map = json.map;
                     drawMap(map);
-                }, null, true);
-        }, null, true);
+                });
+        });
 }
 
 function initLobby()
@@ -206,7 +176,7 @@ function getLobbyState()
             });
         }
         delayedSetTimeout();
-    }, null, true);
+    });
     getJSON(addGame(addSid({cmd:"getPlayersListForGame"})), function(json)
     {
         $("#players").html("");
@@ -224,7 +194,7 @@ function getLobbyState()
         }
         if (startGame) showSection("game");
         delayedSetTimeout();
-    }, null, true);
+    });
 }
 
 function getGamesList()
@@ -280,7 +250,7 @@ function getGamesList()
             empty_message.hide();
             table.show();
             setTimeout("getGamesList()", 3000);
-        }, null, true
+        }
     );
 }
 
@@ -542,12 +512,12 @@ function initBinds()
 
     $('#creation-army').change(function () {
         var aName = $('#creation-army :selected').text();
-        getJSON(addSid({ cmd: 'chooseArmy', armyName: aName }), function (json) {}, null, true);
+        getJSON(addSid({ cmd: 'chooseArmy', armyName: aName }), $.noop);
     });
 
     $('#set-status').click(function(){
         var status = $('#set-status').is(':checked') ? 'ready' : 'in_lobby';
-        getJSON(addSid({ cmd: 'setPlayerStatus', status: status }), function (json) {}, null, true)
+        getJSON(addSid({ cmd: 'setPlayerStatus', status: status }), $.noop)
     });
 
     $('#upload-army-faction').change(function () {
@@ -595,7 +565,7 @@ function initBinds()
                                   .append($('<td/>').text(info[i])));
                 });
             });
-        }, null, true);
+        });
     });
 
     $('#add-army').click(function() {
@@ -607,7 +577,6 @@ function initBinds()
 
 $(document).ready(function()
 {
-    enableAjaxCursorChange();
     initNavigation();
     initHorzMenu();
     initBinds();
