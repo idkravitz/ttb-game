@@ -164,7 +164,7 @@ function describeSections()
         'create-game': new CreateGameSection,
         'manage-armies': new ManageArmiesSection,
         'lobby': new LobbySection,
-        'game': new GameSection 
+        'game': new GameSection
     }
 }
 
@@ -404,9 +404,56 @@ function initCreateGame()
     convertToSlider('creation-moneylimit', 100, 1000, 50);
 }
 
+function editArmy(event)
+{
+    $('#army-view').hide();
+    $('#army-edit, #del-army').show();
+    var subsec = $('#army-edit');
+    var armyname = event.currentTarget.text;
+    getJSON(addSid({armyName: armyname, cmd: 'getArmy'}), function(json) {
+        $('input[name="armyName"]', subsec).val(armyname);
+        sections['manage-armies'].afterSelectChange = function () {
+            $.each(json.units, function(i, v) {
+                var units = $('li', subsec);
+                $('div.slider-count', units[i]).slider('value', v.count);
+                unitCountSlide(units[i], v.count, $('label', units[i]).data().cost);
+            });
+        }
+        var i = $('option', subsec).filter(function() { return this.text == json.factionName }).val();
+        $('#upload-army-faction').val(i).trigger('change');
+        var form = $('form[name="upload-army"]');
+        sections['manage-armies'].storedSubmit = $.extend(true, {}, form.data());
+        form.unbind('submit');
+        form.submit(function() {
+            return submitForm(form,function() {
+                initManageArmies();
+            }, function(form) {
+                var res = uploadArmyGrabber(form);
+                res.newArmyName = res.armyName;
+                res.armyName = armyname;
+                return res;
+            }, addSid({cmd: "editArmy"}));
+        });
+        $('#del-army').unbind('click');
+        $('#del-army').click(function() {
+            getJSON(addSid({cmd: 'deleteArmy', armyName: armyname}), function() {
+                initManageArmies();
+            });
+            return false;
+        });
+    });
+    return false;
+}
+
 function initManageArmies()
 {
     $('#manage-armies > *').hide();
+    if(sections['manage-armies'].storedSubmit)
+    {
+        $('form[name="upload-army"]').data(sections['manage-armies'].storedSubmit);
+        delete sections['manage-armies'].storedSubmit;
+        $('#army-edit input[name="armyName"]').val('');
+    }
     getJSON(addSid({ cmd: 'getArmiesList' }), function (json) {
         $('#army-view > *').hide();
         $('#army-view').show();
@@ -415,10 +462,11 @@ function initManageArmies()
             $('tr', table).not($('tr', table).first()).remove();
             $.each(json.armies, function (i, army) {
                 table.append($('<tr/>')
-                    .append($('<td/>').text(army.name))
+                    .append($('<td/>').append($('<a/>', { href: '#' }).text(army.name)))
                     .append($('<td/>').text(army.faction))
                     .append($('<td/>').text(army.cost)));
             });
+            $('a', table).click(editArmy);
             table.show();
         }
         $('#army-view a.button').show();
@@ -492,7 +540,7 @@ function addGame(data)
     return $.extend(data, { gameName: cookie.fields.gameName });
 }
 
-function submitForm(form, handler, grabber)
+function submitForm(form, handler, grabber, command)
 {
     function formError(form, text)
     {
@@ -525,9 +573,8 @@ function submitForm(form, handler, grabber)
         'upload-army': function() { return addSid({ cmd: 'uploadArmy' }); },
         message: function() { return addGame(addSid({ cmd: 'sendMessage'})); }
     }
-
     getJSON(
-        $.extend(data, commands[form.attr('name')]()),
+        $.extend(data, command || commands[form.attr('name')]()),
         function (json) { handler(json, data); clearForm(form); },
         function (message) { formError(form, message); }
     );
@@ -539,6 +586,25 @@ function clearForm(form)
 {
     $('.error', form).remove();
     $('input[type!="submit"]', form).val('');
+}
+
+function unitCountSlide(unit, val, cost)
+{
+    $('input', unit).val(val);
+    $('.cost', unit).text('$' + val * cost);
+}
+
+function uploadArmyGrabber(form) {
+    return {
+        'armyName': $('input[name="armyName"]', form).val(),
+        'factionName': $('#upload-army-faction :selected').text(),
+        'armyUnits': $.map($('li', form), function(v, i) {
+            return {
+                'name': $('label', v).text(),
+                'count': parseInt($('input', v).val())
+            };
+        })
+    };
 }
 
 function initBinds()
@@ -583,18 +649,7 @@ function initBinds()
     $('form[name="upload-army"]').submit(function()
     {
         var form = $(this);
-        return submitForm(form, initManageArmies, function(form) {
-            return {
-                'armyName': $('input[name="armyName"]', form).val(),
-                'factionName': $('#upload-army-faction :selected').text(),
-                'armyUnits': $.map($('li', form), function(v, i) {
-                    return {
-                        'name': $('label', v).text(),
-                        'count': parseInt($('input', v).val())
-                    };
-                })
-            };
-        });
+        return submitForm(form, initManageArmies, uploadArmyGrabber);
     });
 
     $('#creation-army').change(function () {
@@ -617,17 +672,14 @@ function initBinds()
                 var unit_id = 'unit-army-' + v.name;
                 unit.append($('<label/>', { 'for': unit_id }).text(v.name).data(v))
                     .append($('<input/>', { type: 'text', id: unit_id, value: 0 }))
-                    .append($('<p/>', { class: 'cost' }))
+                    .append($('<p/>', { class: 'cost' }).text('$0'))
                     .append($('<div/>', { class: 'slider-count' }));
                 $('.slider-count', unit).slider({
                     range: 'min',
                     value: 0,
                     min: 0,
                     max: 50,
-                    slide: function (event, ui) {
-                        $('input', unit).val(ui.value);
-                        $('.cost', unit).text('$' + ui.value * v.cost);
-                    }
+                    slide: function (event, ui) { unitCountSlide(unit, ui.value, v.cost); },
                 });
                 uList.append(unit);
             });
@@ -652,11 +704,16 @@ function initBinds()
                                   .append($('<td/>').text(info[i])));
                 });
             });
+            if(sections['manage-armies'].afterSelectChange)
+            {
+                sections['manage-armies'].afterSelectChange();
+                delete sections['manage-armies'].afterSelectChange;
+            }
         });
     });
 
     $('#add-army').click(function() {
-        $('#army-view').hide();
+        $('#army-view, #del-army').hide();
         $('#army-edit').show();
         return false;
     });

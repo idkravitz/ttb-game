@@ -390,16 +390,13 @@ def getFactionList(sid):
     factions = [{"faction": name} for name in dbi().query(Faction.name).all()]
     return response_ok(factions=factions)
 
-@Command(str, str, str, list)
-def uploadArmy(sid, armyName, factionName, armyUnits):
-    user = dbi().get_user(sid)
+def prepareArmy(user, armyName, factionName, armyUnits, new=True):
     dbi().check_faction(factionName)
     check_len(armyName, MAX_NAME_LENGTH, 'Too long army name', BadArmy)
     check_emptiness(armyName, 'Empty army name', BadArmy)
-    if dbi().query(Army).filter_by(user_id=user.id, name=armyName).count():
+    if new and dbi().query(Army).filter_by(user_id=user.id, name=armyName).count():
         raise BadArmy('You have army with such name')
     squads = {}
-    check_emptiness(armyUnits, 'Empty army', BadArmy)
     for unit in armyUnits:
         if not(isinstance(unit, dict) and len(unit) == 2 and
             'name' in unit and 'count'  in unit
@@ -410,8 +407,15 @@ def uploadArmy(sid, armyName, factionName, armyUnits):
         unit = dbi().get_unit(name, factionName)
         if unit in squads:
             squads[unit] += count
-        else:
+        elif count:
             squads[unit] = count
+    check_emptiness(squads, 'Empty army', BadArmy)
+    return squads
+
+@Command(str, str, str, list)
+def uploadArmy(sid, armyName, factionName, armyUnits):
+    user = dbi().get_user(sid)
+    squads = prepareArmy(user, armyName, factionName, armyUnits)
     army = Army(armyName, user.id)
     dbi().add(army)
     dbi().add_all(UnitArmy(unit.id, army.id, count) for unit, count in squads.items())
@@ -419,9 +423,13 @@ def uploadArmy(sid, armyName, factionName, armyUnits):
 
 @Command(str, str)
 def getArmy(sid, armyName):
-    dbi().check_sid(sid)
-    army = dbi().get_army(armyName)
-    return response_ok(units=[dict(name=squad.unit.name, count=squad.count) for squad in army.unitArmy])
+    user = dbi().get_user(sid)
+    try:
+        army = dbi().query(Army).filter_by(name=armyName, user_id=user.id).one()
+    except sqlalchemy.orm.exc.NoResultFound:
+        raise BadArmy('No army with that name')
+    return response_ok(units=[dict(name=squad.unit.name, count=squad.count) for squad in army.unitArmy],
+        factionName=army.unitArmy[0].unit.faction.name)
 
 @Command(str)
 def getArmiesList(sid):
@@ -440,8 +448,26 @@ def deleteArmy(sid, armyName):
     try:
         army = dbi().query(Army).filter_by(name=armyName, user_id=user.id).one()
     except sqlalchemy.orm.exc.NoResultFound:
-       raise BadArmy('No army with that name')
+        raise BadArmy('No army with that name')
     dbi().delete(army)
+    return response_ok()
+
+@Command(str, str, str, str, list)
+def editArmy(sid, armyName, newArmyName, factionName, armyUnits):
+    user = dbi().get_user(sid)
+    try:
+        army = dbi().query(Army).filter_by(name=armyName, user_id=user.id).one()
+    except sqlalchemy.orm.exc.NoResultFound:
+        raise BadArmy('No army with that name')
+    if (armyName != newArmyName and
+        dbi().query(Army).filter_by(name=newArmyName, user_id=user.id).count()
+    ):
+        raise BadArmy('Already have army with this name')
+    squads = prepareArmy(user, newArmyName, factionName, armyUnits, False)
+    dbi().delete(army)
+    army = Army(newArmyName, user.id)
+    dbi().add(army)
+    dbi().add_all(UnitArmy(unit.id, army.id, count) for unit, count in squads.items())
     return response_ok()
 
 @Command(str, str)

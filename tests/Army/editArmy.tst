@@ -54,12 +54,24 @@
 }
 
 {
-    "cmd": "getArmiesList",
-    "sid": "GordonFreeman"
+    "cmd": "editArmy",
+    "sid": "GordonFreeman",
+    "armyName": "People",
+    "newArmyName": "Numbers",
+    "factionName": "People",
+    "armyUnits": [
+        {
+            "name": "first",
+            "count": 1
+        },
+        {
+            "name": "second",
+            "count": 2
+        }
+    ]
 }
 
 {
-    "cmd": "getArmy",
-    "sid": "GordonFreeman",
-    "armyName": "People"
+    "cmd": "getArmiesList",
+    "sid": "GordonFreeman"
 }
