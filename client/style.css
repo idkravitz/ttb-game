@@ -218,17 +218,18 @@ form .error img {
     margin-bottom: 5px;
 }
 
-#active-games table td,
-#active-games table th {
-    border: 1px solid;
-    padding: 5px;
-    text-align: center;
-}
-
-#active-games table {
+.main-table {
     width: 100%;
     border: 1px solid;
     border-collapse: collapse;
+    margin: 5px;
+}
+
+.main-table td,
+.main-table th {
+    border: 1px solid;
+    padding: 5px;
+    text-align: center;
 }
 
 #active-games #empty-server {
@@ -390,4 +391,12 @@ table#tableMap td {
 
 #army-edit form, #unit-info {
     float: left;
+}
+
+#unit-info td, #unit-info th {
+    text-align: left;
+}
+
+#add-army {
+    margin: 5px;
 }
