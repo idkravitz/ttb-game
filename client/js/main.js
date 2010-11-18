@@ -390,10 +390,36 @@ function updateSelect(command, attr, id, extra_success)
     );
 }
 
+function convertToSlider(id, vmin, vmax, step)
+{
+    var input = $('#' + id);
+    var label = input.prev();
+    var prefix = label.text().split(':')[0] + ': ';
+    var slider_id = id + '-slider';
+    $('#' + slider_id).remove();
+    label.text(prefix + vmin);
+    input.after(
+        $('<div/>', { id: slider_id }).slider({
+            range: 'min',
+            value: vmin,
+            min: vmin,
+            max: vmax,
+            step: step || 1,
+            slide: function (event, ui) {
+                input.val(ui.value);
+                label.text(prefix + ui.value);
+            }
+        })
+    );
+    input.hide();
+}
+
 function initCreateGame()
 {
     updateSelect('getMapList', 'map', '#creation-');
     updateSelect('getFactionList', 'faction', '#creation-');
+    convertToSlider('creation-playerscount', 2, 16);
+    convertToSlider('creation-moneylimit', 100, 1000, 50);
 }
 
 function initManageArmies()

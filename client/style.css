@@ -118,12 +118,12 @@ nav p.nav-current:hover {
 }
 
 td a {
-	color: #dc5616;
-	text-decoration: none;
+    color: #dc5616;
+    text-decoration: none;
 }
 
 td a:hover {
-	text-decoration: underline;
+    text-decoration: underline;
 }
 
 footer {
@@ -198,6 +198,11 @@ form .error img {
     margin-bottom: 5px;
 }
 
+.main-section form .ui-slider {
+    width: 100%;
+    margin: 5px 5px 10px 0px;
+}
+
 .main-section form .submit {
     display: block;
     text-align: right;
@@ -213,17 +218,18 @@ form .error img {
     margin-bottom: 5px;
 }
 
-#active-games table td,
-#active-games table th {
-    border: 1px solid;
-    padding: 5px;
-    text-align: center;
-}
-
-#active-games table {
+.main-table {
     width: 100%;
     border: 1px solid;
     border-collapse: collapse;
+    margin: 5px;
+}
+
+.main-table td,
+.main-table th {
+    border: 1px solid;
+    padding: 5px;
+    text-align: center;
 }
 
 #active-games #empty-server {
@@ -368,7 +374,7 @@ table#tableMap td {
 #about-fact {
     display: none;
 }
-    
+
 .factDiv {
     float: left;
     border: solid 1px #333333;
@@ -385,4 +391,12 @@ table#tableMap td {
 
 #army-edit form, #unit-info {
     float: left;
+}
+
+#unit-info td, #unit-info th {
+    text-align: left;
+}
+
+#add-army {
+    margin: 5px;
 }
