@@ -318,8 +318,12 @@ function convertToSlider(id, vmin, vmax, step)
     var label = input.prev();
     var prefix = label.text().split(':')[0] + ': ';
     var slider_id = id + '-slider';
-    $('#' + slider_id).remove();
+
+    input.hide();
+    input.val(vmin);
     label.text(prefix + vmin);
+
+    $('#' + slider_id).remove();
     input.after(
         $('<div/>', { id: slider_id }).slider({
             range: 'min',
@@ -328,12 +332,11 @@ function convertToSlider(id, vmin, vmax, step)
             max: vmax,
             step: step || 1,
             slide: function (event, ui) {
-                input.val(ui.value);
+                input.val(parseInt(ui.value));
                 label.text(prefix + ui.value);
             }
         })
     );
-    input.hide();
 }
 
 function initCreateGame()
