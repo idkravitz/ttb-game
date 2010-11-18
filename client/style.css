@@ -198,6 +198,11 @@ form .error img {
     margin-bottom: 5px;
 }
 
+.main-section form .ui-slider {
+    width: 100%;
+    margin: 5px 5px 10px 0px;
+}
+
 .main-section form .submit {
     display: block;
     text-align: right;
