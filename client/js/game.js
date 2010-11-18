@@ -1,70 +1,12 @@
-function changeCell(th, map)
-{
-    var fMap = document.getElementById("fullMap");
-    var w = document.getElementById("tableMap").rows[0].cells[0];
-    var y = Math.round(($(th).position().top - $(fMap).position().top)/$(w).width());
-    var x = Math.round(($(th).position().left - $(fMap).position().left)/$(w).width());
-    x = changePos(x, map.length);
-    y = changePos(y, map.length);
-    if ((x >= 0) && (x < map.length) && (y >= 0) && (y < map.length))
-    {
-        if (map[y][x] == 'used') map[y][x] = '1';
-    }
-};
-
 function gameInterface(map,army)
 {
     map = drawMap(map);
-    unitsGame = [{"count":2,"name":"one"},{"count":1,"name":"two"},{"count":2,"name":"three"}];
-    showUnits(map,unitsGame);
-
-    var n = map[0].length;
-    $('#control-panel').append(fragment);
-
-    $('.factDiv').dblclick(function(){
-        $('#about-fact').show();
-    });
-
-    $('#content').click(function(){
-        $('#about-fact').hide();
-    });
-
-    $('.factDiv').draggable({});
-    $('#fullMap').droppable({
-        drop: function(event, ui)
-        {
-            var cell, newCell, x, y, posX, posY
-            cell = document.getElementById("tableMap").rows[0].cells[0];
-            //number of cell, where we drop the element
-            x = Math.round((ui.draggable.offset().top - $(cell).offset().top + 2)/$(cell).width());
-            y = Math.round((ui.draggable.offset().left - $(cell).offset().left + 2)/$(cell).width());
-            //don't have n cell (n-1 the last)
-            x = changePos(x, n);
-            y = changePos(y, n);
-            newCell = document.getElementById("tableMap").rows[x].cells[y];
-      	    posY = $(newCell).offset().top;
-		    if(map[x][y] == '1')
-		    {
-                posX = $(newCell).offset().left;
-                //put that smth is in that cell
-        		map[x][y] = 'used';
-            }
-            else
-            {
-                //put away from field if we cannot place in cells
-                if(y > n/2)
-                {
-                    posX = $(cell).offset().left + (n + 0.5)*$(cell).width();
-                }
-				else
-				{
-				    posX = $(cell).offset().left - 1.5*$(cell).width();
-				}
-			    posY = ui.draggable.offset().top;
-            }
-            ui.draggable.offset({top:posY+4, left:posX+4});
-        }
-    });
+    getJSON(addSid({cmd:"getArmy", armyName: army}),
+        function(json){
+            unitsGame = json.units;
+            alert(unitsGame[0]);
+            showUnits(map, unitsGame);
+        });
 };
 
 function drawMap(map)
@@ -105,7 +47,7 @@ function showUnits(map, unitsGame)
     };
     */
 
-    var picUnit = ['images/person1.bmp','images/house.bmp','images/person1.bmp','images/house.bmp']
+    var picUnit = ['images/person1.bmp','images/house.bmp','images/person1.bmp'];
 
     fragment = document.createDocumentFragment();
     div = document.createElement('div');
@@ -121,12 +63,72 @@ function showUnits(map, unitsGame)
             div.appendChild(pic);
             var t = div.cloneNode(true);
             t.id = unitsGame[i].name;
-            $(t).mousedown(function(){
-               changeCell(this,map);
+            $(t).mousedown(function()
+            {
+                var fMap = document.getElementById("fullMap");
+                var w = document.getElementById("tableMap").rows[0].cells[0];
+                var x = Math.round(($(this).position().top - $(fMap).position().top)/$(w).width());
+                var y = Math.round(($(this).position().left - $(fMap).position().left)/$(w).width());
+                x = changePos(x, map[0].length) -5;
+                y = changePos(y, map[0].length) - 5;
+                if ((x >= 0) && (x < map[0].length) && (y >= 0) && (y < map[0].length))
+                {
+                    if (map[x][y] == 'used') map[x][y] = '1';
+                }
             });
             fragment.appendChild(t);
         }
-    }
+    };
+
+    $('#control-panel').append(fragment);
+
+    $('.factDiv').dblclick(function(){
+        $('#about-fact').show();
+    });
+
+    $('#content').click(function(){
+        $('#about-fact').hide();
+    });
+
+    var n = map[0].length;
+
+    $('.factDiv').draggable({});
+    $('#fullMap').droppable({
+        drop: function(event, ui)
+        {
+            var cell, newCell, x, y, posX, posY
+            cell = document.getElementById("tableMap").rows[0].cells[0];
+            //number of cell, where we drop the element
+            x = Math.round((ui.draggable.offset().top - $(cell).offset().top + 2)/$(cell).width());
+            y = Math.round((ui.draggable.offset().left - $(cell).offset().left + 2)/$(cell).width());
+            //don't have n cell (n-1 the last)
+            x = changePos(x, n);
+            y = changePos(y, n);
+
+            newCell = document.getElementById("tableMap").rows[x].cells[y];
+      	    posY = $(newCell).offset().top;
+		    if(map[x][y] == '1')
+		    {
+                posX = $(newCell).offset().left;
+                //put that smth is in that cell
+        		map[x][y] = 'used';
+            }
+            else
+            {
+                //put away from field if we cannot place in cells
+                if(y > n/2)
+                {
+                    posX = $(cell).offset().left + (n + 0.5)*$(cell).width();
+                }
+				else
+				{
+				    posX = $(cell).offset().left - 1.5*$(cell).width();
+				}
+			    posY = ui.draggable.offset().top;
+            }
+            ui.draggable.offset({top:posY+4, left:posX+4});
+        }
+    });
 }
 
 function changePos(pos, len)
