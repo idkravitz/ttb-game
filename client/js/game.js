@@ -32,10 +32,7 @@ function drawMap(map)
         }
     }
 
-    //put map in div center
-    var dw = $('#field').offset().left + ($('#field').width() - $('#fullMap').width())/2;
-    var dh = $('#field').offset().top + ($('#field').height() - $('#fullMap').height())/2;
-    $('#fullMap').offset({top:dh, left:dw});
+    centerMap();
 
     var i = 3;
     fragment = document.createDocumentFragment();
@@ -110,6 +107,13 @@ function drawMap(map)
     });
 
 };
+
+function centerMap()
+{
+    var dw = $('#field').offset().left + ($('#field').width() - $('#fullMap').width())/2;
+    var dh = $('#field').offset().top + ($('#field').height() - $('#fullMap').height())/2;
+    $('#fullMap').offset({top:dh, left:dw});
+}
 
 function changePos(posX, posY, length)
 {
