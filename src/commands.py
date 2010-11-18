@@ -455,7 +455,9 @@ def editArmy(sid, armyName, newArmyName, factionName, armyUnits):
         army = dbi().query(Army).filter_by(name=armyName, user_id=user.id).one()
     except sqlalchemy.orm.exc.NoResultFound:
         raise BadArmy('No army with that name')
-    if dbi().query(Army).filter_by(name=newArmyName, user_id=user.id).count():
+    if (armyName != newArmyName and
+        dbi().query(Army).filter_by(name=newArmyName, user_id=user.id).count()
+    ):
         raise BadArmy('Already have army with this name')
     squads = prepareArmy(user, newArmyName, factionName, armyUnits, False)
     dbi().delete(army)
