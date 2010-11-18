@@ -146,12 +146,12 @@ function GameSection()
 {
     Section.call(this, 'game');
 }
-
 inherit(GameSection, Section);
 $.extend(GameSection.prototype, {
     show: function() {
         Section.prototype.show.call(this);
-        initGame();
+        var army = $('#creation-army :selected').text();
+        initGame(army);
     }
 });
 
@@ -168,7 +168,7 @@ function describeSections()
     }
 }
 
-function initGame()
+function initGame(army)
 {
     $('#menu, #current-game, #leave-game').show();
     var map;
@@ -181,8 +181,7 @@ function initGame()
             getJSON(addSid({cmd:"getMap", name: nameGameMap}),
                 function(json)
                 {
-                    map = json.map;
-                    drawMap(map);
+                    gameInterface(json.map, army);
                 });
         });
 }
@@ -228,13 +227,14 @@ function getArmiesList()
 
 function getLobbyState()
 {
+    var timer;
     var command = addSid(addGame({ cmd: 'getChatHistory' }));
     var calls = 2;
     function delayedSetTimeout()
     {
         if(!--calls)
         {
-            setTimeout("getLobbyState()", 3000);
+            timer = setTimeout("getLobbyState()", 3000);
         }
     }
     if(!inGame())
@@ -275,8 +275,12 @@ function getLobbyState()
         {
             if (json.players[i].status == 'in_lobby') startGame = false;
         }
-        if (startGame) showSection('game');
-        delayedSetTimeout();
+        if (startGame)
+        {
+            showSection('game');
+            clearTimeout(timer);
+        }
+        else delayedSetTimeout();
     });
 }
 
@@ -600,7 +604,7 @@ function initBinds()
 
     $('#set-status').click(function(){
         var status = $('#set-status').is(':checked') ? 'ready' : 'in_lobby';
-        getJSON(addSid({ cmd: 'setPlayerStatus', status: status }), $.noop)
+        getJSON(addSid({ cmd: 'setPlayerStatus', status: status }), $.noop);
     });
 
     $('#upload-army-faction').change(function () {
