@@ -4,21 +4,16 @@ function changeCell(th, map)
     var w = document.getElementById("tableMap").rows[0].cells[0];
     var y = Math.round(($(th).position().top - $(fMap).position().top)/$(w).width());
     var x = Math.round(($(th).position().left - $(fMap).position().left)/$(w).width());
-    if (x == map.length) x--;
-    if (y == map.length) y--;
+    changePos(x, y, map.length);
     if ((x >= 0) && (x < map.length) && (y >= 0) && (y < map.length))
     {
-        if (map[y][x] == '11')
-        {
-            map[y][x] = '1';
-        };
+        if (map[y][x] == 'used') map[y][x] = '1';
     }
 };
 
 function drawMap(map)
 {
-    var n = map[0].length;
-
+    var n = map.length;
     var tableMap = document.getElementById("tableMap");
     var row = tableMap.insertRow(0);
     var colorsMap = {
@@ -37,6 +32,7 @@ function drawMap(map)
         }
     }
 
+    //put map in div center
     var dw = $('#field').offset().left + ($('#field').width() - $('#fullMap').width())/2;
     var dh = $('#field').offset().top + ($('#field').height() - $('#fullMap').height())/2;
     $('#fullMap').offset({top:dh, left:dw});
@@ -87,15 +83,14 @@ function drawMap(map)
             x = Math.round((ui.draggable.offset().top - $(cell).offset().top + 2)/$(cell).width());
             y = Math.round((ui.draggable.offset().left - $(cell).offset().left + 2)/$(cell).width());
             //don't have n cell (n-1 the last)
-            if (x == n) x--;
-            if (y == n) y--;
+            changePos(x, y, n);
             newCell = document.getElementById("tableMap").rows[x].cells[y];
       	    posY = $(newCell).offset().top;
 		    if(map[x][y] == '1')
 		    {
                 posX = $(newCell).offset().left;
                 //put that smth is in that cell
-        		map[x][y] = '11';
+        		map[x][y] = 'used';
             }
             else
             {
@@ -115,3 +110,9 @@ function drawMap(map)
     });
 
 };
+
+function changePos(posX, posY, length)
+{
+    if (posX == length) posX--;
+    if (posY == length) posY--;
+}
