@@ -58,6 +58,11 @@ function showCurrentUser(s)
 
 function showSection(name)
 {
+    if(getCurrentSectionName() == name)
+    {
+        innerShowSection();
+        return;
+    }
     window.location.hash = name;
 }
 
@@ -418,7 +423,7 @@ function initCreateGame()
 {
     updateSelect('getMapList', 'map', '#creation-');
     updateSelect('getFactionList', 'faction', '#creation-');
-    convertToSlider('creation-playerscount', 2, 16);
+    convertToSlider('creation-playerscount', 2, 9);
     convertToSlider('creation-moneylimit', 100, 1000, 50);
 }
 
