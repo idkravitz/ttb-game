@@ -1,4 +1,5 @@
 var sections; // descriptions of toplevel sections (which behave like pages)
+window.onhashchange = innerShowSection;
 
 function inGame()
 {
@@ -50,68 +51,143 @@ function enableAjaxCursorChange()
     });
 }
 
-function showSection(section_name)
-{
-    if (getCurrentSection() == section_name)
-    {
-        return false;
-    }
-    window.location.hash = section_name;
-    return true;
-}
-
-function getCurrentSection()
-{
-    return window.location.hash.substr(1); // remove # symbol
-}
-
 function showCurrentUser(s)
 {
     $("#current-user").html(s + cookie.fields.username);
 }
 
+function getCurrentSectionName()
+{
+    return window.location.hash.substr(1); // remove # symbol
+}
+
 function innerShowSection()
 {
-    var section = getCurrentSection();
+    var section = getCurrentSectionName();
     if (!section || !(section in sections))
     {
         window.location.hash = "registration";
         return;
     }
+    sections[section].show();
+}
 
-    $('#content > *, #menu, #menu > li').hide();
-    $('#' + section).show();
-    if (section != 'registration' && section != 'lobby' && section != 'game')
-    {
+function Section(name)
+{
+    this.name = name;
+}
+
+function inherit(child, super)
+{
+    child.prototype = new super;
+}
+
+Section.prototype = {
+    show: function() {
+        window.onhashchange = undefined;
+        window.location.hash = this.name;
+        window.onhashchange = innerShowSection;
+        $('#content > *, #menu, #menu > li').hide();
+        $('#' + this.name).show();
+    }
+}
+
+function SectionWithNavigation(name)
+{
+    Section.call(this, name);
+}
+
+inherit(SectionWithNavigation, Section);
+$.extend(SectionWithNavigation.prototype, {
+    show: function() {
+        Section.prototype.show.call(this);
         $('nav > p').removeClass('nav-current');
-        $('#nav-' + section).addClass('nav-current');
+        $('#nav-' + this.name).addClass('nav-current');
 
         showCurrentUser('Welcome, ');
 
         $('#menu, #menu li[id!="leave-game"], nav, #nav-vertical-line').show();
     }
-    sections[section]();
+});
+
+function ActiveGamesSection()
+{
+    SectionWithNavigation.call(this, 'active-games');
 }
+
+inherit(ActiveGamesSection, SectionWithNavigation);
+$.extend(ActiveGamesSection.prototype, {
+    show: function() {
+        SectionWithNavigation.prototype.show.call(this);
+        $('#active-games > *').hide();
+        getGamesList();
+    }
+});
+
+function CreateGameSection()
+{
+    SectionWithNavigation.call(this, 'create-game');
+}
+
+inherit(CreateGameSection, SectionWithNavigation);
+$.extend(CreateGameSection.prototype, {
+    show: function() {
+        SectionWithNavigation.prototype.show.call(this);
+        initCreateGame();
+    }
+});
+
+function ManageArmiesSection()
+{
+    SectionWithNavigation.call(this, 'manage-armies');
+}
+
+inherit(ManageArmiesSection, SectionWithNavigation);
+$.extend(ManageArmiesSection.prototype, {
+    show: function() {
+        SectionWithNavigation.prototype.show.call(this);
+        initManageArmies();
+    }
+});
+
+function LobbySection()
+{
+    Section.call(this, 'lobby');
+}
+
+inherit(LobbySection, Section);
+$.extend(LobbySection.prototype, {
+    show: function() {
+        Section.prototype.show.call(this);
+        $('#menu, #leave-game, #current-user').show();
+        showCurrentUser('');
+        initLobby();
+    }
+});
+
+function GameSection()
+{
+    Section.call(this, 'game');
+}
+
+inherit(GameSection, Section);
+$.extend(GameSection.prototype, {
+    show: function() {
+        Section.prototype.show.call(this);
+        initGame();
+    }
+});
 
 function describeSections()
 {
     sections = {
-        'registration': $.noop,
-        'about': $.noop,
-        'active-games': function()
-        {
-            $('#active-games > *').hide();
-            getGamesList();
-        },
-        'create-game': initCreateGame,
-        'manage-armies': initManageArmies,
-        'lobby': function()
-        {
-            $('#menu, #leave-game, #current-user').show();
-            showCurrentUser('');
-            initLobby();
-        },
-        'game': initGame
+        'registration': new Section('registration'),
+        'about': new SectionWithNavigation('about'),
+        'active-games': new ActiveGamesSection,
+        'create-game': new CreateGameSection,
+        'manage-armies': new ManageArmiesSection,
+        'lobby': new LobbySection,
+        'game': new GameSection 
     }
 }
 
@@ -139,11 +215,11 @@ function initLobby()
     getArmiesList();
     if(cookie.isEmpty())
     {
-        showSection("registration");
+        sections.registration.show();
     }
     else if(!inGame())
     {
-        showSection("active-games");
+        sections["active-games"].show();
     }
     getLobbyState();
 }
@@ -222,14 +298,14 @@ function getLobbyState()
         {
             if (json.players[i].status == 'in_lobby') startGame = false;
         }
-        if (startGame) showSection("game");
+        if (startGame) sections.game.show();
         delayedSetTimeout();
     }, null, true);
 }
 
 function getGamesList()
 {
-    if(getCurrentSection() != "active-games")
+    if(getCurrentSectionName() != "active-games")
     {
         return;
     }
@@ -290,7 +366,7 @@ function joinGame()
     getJSON(addSid({cmd: "joinGame", gameName: gameName}), function(json)
     {
         cookie.store({ gameName: gameName });
-        showSection('lobby');
+        sections.lobby.show();
     });
     return false;
 }
@@ -355,7 +431,7 @@ function initNavigation()
         $.each(items, function() { $(this).removeClass("nav-current"); });
         item.addClass("nav-current");
 
-        showSection(item.attr('id').substring(4)); // strip 'nav-' prefix
+        sections[item.attr('id').substring(4)].show(); // strip 'nav-' prefix
     });
 
     // add animation
@@ -381,7 +457,7 @@ function initHorzMenu()
         getJSON(addSid({ cmd: "unregister" }), function(json)
         {
             cookie.clear();
-            showSection("registration");
+            sections.registration.show();
         });
     });
     $("#leave-game").click(function()
@@ -391,7 +467,7 @@ function initHorzMenu()
             cookie.remove('gameName');
             $("#chat").html("");
             $("#players").html("");
-            showSection("active-games");
+            sections["active-games"].show();
         });
     });
 }
@@ -465,12 +541,12 @@ function initBinds()
                 if(!cookie.isEmpty() && cookie.fields.username == data.username &&
                     inGame())
                 {
-                    showSection("lobby");
+                    sections.lobby.show();
                     return;
                 }
                 cookie.clear();
                 cookie.store({ sid: json.sid, username: data.username });
-                showSection("active-games");
+                sections["active-games"].show();
             }
         );
     });
@@ -481,7 +557,7 @@ function initBinds()
         return submitForm($(this), function(json, data)
         {
             cookie.store({ gameName: data.gameName });
-            showSection("lobby");
+            sections.lobby.show();
         });
     });
 
@@ -586,9 +662,5 @@ $(document).ready(function()
     $("input:submit, a.button").button();
 
     describeSections();
-    window.onhashchange = innerShowSection;
-    if (!showSection(getCurrentSection() || "registration"))
-    {
-        innerShowSection(); // force redraw to avoid artifacts
-    }
+    sections[getCurrentSectionName() || "registration"].show();
 });
