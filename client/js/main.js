@@ -106,7 +106,6 @@ function initGame()
 
 function initLobby()
 {
-    getArmiesList();
     if(cookie.isEmpty())
     {
         showSection("registration");
@@ -115,32 +114,33 @@ function initLobby()
     {
         showSection("active-games");
     }
+    getArmiesList();
     getLobbyState();
 }
 
 function getArmiesList()
 {
-    getJSON(addSid({ cmd: 'getGamesList'}), function (json)
+    getJSON(addSid({ cmd: 'getGamesList' }), function (json)
     {
-        var nFaction;
-        var nCost;
-        for (var i = 0; i < json.games.length; i++)
-        {
-            if (json.games[i].gameName == cookie.fields.gameName)
+        var gameFaction;
+        var gameCost;
+        $.each(json.games, function (i, game) {
+            if (game.gameName == cookie.fields.gameName)
             {
-                nFaction = json.games[i].factionName;
-                nCost = json.games[i].totalCost;
+                gameFaction = game.factionName;
+                gameCost = game.totalCost;
+                return;
             }
-        }
-        getJSON(addSid({ cmd: 'getArmiesList'}), function (json)
+        });
+        getJSON(addSid({ cmd: 'getArmiesList' }), function (json)
         {
-            for (var i = 0; i < json.armies.length; i++)
-            {
-                if ((json.armies[i].cost <= nCost) && (json.armies[i].faction == nFaction))
-                    $('#creation-army').append($("<option value="+i+">"+json.armies[i].name+"</option>") );
-            }
-        }, null, true);
-    }, null, true);
+            var select = $('#creation-army').empty();
+            $.each(json.armies, function (i, army) {
+                if (army.cost <= gameCost && army.faction == gameFaction)
+                    select.append(new Option(army.name, i));
+            });
+        });
+    });
 }
 
 function getLobbyState()
