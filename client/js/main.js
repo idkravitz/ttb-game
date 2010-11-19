@@ -185,19 +185,19 @@ function describeSections()
 function initGame(army)
 {
     $('#menu, #current-game, #leave-game').show();
-    var map;
-    getJSON(addSid({ cmd: 'getGamesList' }),
-        function (json)
+    sendRequest({ cmd: 'getGamesList' }, function (json) {
+        $.each(json.games, function (i, game)
         {
-            var i = 0;
-            while (json.games[i].gameName != cookie.fields.gameName) i++;
-            nameGameMap = json.games[i].mapName;
-            getJSON(addSid({cmd:"getMap", name: nameGameMap}),
-                function(json)
-                {
-                    gameInterface(json.map, army);
-                });
+            if (game.gameName == cookie.fields.gameName)
+            {
+                sendRequest({ cmd: 'getMap', name: game.mapName },
+                    function (json) {
+                        startGame(json.map, army);
+                    });
+                return;
+            }
         });
+    });
 }
 
 function initLobby()
