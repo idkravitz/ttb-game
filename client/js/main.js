@@ -163,8 +163,8 @@ function GameSection()
 inherit(GameSection, Section);
 $.extend(GameSection.prototype, {
     show: function() {
+        var army = $('#choose-army :selected').text();
         Section.prototype.show.call(this);
-        var army = $('#creation-army :selected').text();
         initGame(army);
     }
 });
