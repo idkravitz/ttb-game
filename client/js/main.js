@@ -272,7 +272,7 @@ function getLobbyState()
     {
         if(!--calls)
         {
-            setTimeout('getLobbyState()', 3000);
+            setTimeout(getLobbyState, 3000);
         }
     }
 
@@ -383,7 +383,7 @@ function getGamesList()
             $('a', table).click(joinGame);
             empty_message.hide();
             table.show();
-            setTimeout("getGamesList()", 3000);
+            setTimeout(getGamesList, 3000);
         }
     );
 }
