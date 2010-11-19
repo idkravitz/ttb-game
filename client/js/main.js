@@ -227,6 +227,7 @@ function initLobby()
         sendRequest({ cmd: 'getArmiesList' }, function (json)
         {
             var select = $('#choose-army').empty();
+            enable(select);
             select.append(new Option('', 0));
             disable('#set-status');
             $.each(json.armies, function (i, army) {
