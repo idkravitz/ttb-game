@@ -211,6 +211,8 @@ function initLobby()
             }
         });
 
+        cookie.max_players = currentGame.playersCount;
+
         getJSON(addSid({ cmd: 'getArmiesList' }), function (json)
         {
             var select = $('#choose-army').empty();
@@ -295,6 +297,10 @@ function getLobbyState()
     getJSON(addGame(addSid({ cmd: 'getPlayersListForGame' })), function(json)
     {
         var all_ready = true;
+
+        var players_counter = $('#players h3').empty();
+        players_counter.text(json.players.length + ' / ' + cookie.max_players);
+
         var players_list = $('#players-list').empty();
         $.each(json.players, function(i, player)
         {

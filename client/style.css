@@ -252,7 +252,7 @@ form .error img {
     width: 350px;
 }
 
-#game-info {
+#right-info {
     width: 320px;
 }
 
@@ -301,8 +301,13 @@ form .error img {
     padding: 3px 10px;
 }
 
+#players h3 {
+    text-align: right;
+}
+
 #players-list {
     margin: 5px 0px;
+    float: right;
 }
 
 #players-list td {
@@ -330,6 +335,8 @@ form .error img {
 #map-thumbnail {
     margin: 0 auto;
     border: 1px solid grey;
+    width: 100%;
+    height: 342px;
 }
 
 #map-thumbnail td {
@@ -356,12 +363,12 @@ form .error img {
 #map-thumbnail .player-8 { background-color: #e55bb0; }
 #map-thumbnail .player-9 { background-color: #7ebff1; }
 
-#game-info label {
+#right-info label {
     margin-top: 10px;
     display: block;
 }
 
-#game-info #ready-label {
+#right-info #ready-label {
     margin-left: 5px;
 }
 
