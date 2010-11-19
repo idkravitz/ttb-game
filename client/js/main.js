@@ -16,12 +16,23 @@ function inGame()
     return cookie.fields.gameName;
 }
 
-function getJSON(data, handler, error_handler)
+function addGame(data)
+{
+    return $.extend(data, { gameName: cookie.fields.gameName });
+}
+
+function sendNonAuthorizedRequest(data, handler, error_handler)
 {
     $.getJSON('/ajax', { data: JSON.stringify(data) }, function (json)
     {
-        (json.status == 'ok') ? handler(json) : (error_handler || alert)(json.message);
+        json.status == 'ok' ? handler(json) : (error_handler || alert)(json.message);
     });
+}
+
+function sendRequest(data, handler, error_handler)
+{
+    sendNonAuthorizedRequest($.extend(data, { sid: cookie.fields.sid }),
+        handler, error_handler);
 }
 
 function showCurrentUser(prefix)
@@ -200,7 +211,7 @@ function initLobby()
         showSection('active-games');
     }
 
-    getJSON(addSid({ cmd: 'getGamesList' }), function (json)
+    sendRequest({ cmd: 'getGamesList' }, function (json)
     {
         var currentGame;
         $.each(json.games, function (i, game) {
@@ -213,7 +224,7 @@ function initLobby()
 
         cookie.max_players = currentGame.playersCount;
 
-        getJSON(addSid({ cmd: 'getArmiesList' }), function (json)
+        sendRequest({ cmd: 'getArmiesList' }, function (json)
         {
             var select = $('#choose-army').empty();
             select.append(new Option('', 0));
@@ -224,7 +235,7 @@ function initLobby()
             });
         });
 
-        getJSON(addSid({ cmd: 'getMap', name: currentGame.mapName }), function (json)
+        sendRequest({ cmd: 'getMap', name: currentGame.mapName }, function (json)
         {
             function getCellClass(cell)
             {
@@ -265,12 +276,12 @@ function getLobbyState()
         }
     }
 
-    var command = addSid(addGame({ cmd: 'getChatHistory' }));
+    var command = addGame({ cmd: 'getChatHistory' });
     if (sections.lobby.last_id)
     {
         $.extend(command, { since: sections.lobby.last_id });
     }
-    getJSON(command, function (json)
+    sendRequest(command, function (json)
     {
         if (json.chat.length)
         {
@@ -294,7 +305,7 @@ function getLobbyState()
         delayedSetTimeout();
     });
 
-    getJSON(addGame(addSid({ cmd: 'getPlayersListForGame' })), function(json)
+    sendRequest(addGame({ cmd: 'getPlayersListForGame' }), function (json)
     {
         var all_ready = true;
 
@@ -326,8 +337,8 @@ function getGamesList()
     {
         return;
     }
-    getJSON(
-        addSid({ cmd: 'getGamesList' }),
+    sendRequest(
+        { cmd: 'getGamesList' },
         function (json)
         {
             var table = $('#active-games table');
@@ -380,7 +391,7 @@ function getGamesList()
 function joinGame()
 {
     var gameName = $(this).text();
-    getJSON(addSid({cmd: "joinGame", gameName: gameName}), function(json)
+    sendRequest({ cmd: 'joinGame', gameName: gameName }, function (json)
     {
         cookie.store({ gameName: gameName });
         showSection('lobby');
@@ -390,19 +401,16 @@ function joinGame()
 
 function updateSelect(command, attr, id, extra_success)
 {
-    getJSON(
-        addSid({ cmd: command }),
-        function (json) {
-            var array = attr + 's';
-            var select = $(id + attr);
-            select.empty();
-            $.each(json[array], function(i, option) {
-                select.append(new Option(option[attr], i));
-            });
-            if(extra_success)
-                extra_success(json);
-        }
-    );
+    sendRequest({ cmd: command }, function (json) {
+        var array = attr + 's';
+        var select = $(id + attr);
+        select.empty();
+        $.each(json[array], function(i, option) {
+            select.append(new Option(option[attr], i));
+        });
+        if(extra_success)
+            extra_success(json);
+    });
 }
 
 function convertToSlider(id, vmin, vmax, step)
@@ -446,7 +454,7 @@ function editArmy(event)
     $('#army-edit, #del-army').show();
     var subsec = $('#army-edit');
     var armyname = event.currentTarget.text;
-    getJSON(addSid({armyName: armyname, cmd: 'getArmy'}), function(json) {
+    sendRequest({ cmd: 'getArmy', armyName: armyname }, function (json) {
         $('input[name="armyName"]', subsec).val(armyname);
         sections['manage-armies'].afterSelectChange = function () {
             $.each(json.units, function(i, v) {
@@ -472,7 +480,7 @@ function editArmy(event)
         });
         $('#del-army').unbind('click');
         $('#del-army').click(function() {
-            getJSON(addSid({cmd: 'deleteArmy', armyName: armyname}), function() {
+            sendRequest({ cmd: 'deleteArmy', armyName: armyname }, function (json) {
                 initManageArmies();
             });
             return false;
@@ -490,7 +498,7 @@ function initManageArmies()
         delete sections['manage-armies'].storedSubmit;
         $('#army-edit input[name="armyName"]').val('');
     }
-    getJSON(addSid({ cmd: 'getArmiesList' }), function (json) {
+    sendRequest({ cmd: 'getArmiesList' }, function (json) {
         $('#army-view > *').hide();
         $('#army-view').show();
         if(json.armies.length) {
@@ -548,7 +556,7 @@ function initHorzMenu()
 {
     $("#sign-out").click(function()
     {
-        getJSON(addSid({ cmd: "unregister" }), function(json)
+        sendRequest({ cmd: 'unregister' }, function (json)
         {
             cookie.clear();
             showSection('registration');
@@ -556,7 +564,7 @@ function initHorzMenu()
     });
     $("#leave-game").click(function()
     {
-        getJSON(addGame(addSid({cmd:"leaveGame"})), function()
+        sendRequest(addGame({ cmd: 'leaveGame' }), function (json)
         {
             cookie.remove('gameName');
             $("#chat").html("");
@@ -564,16 +572,6 @@ function initHorzMenu()
             showSection('active-games');
         });
     });
-}
-
-function addSid(data)
-{
-    return $.extend(data, { sid: cookie.fields.sid });
-}
-
-function addGame(data)
-{
-    return $.extend(data, { gameName: cookie.fields.gameName });
 }
 
 function submitForm(form, handler, grabber, command)
@@ -605,12 +603,18 @@ function submitForm(form, handler, grabber, command)
     var data = grabber ? grabber(form): grabForm(form);
     var commands = {
         'registration': function() { return { cmd: 'register' }; },
-        'creation': function() { return addSid({ cmd: 'createGame' }); },
-        'upload-army': function() { return addSid({ cmd: 'uploadArmy' }); },
-        'send-message': function() { return addGame(addSid({ cmd: 'sendMessage' })); }
+        'creation': function() { return { cmd: 'createGame' }; },
+        'upload-army': function() { return { cmd: 'uploadArmy' }; },
+        'send-message': function() { return addGame({ cmd: 'sendMessage' }); }
     }
-    getJSON(
-        $.extend(data, command || commands[form.attr('name')]()),
+    command = command || commands[form.attr('name')]();
+    if (command.cmd == 'register')
+        requestFunc = sendNonAuthorizedRequest;
+    else
+        requestFunc = sendRequest;
+
+    requestFunc(
+        $.extend(data, command),
         function (json) { handler(json, data); clearForm(form); },
         function (message) { formError(form, message); }
     );
@@ -698,7 +702,7 @@ function initBinds()
         if (army != '')
         {
             enable('#set-status');
-            getJSON(addSid({ cmd: 'chooseArmy', armyName: army }), $.noop);
+            sendRequest({ cmd: 'chooseArmy', armyName: army }, $.noop);
         }
         else
         {
@@ -718,13 +722,13 @@ function initBinds()
             status = 'in_lobby';
             enable('#choose-army');
         }
-        getJSON(addSid({ cmd: 'setPlayerStatus', status: status }), $.noop);
+        sendRequest({ cmd: 'setPlayerStatus', status: status }, $.noop);
     });
 
     $('#upload-army-faction').change(function () {
         var fName = $('#upload-army-faction :selected').text();
         $('#unit-info').empty();
-        getJSON(addSid({ cmd: 'getFaction', factionName: fName }), function (json) {
+        sendRequest({ cmd: 'getFaction', factionName: fName }, function (json) {
             var uList = $("#upload-army-units").empty();
             $.each(json.unitList, function(i, v) {
                 var unit = $('<li/>');
