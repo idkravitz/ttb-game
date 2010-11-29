@@ -7,7 +7,8 @@ function startGame(map,army){
        });
 };
 
-function drawMap(mapJson){
+function drawMap(mapJson)
+{
     var map = new Array(mapJson.length);
     var mapDiv = $("#fullMap");
     var table = $("<table>");
@@ -15,7 +16,7 @@ function drawMap(mapJson){
         map[i] = new Array(mapJson.length);
         var row = $("<tr>");
         for (var j = 0; j < mapJson.length; j++){
-            map[i][j] = $("<div>").addClass(getClassDiv(mapJson[i][j])).addClass("square");
+            map[i][j] = $("<div>").addClass(getClassDiv(mapJson[i][j]));
 			map[i][j].data({"x":i,"y":j,"unit" :"none","available":false});
 			if (mapJson[i][j] =='1') map[i][j].data({"available":true});
             map[i][j].droppable({
@@ -23,15 +24,17 @@ function drawMap(mapJson){
                 drop: function(event, ui){
 				    if (!$(this).data("available")){
 					    var x = $(this).data("y");
-				        var dx = (x < mapJson.length/2) ? -(2+x)*$(this).width(): (mapJson.length-x)*$(this).width();
-						ui.draggable.offset({left : (event.clientX+dx)});
+				        var dx = (x < mapJson.length/2) ? -(1+x)*$(this).width(): (mapJson.length-x+1)*$(this).width();
+						var unit = newUnit(ui.draggable.data("unit"));
+						unit.offset({top: ui.draggable.offset().top - $("#field").offset().top, left : $(this).offset().left+dx - $("#field").offset().top});
+                        $("#field").append(unit);
                     }
 					else {
-						$(this).append(ui.draggable);
-                        $(this).data({"available":false});
-                        $(this).data({"unit":ui.draggable.data("unit")});
-                        ui.draggable.offset({top : $(this).offset().top+2, left : $(this).offset().left+2});
+						$(this).data({"available":false,"unit":ui.draggable.data("unit")});
+                        var unit = newUnit(ui.draggable.data("unit"));
+						$(this).append(unit);
                     }
+				    ui.draggable.remove();
                 }
             });
             row.append($("<td>").append(map[i][j]));
@@ -56,23 +59,40 @@ function getPictUnit(name){
 }
 
 function showUnits(map, unitsGame){
+    var x;
+	var y = $('#control-panel').offset().top + 40;
+	var h = 50;
+	var width = $('#control-panel').width()+$('#control-panel').offset().left;
     for(var i = 0; i < unitsGame.length; i++){
+	    x = $('#control-panel').offset().left;
         for(var j = 0; j < unitsGame[i].count; j++){
-           var unit = $("<div>").addClass("factDiv");
-			unit.css("background-image",getPictUnit(unitsGame[i].name));
-			unit.dblclick(function(){
-                $('#out-fact').show();
-            });
-			unit.data({"unit": unitsGame[i].name}).draggable({start:startDrag});
+            var unit = newUnit(unitsGame[i].name);
+			unit.offset({top : y, left : x});
 			$('#control-panel').append(unit);
+            x += h;
+            if (x > (width - h)){
+			    x = $('#control-panel').offset().left;
+			    y += h;
+			}
         }
-    };
+		y += h;
+    }
+}
+
+function newUnit(unitName){
+    var unit = $("<div>").addClass("factDiv");
+	unit.css("background-image",getPictUnit(unitName));
+	unit.dblclick(function(){
+        $('#out-fact').show();
+    });
+	unit.data({"unit": unitName}).draggable({
+	    start: startDrag
+	});
+	return unit;
 }
 
 var startDrag = function(){
 	var parent = $(this).parent();
-	if (parent.hasClass("square")){
-		//parent.children().remove();
+	if (parent.hasClass("unit"))
 		parent.data({"available": true,"unit" :"none"});
-	}
 }

@@ -464,13 +464,15 @@ form .error img {
 }
 
 .factDiv {
-    float: left;
+	position: absolute;
     border: solid 1px #333333;
     margin: 2px;
 	height: 40px;
 	width: 40px;
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
+	-o-background-size: 100% 100%;
+    -webkit-background-size: 100% 100%;
 }
 
 /* Manage Armies  */
