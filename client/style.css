@@ -398,7 +398,7 @@ form .error img {
     position: absolute;
 }
 
-.unit{
+.cell{
     width: 100%;
     height: 100%;
 }
@@ -463,7 +463,7 @@ form .error img {
     display: none;
 }
 
-.factDiv {
+.unit{
 	position: absolute;
     border: solid 1px #333333;
     margin: 2px;
