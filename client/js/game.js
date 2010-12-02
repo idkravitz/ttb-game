@@ -1,14 +1,14 @@
-function startGame(map, army)
+function startGame(map, army, player_count)
 {
     sendRequest({ cmd: 'getArmy', armyName: army },
        function (json) {
            var unitsGame = json.units;
            showUnits(unitsGame);
-           drawMap(map);
+           drawMap(map, player_count);
        });
 };
 
-function drawMap(mapJson)
+function drawMap(mapJson, player_count)
 {
     var map = new Array(mapJson.length);
     var mapDiv = $('#fullMap');
@@ -19,8 +19,9 @@ function drawMap(mapJson)
         var row = $('<tr>');
         for (var j = 0; j < mapJson.length; j++)
         {
-            map[i][j] = $('<div>').addClass(getClassDiv(mapJson[i][j]))
-            if (map[i][j].hasClass('player-1'))
+            map[i][j] = $('<div>').addClass(getClassDiv(mapJson[i][j]));
+            $('#player-color').html(showHelp(player_count));
+            if (map[i][j].hasClass('player-'+player_count))
             {
                 map[i][j].droppable({
                     accept: '.unit',
@@ -62,6 +63,12 @@ function getClassDiv(charMap)
     if (charMap == '.') common_class = 'point';
     if (charMap == 'x') common_class = 'stone';
     return common_class + ' cell'
+}
+
+function showHelp(player_count)
+{
+    var player_color = ['red','blue'];
+    return 'Place units on ' + player_color[player_count - 1] + ' cells';
 }
 
 function getPictUnit(name)
