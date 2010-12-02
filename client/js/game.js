@@ -1,14 +1,14 @@
-function startGame(map, army, player_count)
+function startGame(map, army)
 {
     sendRequest({ cmd: 'getArmy', armyName: army },
        function (json) {
            var unitsGame = json.units;
            showUnits(unitsGame);
-           drawMap(map, player_count);
+           drawMap(map);
        });
 };
 
-function drawMap(mapJson, player_count)
+function drawMap(mapJson)
 {
     var map = new Array(mapJson.length);
     var mapDiv = $('#fullMap');
@@ -20,7 +20,7 @@ function drawMap(mapJson, player_count)
         for (var j = 0; j < mapJson.length; j++)
         {
             map[i][j] = $('<div>').addClass(getClassDiv(mapJson[i][j]))
-            if (map[i][j].hasClass(getClassDiv(player_count)))
+            if (map[i][j].hasClass('player-1'))
             {
                 map[i][j].droppable({
                     accept: '.unit',
@@ -31,6 +31,11 @@ function drawMap(mapJson, player_count)
                         $(this).setDroppableScope('default');
                         freeLeavedCell(dropped);
                         $(dropped).data({'cell': $(this)});
+                        $(dropped).position({
+                            of: $(this),
+                            my: "center center",
+                            at: "center center"
+                        });
                     }
                 });
             }
