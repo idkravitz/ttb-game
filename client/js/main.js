@@ -13,12 +13,12 @@ function disable(selector)
 
 function inGame()
 {
-    return cookie.fields.gameName;
+    return 'gameName' in sessionStorage;
 }
 
 function addGame(data)
 {
-    return $.extend(data, { gameName: cookie.fields.gameName });
+    return $.extend(data, { gameName: sessionStorage.gameName });
 }
 
 function sendNonAuthorizedRequest(data, handler, error_handler)
@@ -31,13 +31,13 @@ function sendNonAuthorizedRequest(data, handler, error_handler)
 
 function sendRequest(data, handler, error_handler)
 {
-    sendNonAuthorizedRequest($.extend(data, { sid: cookie.fields.sid }),
+    sendNonAuthorizedRequest($.extend(data, { sid: sessionStorage.sid }),
         handler, error_handler);
 }
 
 function showCurrentUser(prefix)
 {
-    $("#current-user").html(prefix + cookie.fields.username);
+    $("#current-user").html(prefix + sessionStorage.username);
 }
 
 function showSection(name)
@@ -163,9 +163,8 @@ function GameSection()
 inherit(GameSection, Section);
 $.extend(GameSection.prototype, {
     show: function() {
-        var army = $('#choose-army :selected').text();
         Section.prototype.show.call(this);
-        initGame(army);
+        initGame();
     }
 });
 
@@ -182,17 +181,17 @@ function describeSections()
     }
 }
 
-function initGame(army)
+function initGame()
 {
     $('#menu, #current-game, #leave-game').show();
     sendRequest({ cmd: 'getGamesList' }, function (json) {
         $.each(json.games, function (i, game)
         {
-            if (game.gameName == cookie.fields.gameName)
+            if (game.gameName == sessionStorage.gameName)
             {
                 sendRequest({ cmd: 'getMap', name: game.mapName },
                     function (json) {
-                        startGame(json.map, army);
+                        startGame(json.map, sessionStorage.armyName);
                     });
                 return;
             }
@@ -202,7 +201,7 @@ function initGame(army)
 
 function initLobby()
 {
-    if(cookie.isEmpty())
+    if(!sessionStorage.length)
     {
         showSection('registration');
     }
@@ -215,14 +214,14 @@ function initLobby()
     {
         var currentGame;
         $.each(json.games, function (i, game) {
-            if (game.gameName == cookie.fields.gameName)
+            if (game.gameName == sessionStorage.gameName)
             {
                 currentGame = game;
                 return;
             }
         });
 
-        cookie.max_players = currentGame.playersCount;
+        sessionStorage.max_players = currentGame.playersCount;
 
         sendRequest({ cmd: 'getArmiesList' }, function (json)
         {
@@ -311,7 +310,7 @@ function getLobbyState()
         var all_ready = true;
 
         var players_counter = $('#players h3').empty();
-        players_counter.text(json.players.length + ' / ' + cookie.max_players);
+        players_counter.text(json.players.length + ' / ' + sessionStorage.max_players);
 
         var players_list = $('#players-list').empty();
         $.each(json.players, function(i, player)
@@ -326,6 +325,7 @@ function getLobbyState()
         });
         if (all_ready)
         {
+            sessionStorage.armyName = $('#choose-army :selected').text();
             showSection('game');
         }
         delayedSetTimeout();
@@ -394,7 +394,7 @@ function joinGame()
     var gameName = $(this).text();
     sendRequest({ cmd: 'joinGame', gameName: gameName }, function (json)
     {
-        cookie.store({ gameName: gameName });
+        sessionStorage.gameName = gameName;
         showSection('lobby');
     });
     return false;
@@ -559,7 +559,7 @@ function initHorzMenu()
     {
         sendRequest({ cmd: 'unregister' }, function (json)
         {
-            cookie.clear();
+            sessionStorage.clear();
             showSection('registration');
         });
     });
@@ -567,7 +567,7 @@ function initHorzMenu()
     {
         sendRequest(addGame({ cmd: 'leaveGame' }), function (json)
         {
-            cookie.remove('gameName');
+            delete sessionStorage.gameName;
             $("#chat").html("");
             $("#players").html("");
             showSection('active-games');
@@ -655,14 +655,15 @@ function initBinds()
     {
         return submitForm($(this), function(json, data)
             {
-                if(!cookie.isEmpty() && cookie.fields.username == data.username &&
+                if(!sessionStorage.length && sessionStorage.username == data.username &&
                     inGame())
                 {
                     showSection('lobby');
                     return;
                 }
-                cookie.clear();
-                cookie.store({ sid: json.sid, username: data.username });
+                sessionStorage.clear();
+                sessionStorage.sid = json.sid;
+                sessionStorage.username = data.username;
                 showSection('active-games');
             }
         );
@@ -673,7 +674,7 @@ function initBinds()
     {
         return submitForm($(this), function(json, data)
         {
-            cookie.store({ gameName: data.gameName });
+            sessionStorage.gameName = data.gameName;
             showSection('lobby');
         });
     });
