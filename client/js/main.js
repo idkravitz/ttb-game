@@ -317,7 +317,7 @@ function getLobbyState()
         $.each(json.players, function(i, player)
         {
             var status = player.status.replace('_', '-');
-            var ready = status == 'ready';
+            var ready = status == 'ready' || status == 'in-game';
             all_ready = all_ready && ready;
             players_list
                 .append($('<tr/>')
