@@ -191,7 +191,7 @@ function initGame()
             {
                 sendRequest({ cmd: 'getMap', name: game.mapName },
                     function (json) {
-                        startGame(json.map, sessionStorage.armyName);
+                        startGame(json.map, sessionStorage.armyName, player_count);
                     });
                 return;
             }
@@ -310,6 +310,7 @@ function getLobbyState()
         var all_ready = true;
 
         var players_counter = $('#players h3').empty();
+        player_count = json.players.length;
         players_counter.text(json.players.length + ' / ' + sessionStorage.max_players);
 
         var players_list = $('#players-list').empty();
