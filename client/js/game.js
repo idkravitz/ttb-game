@@ -1,54 +1,40 @@
 function startGame(map, army)
 {
-    map = drawMap(map);
     sendRequest({ cmd: 'getArmy', armyName: army },
        function (json) {
            var unitsGame = json.units;
-           showUnits(map, unitsGame);
+           showUnits(unitsGame);
+           drawMap(map);
        });
 };
 
 function drawMap(mapJson)
 {
     var map = new Array(mapJson.length);
-    var mapDiv = $("#fullMap");
-    var table = $("<table>");
+    var mapDiv = $('#fullMap');
+    var table = $('<table>');
     for (var i = 0; i < mapJson.length; i++)
     {
         map[i] = new Array(mapJson.length);
-        var row = $("<tr>");
+        var row = $('<tr>');
         for (var j = 0; j < mapJson.length; j++)
         {
-            map[i][j] = $("<div>").addClass(getClassDiv(mapJson[i][j]))
-                .data({
-                    "x": i,
-                    "y": j,
-                    "unit": "none",
-                    "available": mapJson[i][j] =='1'
-                })
-                .droppable({
-                    accept: ".unit",
+            map[i][j] = $('<div>').addClass(getClassDiv(mapJson[i][j]))
+            if (map[i][j].hasClass('player-1'))
+            {
+                map[i][j].droppable({
+                    accept: '.unit',
+                    scope: 'free',
                     drop: function(event, ui)
                     {
-                        var unit = newUnit(ui.draggable.data("unit"));
-                        if (!$(this).data("available")){
-                            var x = $(this).data("y");
-                            var dx = (x < mapJson.length / 2) ? -(1 + x) * $(this).width(): (mapJson.length - x + 1) * $(this).width();
-                            unit.offset({
-                                top: ui.draggable.offset().top - $("#field").offset().top,
-                                left: $(this).offset().left + dx - $("#field").offset().top
-                            });
-                            $("#field").append(unit);
-                        }
-                        else
-                        {
-                            $(this).data({ "available": false, "unit": ui.draggable.data("unit") });
-                            $(this).append(unit);
-                        }
-                        ui.draggable.remove();
+                        var dropped = ui.draggable; 
+                        $(this).setDroppableScope('default');
+                        freeLeavedCell(dropped);
+                        $(dropped).data({'cell': $(this)});
                     }
-            });
-            row.append($("<td>").append(map[i][j]));
+                });
+            }
+            row.append($('<td>').append(map[i][j]));
         }
         table.append(row);
     }
@@ -67,10 +53,10 @@ function centerMap(mapDiv)
 function getClassDiv(charMap)
 {
     var common_class;
-    if ((charMap >= "1") && (charMap <= "9")) common_class = "player-" + charMap;
-    if (charMap == ".") common_class = "point";
-    if (charMap == "x") common_class = "stone";
-    return common_class + " cell"
+    if ((charMap >= '1') && (charMap <= '9')) common_class = 'player-' + charMap;
+    if (charMap == '.') common_class = 'point';
+    if (charMap == 'x') common_class = 'stone';
+    return common_class + ' cell'
 }
 
 function getPictUnit(name)
@@ -78,44 +64,75 @@ function getPictUnit(name)
     return 'url(images/person1.bmp)';
 }
 
-function showUnits(map, unitsGame)
+function showUnits(unitsGame)
 {
-    var x;
-    var y = $('#control-panel').offset().top + 40;
-    var h = 50;
-    var width = $('#control-panel').width()+$('#control-panel').offset().left;
+    $('#control-panel').droppable({
+        accept: '.unit',
+        scope: 'free',
+        drop: function(event, ui) {
+            freeLeavedCell(ui.draggable);
+        }    
+    });
     for(var i = 0; i < unitsGame.length; i++){
-        x = $('#control-panel').offset().left;
         for(var j = 0; j < unitsGame[i].count; j++){
             var unit = newUnit(unitsGame[i].name);
-            unit.offset({ top: y, left: x });
             $('#control-panel').append(unit);
-            x += h;
-            if (x > (width - h)){
-                x = $('#control-panel').offset().left;
-                y += h;
-            }
         }
-        y += h;
     }
 }
 
 function newUnit(unitName)
 {
-    var unit = $("<div>").addClass("unit");
-    unit.css("background-image",getPictUnit(unitName));
+    var unit = $('<div>').addClass('unit');
+    unit.css('background-image',getPictUnit(unitName));
     unit.dblclick(function() {
-        $('#out-fact').show();
+        $('#about-fact').show();
     });
-    unit.data({ "unit": unitName }).draggable({
-        start: startDrag
+    unit.draggable({
+        revert: 'invalid',
+        scope: 'free'
     });
     return unit;
 }
 
-function startDrag()
+function freeLeavedCell(obj)
 {
-    var parent = $(this).parent();
-    if (parent.hasClass("cell"))
-        parent.data({ "available": true, "unit" :"none" });
+    var data = $(obj).data();
+    if('cell' in data)
+    {
+        data.cell.setDroppableScope('free');
+        delete data.cell;
+        $(this).data(data);
+    }
 }
+
+/*
+* Fix for bug with droppable scope,
+* source: http://stackoverflow.com/questions/3097332/jquery-drag-droppable-scope-issue 
+*/ 
+jQuery.fn.extend({
+    setDroppableScope: function(scope) {
+        return this.each(function() {
+            var currentScope = $(this).droppable('option','scope');
+            if (typeof currentScope == 'object' && currentScope[0] == this) return true; //continue if this is not droppable
+
+            //Remove from current scope and add to new scope
+            var i, droppableArrayObject;
+            for(i = 0; i < $.ui.ddmanager.droppables[currentScope].length; i++) {
+                var ui_element = $.ui.ddmanager.droppables[currentScope][i].element[0];
+
+                if (this == ui_element) {
+                    //Remove from old scope position in jQuery's internal array
+                    droppableArrayObject = $.ui.ddmanager.droppables[currentScope].splice(i,1)[0];
+                    //Add to new scope
+                    $.ui.ddmanager.droppables[scope] = $.ui.ddmanager.droppables[scope] || [];
+                    $.ui.ddmanager.droppables[scope].push(droppableArrayObject);
+                    //Update the original way via jQuery
+                    $(this).droppable('option','scope',scope);
+                    break;
+                }
+            }
+        });
+    }
+});
+
