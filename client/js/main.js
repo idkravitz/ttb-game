@@ -191,7 +191,11 @@ function initGame()
             {
                 sendRequest({ cmd: 'getMap', name: game.mapName },
                     function (json) {
-                        startGame(json.map, sessionStorage.armyName, player_count);
+                        var map = json.map;
+                        sendRequest(addGame({ cmd: 'getPlayerNumber'}),
+                            function(json) {
+                                startGame(map, sessionStorage.armyName, json.player_number);
+                            });
                     });
                 return;
             }
@@ -310,7 +314,6 @@ function getLobbyState()
         var all_ready = true;
 
         var players_counter = $('#players h3').empty();
-        player_count = json.players.length;
         players_counter.text(json.players.length + ' / ' + sessionStorage.max_players);
 
         var players_list = $('#players-list').empty();
@@ -478,7 +481,7 @@ function editArmy(event)
                 res.newArmyName = res.armyName;
                 res.armyName = armyname;
                 return res;
-            }, addSid({cmd: "editArmy"}));
+            }, {cmd: "editArmy"});
         });
         $('#del-army').unbind('click');
         $('#del-army').click(function() {

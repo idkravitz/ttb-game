@@ -1,0 +1,77 @@
+{
+    "sid": "GordonFreeman", 
+    "status": "ok"
+}
+{
+    "sid": "headcrabarrgh", 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "games": [
+        {
+            "connectedPlayersCount": 2, 
+            "factionName": "People", 
+            "gameName": "Half-life", 
+            "gameStatus": "not_started", 
+            "mapName": "de_dust", 
+            "playersCount": 2, 
+            "totalCost": 100
+        }
+    ], 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "games": [
+        {
+            "connectedPlayersCount": 2, 
+            "factionName": "People", 
+            "gameName": "Half-life", 
+            "gameStatus": "started", 
+            "mapName": "de_dust", 
+            "playersCount": 2, 
+            "totalCost": 100
+        }
+    ], 
+    "status": "ok"
+}
+{
+    "player_number": 1, 
+    "status": "ok"
+}
+{
+    "player_number": 2, 
+    "status": "ok"
+}

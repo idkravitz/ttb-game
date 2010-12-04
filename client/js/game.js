@@ -1,14 +1,14 @@
-function startGame(map, army, player_count)
+function startGame(map, army, player_number)
 {
     sendRequest({ cmd: 'getArmy', armyName: army },
        function (json) {
-           var unitsGame = json.units;
-           showUnits(unitsGame);
-           drawMap(map, player_count);
+           var units = json.units;
+           showUnits(units);
+           drawMap(map, player_number);
        });
 };
 
-function drawMap(mapJson, player_count)
+function drawMap(mapJson, player_number)
 {
     var map = new Array(mapJson.length);
     var mapDiv = $('#fullMap');
@@ -20,8 +20,8 @@ function drawMap(mapJson, player_count)
         for (var j = 0; j < mapJson.length; j++)
         {
             map[i][j] = $('<div>').addClass(getClassDiv(mapJson[i][j]));
-            $('#player-color').html(showHelp(player_count));
-            if (map[i][j].hasClass('player-'+player_count))
+            $('#player-color').html(showHelp(player_number));
+            if (map[i][j].hasClass('player-'+player_number))
             {
                 map[i][j].droppable({
                     accept: '.unit',
@@ -65,10 +65,10 @@ function getClassDiv(charMap)
     return common_class + ' cell'
 }
 
-function showHelp(player_count)
+function showHelp(player_number)
 {
-    var player_color = ['red','blue'];
-    return 'Place units on ' + player_color[player_count - 1] + ' cells';
+    var player_color = ['red', 'blue'];
+    return 'Place units on ' + player_color[player_number - 1] + ' cells';
 }
 
 function getPictUnit(name)
@@ -96,7 +96,7 @@ function showUnits(unitsGame)
 function newUnit(unitName)
 {
     var unit = $('<div>').addClass('unit');
-    unit.css('background-image',getPictUnit(unitName));
+    unit.css('background-image', getPictUnit(unitName));
     unit.dblclick(function() {
         $('#about-fact').show();
     });
