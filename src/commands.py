@@ -203,7 +203,7 @@ def leaveGame(sid, gameName):
         dbi().delete(player)
     else:
         player.state = 'left'
-    if not dbi().query(Player).filter_by(game_id=game.id).count():
+    if not dbi().query(Player).filter_by(game_id=game.id).filter(Player.state!='left').count():
         game.state = 'finished'
     dbi().commit()
     return response_ok()
@@ -255,8 +255,6 @@ def getGamesList(sid):
               dbi().query(Player).filter_by(game_id=game.id).count(),
             "totalCost": game.total_cost,
         }
-        #if game.state == 'finished':
-        #    rec["winner"] = get_winner(game)
         games.append(rec)
     return response_ok(games=games)
 
