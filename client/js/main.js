@@ -313,7 +313,7 @@ function getLobbyState()
 
     sendRequest(addGame({ cmd: 'getPlayersListForGame' }), function (json)
     {
-        var all_ready = true;
+        var all_ready = json.players.length == sessionStorage.max_players;
 
         var players_counter = $('#players h3').empty();
         players_counter.text(json.players.length + ' / ' + sessionStorage.max_players);
