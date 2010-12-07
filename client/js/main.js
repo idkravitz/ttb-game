@@ -659,7 +659,7 @@ function initBinds()
     {
         return submitForm($(this), function(json, data)
             {
-                if(!sessionStorage.length && sessionStorage.username == data.username &&
+                if(sessionStorage.length && sessionStorage.username == data.username &&
                     inGame())
                 {
                     showSection('lobby');
