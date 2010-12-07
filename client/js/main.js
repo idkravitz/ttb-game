@@ -164,6 +164,8 @@ inherit(GameSection, Section);
 $.extend(GameSection.prototype, {
     show: function() {
         Section.prototype.show.call(this);
+        $('#end-turn-btn').hide();
+        $('#end-placing-btn').show();
         initGame();
     }
 });
