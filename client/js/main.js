@@ -1,16 +1,6 @@
 var sections; // descriptions of toplevel sections (which behave like pages)
 window.onhashchange = innerShowSection;
 
-function enable(selector)
-{
-    $(selector).removeAttr('disabled');
-}
-
-function disable(selector)
-{
-    $(selector).attr('disabled', 'disabled');
-}
-
 function inGame()
 {
     return 'gameName' in sessionStorage;
@@ -165,7 +155,7 @@ $.extend(GameSection.prototype, {
     show: function() {
         Section.prototype.show.call(this);
         $('#end-turn-btn').hide();
-        $('#end-placing-btn').show();
+        $('#end-placing-btn').show().button('disable');
         initGame();
     }
 });
@@ -788,6 +778,7 @@ function initBinds()
         $('#army-edit').show();
         return false;
     });
+    $('#end-placing-btn').click(endPlacing); // definition of endPlacing appears in game.js
 }
 
 $(document).ready(function()

@@ -1,5 +1,8 @@
+var have_units_placed = false;
+
 function startGame(map, army, player_number)
 {
+    sessionStorage.player_number = player_number;
     sendRequest({ cmd: 'getArmy', armyName: army },
        function (json) {
            var units = json.units;
@@ -19,23 +22,26 @@ function drawMap(mapJson, player_number)
         var row = $('<tr>');
         for (var j = 0; j < mapJson.length; j++)
         {
-            map[i][j] = $('<div>').addClass(getClassDiv(mapJson[i][j]));
+            map[i][j] = $('<div>').addClass(getClassDiv(mapJson[i][j]))
+                .data({'x': j, 'y': i});
             $('#player-color').html(showHelp(player_number));
-            if (map[i][j].hasClass('player-'+player_number))
+            if (map[i][j].hasClass('player-' + player_number))
             {
                 map[i][j].droppable({
                     accept: '.unit',
                     scope: 'free',
                     drop: function(event, ui)
                     {
-                        var dropped = ui.draggable; 
+                        var dropped = ui.draggable;
+                        have_units_placed = true;
+                        $('#end-placing-btn').button('enable');
                         $(this).setDroppableScope('default');
                         freeLeavedCell(dropped);
                         $(dropped).data({'cell': $(this)});
                         $(dropped).position({
-                            of: $(this),
-                            my: "center center",
-                            at: "center center"
+                            my: 'center center',
+                            at: 'center center',
+                            of: $(this)
                         });
                     }
                 });
@@ -83,7 +89,12 @@ function showUnits(unitsGame)
         scope: 'free',
         drop: function(event, ui) {
             freeLeavedCell(ui.draggable);
-        }    
+            var len = ($('.player-' + sessionStorage.player_number).filter(function() {
+                return $(this).droppable('option', 'scope') == 'default';
+            }).length);
+            have_units_placed = have_units_placed && (len != 0);
+            $('#end-placing-btn').button('option', 'disabled', !have_units_placed);
+        }
     });
     for(var i = 0; i < unitsGame.length; i++){
         for(var j = 0; j < unitsGame[i].count; j++){
@@ -97,6 +108,7 @@ function newUnit(unitName)
 {
     var unit = $('<div>').addClass('unit');
     unit.css('background-image', getPictUnit(unitName));
+    unit.data({'name': unitName});
     unit.dblclick(function() {
         $('#about-fact').show();
     });
@@ -118,10 +130,48 @@ function freeLeavedCell(obj)
     }
 }
 
+function loop()
+{
+    // to be implemented
+}
+
+/* Handler for #end-placing-btn */
+function endPlacing()
+{
+    if(!$(this).button('option', 'disabled'))
+    {
+        /* probably ask about do you wanna continue, if there are
+         * any empty cells for placing and free units */
+        $(this).button('option', 'label', 'waiting for players');
+        $(this).button('disable');
+        units = $('.unit').filter(function() {
+                var is_placed = 'cell' in $(this).data();
+                if(!is_placed)
+                {
+                    $(this).hide();
+                }
+                else
+                {
+                    $(this).setDroppableScope('fixed');
+                }
+                return is_placed;
+            })
+            .map(function(i, v) {
+                var data = $(v).data();
+                var cdata = data.cell.data();
+                return { 'name': data.name, 'posX': cdata.x, 'posY': cdata.y };
+            });
+        sendRequest({ cmd: 'placeUnits', 'units': $.makeArray(units) });
+        // and now start a waiting loop
+        loop();
+    }
+    return false;
+}
+
 /*
 * Fix for bug with droppable scope,
-* source: http://stackoverflow.com/questions/3097332/jquery-drag-droppable-scope-issue 
-*/ 
+* source: http://stackoverflow.com/questions/3097332/jquery-drag-droppable-scope-issue
+*/
 jQuery.fn.extend({
     setDroppableScope: function(scope) {
         return this.each(function() {
