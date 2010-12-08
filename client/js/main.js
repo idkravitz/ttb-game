@@ -1,21 +1,11 @@
 var sections; // descriptions of toplevel sections (which behave like pages)
 window.onhashchange = innerShowSection;
 
-function inGame()
-{
-    return 'gameName' in sessionStorage;
-}
-
-function addGame(data)
-{
-    return $.extend(data, { gameName: sessionStorage.gameName });
-}
-
 function sendNonAuthorizedRequest(data, handler, error_handler)
 {
     $.getJSON('/ajax', { data: JSON.stringify(data) }, function (json)
     {
-        json.status == 'ok' ? handler(json) : (error_handler || alert)(json.message);
+        json.status == 'ok' ? handler(json) : (error_handler || alert)(json.message, json.status);
     });
 }
 

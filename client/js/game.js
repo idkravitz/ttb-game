@@ -3,17 +3,18 @@ var have_units_placed = false;
 function startGame(map, army, player_number)
 {
     sessionStorage.player_number = player_number;
+    sessionStorage.turn = 0;
+    drawMap(map, player_number);
     sendRequest({ cmd: 'getArmy', armyName: army },
        function (json) {
            var units = json.units;
            showUnits(units);
-           drawMap(map, player_number);
        });
 };
 
 function drawMap(mapJson, player_number)
 {
-    var map = new Array(mapJson.length);
+    map = new Array(mapJson.length);
     var mapDiv = $('#fullMap');
     var table = $('<table>');
     for (var i = 0; i < mapJson.length; i++)
@@ -104,14 +105,20 @@ function showUnits(unitsGame)
     }
 }
 
-function newUnit(unitName)
+function staticUnit(data)
 {
     var unit = $('<div>').addClass('unit');
-    unit.css('background-image', getPictUnit(unitName));
-    unit.data({'name': unitName});
+    unit.css('background-image', getPictUnit(data.name));
+    unit.data(data);
     unit.dblclick(function() {
         $('#about-fact').show();
     });
+    return unit;
+}
+
+function newUnit(unitName)
+{
+    var unit = staticUnit({'name': unitName});
     unit.draggable({
         revert: 'invalid',
         scope: 'free'
@@ -130,9 +137,47 @@ function freeLeavedCell(obj)
     }
 }
 
+/* Loops as far, until we receive new turn information */
 function loop()
 {
-    // to be implemented
+    sendNonAuthorizedRequest({ cmd: 'getGameState', name: sessionStorage.gameName }, function(json) {
+        if(sessionStorage.turn != json.turnNumber)
+        {
+            $('#end-placing-btn').hide().button('enable').button('option', 'label', 'End placing');
+            $('#end-turn-btn').show();
+            $('.unit').remove();
+            if(!(sessionStorage.username in json.players))
+            {
+                alert('You failed');
+                return;
+            }
+            players = json.players;
+            $.each(json.players, function(player, pval)
+            {
+                $.each(pval.units, function(i, unit)
+                {
+                    var x = unit.X;
+                    var y = unit.Y;
+                    var nunit = staticUnit({ 'name': unit.name, 'HP': unit.HP, 'cell': map[y][x], 'player': player });
+                    map[y][x].append(nunit);
+                });
+            });
+        }
+        else
+        {
+            setTimeout(loop, 3000);
+        }
+    },
+    function(msg, status) {
+        if(status == 'badTurn') // placing in progress
+        {
+            setTimeout(loop, 3000);
+        }
+        else
+        {
+            alert(msg);
+        }
+    });
 }
 
 /* Handler for #end-placing-btn */
@@ -140,28 +185,18 @@ function endPlacing()
 {
     if(!$(this).button('option', 'disabled'))
     {
-        /* probably ask about do you wanna continue, if there are
+        /* probably ask about do the player wanna continue, if there are
          * any empty cells for placing and free units */
         $(this).button('option', 'label', 'waiting for players');
         $(this).button('disable');
-        units = $('.unit').filter(function() {
-                var is_placed = 'cell' in $(this).data();
-                if(!is_placed)
-                {
-                    $(this).hide();
-                }
-                else
-                {
-                    $(this).setDroppableScope('fixed');
-                }
-                return is_placed;
-            })
-            .map(function(i, v) {
+        $('.unit').filter(function() { return !('cell' in $(this).data()); }).remove();
+        units = $('.unit').map(function(i, v) {
                 var data = $(v).data();
                 var cdata = data.cell.data();
                 return { 'name': data.name, 'posX': cdata.x, 'posY': cdata.y };
             });
-        sendRequest({ cmd: 'placeUnits', 'units': $.makeArray(units) });
+        sendRequest({ cmd: 'placeUnits', 'units': $.makeArray(units) }, $.noop);
+        $('.cell').not('.stone').removeClass().addClass('cell point');
         // and now start a waiting loop
         loop();
     }

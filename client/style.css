@@ -398,11 +398,6 @@ form .error img {
     position: absolute;
 }
 
-.cell{
-    width: 100%;
-    height: 100%;
-}
-
 #fullMap .player-1 {
     background: #ff6666;
 }
@@ -425,7 +420,7 @@ form .error img {
     height: 100%;
 }
 
-#fullMap td {
+#fullMap td, .cell {
     margin: 0;
     padding: 0;
     height: 46px;
