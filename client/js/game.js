@@ -37,6 +37,7 @@ function generateGrid(map)
     });
     return result;
 }
+
 /*
  * Obtains info for each unit in fraction, attributes of units: 
  *
@@ -238,6 +239,7 @@ function waitNextTurn()
                 {
                     selection = $(this);
                 }
+            });
             $('.cell').unbind('mousedown').mousedown(function(e)
             {
                 if('selection' in window)
