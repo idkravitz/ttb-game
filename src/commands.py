@@ -300,7 +300,7 @@ def getPlayerNumber(sid, gameName):
     game = dbi().get_game(gameName)
     if game.state != 'started':
         raise BadGame("Cann't obtain players numbers for not started game")
-    player = dbi().query(Player).join(Game).filter(Player.game_id==Game.id).filter(Player.user_id==user.id).one()
+    player = dbi().query(Player).join(Game).filter(Player.game_id==game.id).filter(Player.user_id==user.id).one()
     return response_ok(player_number=player.player_number)
 
 @commandline_only
