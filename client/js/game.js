@@ -89,13 +89,9 @@ function drawMap(mapJson, player_number)
                         have_units_placed = true;
                         $('#end-placing-btn').button('enable');
                         $(this).setDroppableScope('default');
-                        freeLeavedCell(dropped);
-                        $(dropped).data({'cell': $(this)});
-                        $(dropped).position({
-                            my: 'center center',
-                            at: 'center center',
-                            of: $(this)
-                        });
+                        detachFromCell(dropped);
+                        $(dropped).appendTo(this);
+                        clearUnitStyle(dropped);
                     }
                 });
             }
@@ -135,17 +131,21 @@ function getPictUnit(name)
     return 'url(images/person1.bmp)';
 }
 
+function clearUnitStyle(unit)
+{
+    var img = $(unit).css('background-image');
+    $(unit).removeAttr('style');
+    $(unit).css('background-image', img).css('position', 'relative');
+}
+
 function showUnits(unitsGame)
 {
     $('#control-panel').droppable({
         accept: '.unit',
         scope: 'free',
         drop: function(event, ui) {
-            freeLeavedCell(ui.draggable);
-            var len = ($('.player-' + sessionStorage.player_number).filter(function() {
-                return $(this).droppable('option', 'scope') == 'default';
-            }).length);
-            have_units_placed = have_units_placed && (len != 0);
+            detachFromCell(ui.draggable);
+            have_units_placed = have_units_placed && ($('.cell .unit').length != 0);
             $('#end-placing-btn').button('option', 'disabled', !have_units_placed);
         }
     });
@@ -178,14 +178,13 @@ function newUnit(unitName)
     return unit;
 }
 
-function freeLeavedCell(obj)
+function detachFromCell(obj)
 {
-    var data = $(obj).data();
-    if('cell' in data)
+    if($(obj).parent().hasClass('cell'))
     {
-        data.cell.setDroppableScope('free');
-        delete data.cell;
-        $(this).data(data);
+        $(obj).parent().setDroppableScope('free');
+        $(obj).appendTo($('#control-panel'));
+        clearUnitStyle(obj);
     }
 }
 
@@ -295,15 +294,13 @@ function endPlacing()
          * any empty cells for placing and free units */
         $(this).button('option', 'label', 'waiting for players');
         $(this).button('disable');
-        $('.unit').filter(function() { return !('cell' in $(this).data()); }).remove();
+        $('.unit').not('.cell .unit').remove();
         units = $('.unit').map(function(i, v) {
                 var data = $(v).data();
-                var cdata = data.cell.data();
+                var cdata = $(v).parent().data();
                 return { 'name': data.name, 'posX': cdata.x, 'posY': cdata.y };
             });
-        sendRequest({ cmd: 'placeUnits', 'units': $.makeArray(units) }, $.noop);
-        // and now start a waiting loop
-        waitNextTurn();
+        sendRequest({ cmd: 'placeUnits', 'units': $.makeArray(units) }, waitNextTurn);
     }
     return false;
 }
