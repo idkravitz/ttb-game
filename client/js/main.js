@@ -144,7 +144,7 @@ inherit(GameSection, Section);
 $.extend(GameSection.prototype, {
     show: function() {
         Section.prototype.show.call(this);
-        $('#end-turn-btn').hide();
+        $('#end-turn-btn').hide().button('enable');
         $('#end-placing-btn').show().button('disable');
         initGame();
     }
@@ -206,6 +206,7 @@ function initLobby()
                 return;
             }
         });
+        sessionStorage.factionName = currentGame.factionName;
 
         sessionStorage.max_players = currentGame.playersCount;
 
@@ -554,6 +555,8 @@ function initHorzMenu()
         sendRequest(addGame({ cmd: 'leaveGame' }), function (json)
         {
             delete sessionStorage.gameName;
+            delete sessionStorage.turn;
+            delete sessionStorage.player_number;
             $("#chat").html("");
             $("#players").html("");
             showSection('active-games');
@@ -769,6 +772,7 @@ function initBinds()
         return false;
     });
     $('#end-placing-btn').click(endPlacing); // definition of endPlacing appears in game.js
+    $('#end-turn-btn').click(endTurn); // definition of endTurn appears in game.js
 }
 
 $(document).ready(function()

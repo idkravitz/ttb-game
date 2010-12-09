@@ -2,15 +2,66 @@ var have_units_placed = false;
 
 function startGame(map, army, player_number)
 {
-    sessionStorage.player_number = player_number;
-    sessionStorage.turn = 0;
     drawMap(map, player_number);
-    sendRequest({ cmd: 'getArmy', armyName: army },
-       function (json) {
-           var units = json.units;
-           showUnits(units);
-       });
+    grid = generateGrid(map);
+
+    grabFactionInfo();
+
+    var is_aborted = 'turn' in sessionStorage && sessionStorage.turn != 0;
+    sessionStorage.turn = 0;
+    sessionStorage.player_number = player_number;
+    if(!is_aborted)
+    {
+        sendRequest({ cmd: 'getArmy', armyName: army },
+           function (json) {
+               var units = json.units;
+               showUnits(units);
+           });
+    }
+    else
+    {
+        waitNextTurn();
+    }
 };
+
+function generateGrid(map)
+{
+    result = new Array(map.length);
+    $.each(result, function(i)
+    {
+        result[i] = new Array(map[0].length);
+        $.each(result[i], function(j)
+        {
+            result[i][j] = map[i][j] == 'x';
+        });
+    });
+    return result;
+}
+/*
+ * Obtains info for each unit in fraction, attributes of units: 
+ *
+ * 'name': str,
+ * 'HP': int,
+ * 'attack': int,
+ * 'defence': int,
+ * 'range': int,
+ * 'damage': int,
+ * 'MP': int,
+ * 'protection': int,
+ * 'initiative': int,
+ * 'cost': int,
+*/
+function grabFactionInfo() // grab from currentGame info in sessionStorage
+{
+    sendRequest({cmd: 'getFaction', factionName: sessionStorage.factionName }, function(json)
+    {
+        units_info = {};
+        $.each(json.unitList, function(i, unit)
+        {
+            units_info[unit.name] = unit;
+        });
+    });
+}
 
 function drawMap(mapJson, player_number)
 {
@@ -137,15 +188,17 @@ function freeLeavedCell(obj)
     }
 }
 
-/* Loops as far, until we receive new turn information */
-function loop()
+/* Loops  until we receive new turn information */
+function waitNextTurn()
 {
     sendNonAuthorizedRequest({ cmd: 'getGameState', name: sessionStorage.gameName }, function(json) {
         if(sessionStorage.turn != json.turnNumber)
         {
+            $('.cell').not('.stone').removeClass().addClass('cell point');
             $('#end-placing-btn').hide().button('enable').button('option', 'label', 'End placing');
-            $('#end-turn-btn').show();
+            $('#end-turn-btn').show().button('enable').button('option', 'label', 'End turn');
             $('.unit').remove();
+            sessionStorage.turn = json.turnNumber;
             if(!(sessionStorage.username in json.players))
             {
                 alert('You failed');
@@ -154,24 +207,75 @@ function loop()
             players = json.players;
             $.each(json.players, function(player, pval)
             {
+                var is_your = player == sessionStorage.username;
                 $.each(pval.units, function(i, unit)
                 {
                     var x = unit.X;
                     var y = unit.Y;
-                    var nunit = staticUnit({ 'name': unit.name, 'HP': unit.HP, 'cell': map[y][x], 'player': player });
+                    var nunit = staticUnit({ 
+                        'name': unit.name,
+                        'HP': unit.HP,
+                        'player': player,
+                        'destX': x,
+                        'destY': y,
+                        'attackX': -1,
+                        'attackY': -1 });
+                    if(is_your)
+                    {
+                        nunit.addClass('your');
+                    }
                     map[y][x].append(nunit);
                 });
+            });
+            /*
+             * left btndown  -- select/attack
+             * right btndown -- move
+             */
+            $('.unit, .cell').unbind('contextmenu').bind('contextmenu', false); // disable context menu
+            $('.your').unbind('mousedown').mousedown(function(e) // click cann't catch right button 
+            {
+                if(e.which == 1) // Left
+                {
+                    selection = $(this);
+                }
+            $('.cell').unbind('mousedown').mousedown(function(e)
+            {
+                if('selection' in window)
+                {
+                    if(e.which == 3) // right
+                    {
+                        var x0 = selection.parent().data('x'), y0 = selection.parent().data('y');
+                        var x1 = $(this).data('x'), y1 = $(this).data('y');
+                        path = AStar(grid, [x0, y0], [x1, y1]);
+                        if(path.length && units_info[selection.data('name')].MP >= path.length)
+                        {
+                            selection.data({ 'destX': x1, 'destY': y1 });
+                        }
+                    }
+                }
+            });
+            $('.unit').not('.your').unbind('mousedown').mousedown(function(e)
+            { // this == enemy, selection == your
+                if('selection' in window)
+                {
+                    if(e.which == 1) // Left
+                    {
+                        var x0 = selection.parent().data('x'), y0 = selection.parent().data('y');
+                        var x1 = $(this).parent().data('x'), y1 = $(this).parent().data('y');
+                        selection.data({ 'attackX': x1, 'attackY': y1 });
+                    }
+                }
             });
         }
         else
         {
-            setTimeout(loop, 3000);
+            setTimeout(waitNextTurn, 3000);
         }
     },
     function(msg, status) {
         if(status == 'badTurn') // placing in progress
         {
-            setTimeout(loop, 3000);
+            setTimeout(waitNextTurn, 3000);
         }
         else
         {
@@ -185,7 +289,7 @@ function endPlacing()
 {
     if(!$(this).button('option', 'disabled'))
     {
-        /* probably ask about do the player wanna continue, if there are
+        /* probably ask about if the player wanna continue, when there are
          * any empty cells for placing and free units */
         $(this).button('option', 'label', 'waiting for players');
         $(this).button('disable');
@@ -196,9 +300,30 @@ function endPlacing()
                 return { 'name': data.name, 'posX': cdata.x, 'posY': cdata.y };
             });
         sendRequest({ cmd: 'placeUnits', 'units': $.makeArray(units) }, $.noop);
-        $('.cell').not('.stone').removeClass().addClass('cell point');
         // and now start a waiting loop
-        loop();
+        waitNextTurn();
+    }
+    return false;
+}
+
+function endTurn()
+{
+    if(!$(this).button('option', 'disabled'))
+    {
+        $(this).button('option', 'label', 'waiting for players');
+        $(this).button('disable');
+        units = $('.your').map(function(i, unit) {
+            var data = $(unit).data();
+            return { 
+                'posX': $(unit).parent().data('x'),
+                'posY': $(unit).parent().data('y'),
+                'destX': data.destX,
+                'destY': data.destY,
+                'attackX': data.attackX,
+                'attackY': data.attackY
+            }
+        });
+        sendRequest({ cmd: 'move', turn: parseInt(sessionStorage.turn), units: $.makeArray(units) }, waitNextTurn);
     }
     return false;
 }
