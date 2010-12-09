@@ -106,9 +106,10 @@ function drawMap(mapJson, player_number)
 
 function centerMap(mapDiv)
 {
-    var dw = $('#field').offset().left + ($('#field').width() - mapDiv.width()) / 2;
-    var dh = $('#field').offset().top + ($('#field').height() - mapDiv.height()) / 2;
-    mapDiv.offset({ top: dh, left: dw });
+    mapDiv.position({
+        my: 'center center',
+        at: 'center center',
+        of: mapDiv.parent()});
 }
 
 function getClassDiv(charMap)

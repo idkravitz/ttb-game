@@ -353,15 +353,15 @@ form .error img {
     background-color: #666;
 }
 
-#map-thumbnail .player-1 { background-color: #ff1717; }
-#map-thumbnail .player-2 { background-color: #0042ff; }
-#map-thumbnail .player-3 { background-color: #1ce6b9; }
-#map-thumbnail .player-4 { background-color: #540081; }
-#map-thumbnail .player-5 { background-color: #fffc01; }
-#map-thumbnail .player-6 { background-color: #fe8a0e; }
-#map-thumbnail .player-7 { background-color: #959697; }
-#map-thumbnail .player-8 { background-color: #e55bb0; }
-#map-thumbnail .player-9 { background-color: #7ebff1; }
+.player-1 { background-color: #ff1717; }
+.player-2 { background-color: #0042ff; }
+.player-3 { background-color: #1ce6b9; }
+.player-4 { background-color: #540081; }
+.player-5 { background-color: #fffc01; }
+.player-6 { background-color: #fe8a0e; }
+.player-7 { background-color: #959697; }
+.player-8 { background-color: #e55bb0; }
+.player-9 { background-color: #7ebff1; }
 
 #right-info label {
     margin-top: 10px;
