@@ -195,6 +195,7 @@ function waitNextTurn()
             $('#end-turn-btn').show().button('enable').button('option', 'label', 'End turn');
             $('.unit').remove();
             sessionStorage.turn = json.turnNumber;
+            delete selection;
             if(!(sessionStorage.username in json.players))
             {
                 if(json.players_count)
@@ -221,6 +222,7 @@ function waitNextTurn()
                     var nunit = staticUnit({ 
                         'name': unit.name,
                         'HP': unit.HP,
+                        'distance': 0,
                         'player': player,
                         'destX': x,
                         'destY': y,
@@ -243,6 +245,7 @@ function waitNextTurn()
                 if(e.which == 1) // Left
                 {
                     selection = $(this);
+                    fillInfo($(this));
                 }
             });
             $('.cell').unbind('mousedown').mousedown(function(e)
@@ -256,7 +259,8 @@ function waitNextTurn()
                         path = AStar(grid, [x0, y0], [x1, y1]);
                         if(path.length && units_info[selection.data('name')].MP >= path.length)
                         {
-                            selection.data({ 'destX': x1, 'destY': y1 });
+                            selection.data({ 'destX': x1, 'destY': y1, 'distance': path.length });
+                            fillInfo(selection);
                         }
                     }
                 }
@@ -270,6 +274,7 @@ function waitNextTurn()
                         var x0 = selection.parent().data('x'), y0 = selection.parent().data('y');
                         var x1 = $(this).parent().data('x'), y1 = $(this).parent().data('y');
                         selection.data({ 'attackX': x1, 'attackY': y1 });
+                        fillInfo(selection);
                     }
                 }
             });
@@ -289,6 +294,27 @@ function waitNextTurn()
             alert(msg);
         }
     });
+}
+
+function fillInfo(obj)
+{
+    function addRow(name, value)
+    {
+        $('#info').append($('<tr/>').append($('<td/>').text(name)).append($('<td/>').text(value)));
+    }
+    $('#info').empty();
+    var unit_info = units_info[obj.data('name')];
+    addRow('Name', obj.data('name'));
+    addRow('Pos', '(' + obj.parent().data('x') + ',' + obj.parent().data('y') + ')');
+    addRow('HP', obj.data('HP') + '/' + unit_info.HP);
+    addRow('MP', (unit_info.MP - obj.data('distance')) + '/' + unit_info.MP);
+    addRow('Dest', '(' + obj.data('destX') + ',' + obj.data('destY') + ')');
+    addRow('Attack', (obj.data('attackX') == -1) ? 'nothing' : ('(' + obj.data('attackX') + ',' + obj.data('attackY') + ')'));
+    addRow('Range', unit_info.range);
+    addRow('Defence', unit_info.defence);
+    addRow('Damage', unit_info.damage);
+    //addRow('Protection', unint_info.protection);
+    //addRow('Initiative', unit_info.initiative);
 }
 
 /* Handler for #end-placing-btn */
