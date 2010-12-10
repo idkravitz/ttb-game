@@ -100,17 +100,12 @@ function drawMap(mapJson, player_number)
         table.append(row);
     }
     mapDiv.append(table);
-    centerMap(mapDiv);
-    return map;
-};
-
-function centerMap(mapDiv)
-{
     mapDiv.position({
         my: 'center center',
         at: 'center center',
         of: mapDiv.parent()});
-}
+    return map;
+};
 
 function getClassDiv(charMap)
 {
@@ -202,8 +197,18 @@ function waitNextTurn()
             sessionStorage.turn = json.turnNumber;
             if(!(sessionStorage.username in json.players))
             {
-                alert('You failed');
-                return;
+                if(json.players_count)
+                {
+                    alert('You failed');
+                }
+                else
+                {
+                    alert('Draw');
+                }
+            }
+            else if(json.players_count == 1 && sessionStorage.username in json.players)
+            {
+                alert('You win!');
             }
             players = json.players;
             $.each(json.players, function(player, pval)

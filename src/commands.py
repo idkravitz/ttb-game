@@ -574,5 +574,5 @@ def getGameState(name):
               }
         for player_number, placements in process.player_previous_placements.items()
     }
-    return response_ok(players=result, turnNumber=process.turn)
+    return response_ok(players=result, turnNumber=process.turn, players_count=len(result))
 
