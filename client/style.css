@@ -398,14 +398,6 @@ form .error img {
     position: absolute;
 }
 
-#fullMap .player-1 {
-    background: #ff6666;
-}
-
-#fullMap .player-2 {
-    background: #6666ff;
-}
-
 #fullMap .point {
     background: #66cc00;
 }
