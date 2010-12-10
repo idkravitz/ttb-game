@@ -116,16 +116,15 @@
             "connectedPlayersCount": 2, 
             "factionName": "Headcrabs", 
             "gameName": "BlackMesa", 
-            "gameStatus": "finished", 
+            "gameStatus": "started", 
             "mapName": "BlackMesa", 
             "playersCount": 2, 
-            "totalCost": 1, 
-            "winner": "Barney"
+            "totalCost": 1
         }
     ], 
     "status": "ok"
 }
 {
-    "message": "No started game with that name", 
-    "status": "badGame"
+    "message": "Not actual turn number", 
+    "status": "badTurn"
 }

@@ -37,6 +37,7 @@
     "status": "ok"
 }
 {
+    "factionName": "Headcrabs", 
     "status": "ok", 
     "units": [
         {

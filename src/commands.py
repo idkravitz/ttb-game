@@ -204,6 +204,7 @@ def leaveGame(sid, gameName):
     else:
         player.state = 'left'
     if not dbi().query(Player).filter_by(game_id=game.id).filter(Player.state!='left').count():
+        GameProcess.game_finished(gameName)
         game.state = 'finished'
     dbi().commit()
     return response_ok()

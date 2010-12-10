@@ -42,22 +42,3 @@
 {
     "status": "ok"
 }
-{
-    "status": "ok"
-}
-{
-    "status": "ok"
-}
-{
-    "message": "No unit in that cell", 
-    "status": "breakRules"
-}
-{
-    "message": "No unit in that cell", 
-    "status": "breakRules"
-}
-{
-    "players": {}, 
-    "status": "ok", 
-    "turnNumber": 2
-}

@@ -107,16 +107,31 @@
     "status": "ok"
 }
 {
+    "players": {
+        "Barney": {
+            "units": [
+                {
+                    "HP": 1, 
+                    "X": 1, 
+                    "Y": 2, 
+                    "name": "brown"
+                }
+            ]
+        }
+    }, 
+    "status": "ok", 
+    "turnNumber": 3
+}
+{
     "games": [
         {
             "connectedPlayersCount": 2, 
             "factionName": "Headcrabs", 
             "gameName": "BlackMesa", 
-            "gameStatus": "finished", 
+            "gameStatus": "started", 
             "mapName": "BlackMesa", 
             "playersCount": 2, 
-            "totalCost": 1, 
-            "winner": "Barney"
+            "totalCost": 1
         }
     ], 
     "status": "ok"

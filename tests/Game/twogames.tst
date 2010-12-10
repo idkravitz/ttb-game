@@ -116,109 +116,89 @@
 }
 
 {
-    "cmd": "placeUnits",
+    "cmd": "getPlayerNumber",
     "sid": "GordonFreeman",
-    "units": [
-        {
-            "name": "white",
-            "posX": 0,
-            "posY": 0
-        }
-    ]
+    "gameName": "BlackMesa"
 }
 
 {
-    "cmd": "placeUnits",
+    "cmd": "getPlayerNumber",
     "sid": "BarneyColhoun",
-    "units": [
-        {
-            "name": "brown",
-            "posX": 2,
-            "posY": 2
-        }
-    ]
+    "gameName": "BlackMesa"
 }
 
 {
-    "cmd": "getGameState",
-    "name": "BlackMesa"
-}
-
-{
-    "cmd": "move",
+    "cmd": "leaveGame",
     "sid": "GordonFreeman",
-    "turn": 1,
-    "units": [
-    {
-        "posX": 0,
-        "posY": 0,
-        "destX": 1,
-        "destY": 0,
-        "attackX": 2,
-        "attackY": 2
-    }
-    ]
+    "gameName": "BlackMesa"
 }
 
 {
-    "cmd": "move",
+    "cmd": "leaveGame",
     "sid": "BarneyColhoun",
-    "turn": 1,
-    "units": [
-    {
-        "posX": 2,
-        "posY": 2,
-        "destX": 1,
-        "destY": 2,
-        "attackX": 0,
-        "attackY": 0
-    }
-    ]
+    "gameName": "BlackMesa"
 }
 
 {
-    "cmd": "getGameState",
-    "name": "BlackMesa"
-}
-
-{
-    "cmd": "move",
+    "cmd": "createGame",
     "sid": "GordonFreeman",
-    "turn": 2,
-    "units": [
-    {
-        "posX": 1,
-        "posY": 0,
-        "destX": 1,
-        "destY": 1,
-        "attackX": 1,
-        "attackY": 2
-    }
-    ]
+    "gameName": "HL",
+    "mapName": "BlackMesa",
+    "factionName": "Headcrabs",
+    "totalCost": 1,
+    "playersCount": 2
 }
 
 {
-    "cmd": "move",
+    "cmd": "joinGame",
     "sid": "BarneyColhoun",
-    "turn": 2,
-    "units": [
-    {
-        "posX": 1,
-        "posY": 2,
-        "destX": 1,
-        "destY": 1,
-        "attackX": 1,
-        "attackY": 0
-    }
-    ]
+    "gameName": "HL"
 }
 
 {
-    "cmd": "getGameState",
-    "name": "BlackMesa"
+    "cmd": "chooseArmy",
+    "sid": "GordonFreeman",
+    "armyName": "GF"
 }
 
 {
-    "cmd": "getGamesList",
-    "sid": "BarneyColhoun"
+    "cmd": "chooseArmy",
+    "sid": "BarneyColhoun",
+    "armyName": "BC"
+}
+
+{
+    "cmd": "setPlayerStatus",
+    "sid": "GordonFreeman",
+    "status": "ready"
+}
+
+{
+    "cmd": "setPlayerStatus",
+    "sid": "BarneyColhoun",
+    "status": "ready"
+}
+
+{
+    "cmd": "getPlayerNumber",
+    "sid": "GordonFreeman",
+    "gameName": "HL"
+}
+
+{
+    "cmd": "getPlayerNumber",
+    "sid": "BarneyColhoun",
+    "gameName": "HL"
+}
+
+{
+    "cmd": "leaveGame",
+    "sid": "GordonFreeman",
+    "gameName": "HL"
+}
+
+{
+    "cmd": "leaveGame",
+    "sid": "BarneyColhoun",
+    "gameName": "HL"
 }

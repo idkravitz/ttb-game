@@ -37,6 +37,11 @@
     "status": "ok"
 }
 {
+    "player_number": 1, 
+    "status": "ok"
+}
+{
+    "player_number": 2, 
     "status": "ok"
 }
 {
@@ -49,15 +54,31 @@
     "status": "ok"
 }
 {
-    "message": "No unit in that cell", 
-    "status": "breakRules"
+    "status": "ok"
 }
 {
-    "message": "No unit in that cell", 
-    "status": "breakRules"
+    "status": "ok"
 }
 {
-    "players": {}, 
-    "status": "ok", 
-    "turnNumber": 2
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "player_number": 1, 
+    "status": "ok"
+}
+{
+    "player_number": 2, 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
 }

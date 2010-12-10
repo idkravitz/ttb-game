@@ -201,13 +201,11 @@ class GameProcess(object):
         self.player_current_placements = {}
         self.current_actions = []
         self.ready_players -= len(self.player_previous_placements) # defeated players are always ready
-        if len(self.player_previous_placements) <= 1:
-            for winner in self.player_previous_placements:
-                player = dbi().query(Player).filter(Player.game_id==self.game.id).filter(Player.player_number==winner).first()
-                player.is_winner = True
-            del self.games[self.game.name]
-            self.game.state = 'finished'
-            dbi().commit()
+
+    @classmethod
+    def game_finished(cls, name):
+        if name in cls.games:
+            del cls.games[name]
 
     def placement_finished(self):
         self.ready_players += 1
