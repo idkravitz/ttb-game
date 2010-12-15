@@ -100,12 +100,17 @@ function drawMap(mapJson, player_number)
         table.append(row);
     }
     mapDiv.append(table);
-    mapDiv.position({
-        my: 'center center',
-        at: 'center center',
-        of: mapDiv.parent()});
+    centeringMap(mapDiv);
     return map;
 };
+
+function centeringMap(obj)
+{
+    $(obj).position({
+        my: 'center center',
+        at: 'center center',
+        of: $(obj).parent()});
+}
 
 function getClassDiv(charMap)
 {
@@ -279,12 +284,14 @@ function waitNextTurn()
                     cell.trigger(e);
                 }   
             });
+            const a_red = 'rgba(100%, 0%, 0%, 75%)';
+            const a_white = 'rgba(100%, 100%, 100%, 50%)';
             $(yours).hover(function(e){
                 if($(this).data('path'))
-                    $(this).data('path').attr({'stroke': 'rgba(100%, 0%, 0%, 75%)'});
+                    $(this).data('path').attr({'stroke': a_red }).toFront();
             }, function(e){
                 if($(this).data('path'))
-                    $(this).data('path').attr({'stroke': 'rgba(100%, 100%, 100%, 50%)'});
+                    $(this).data('path').attr({'stroke': a_white });
             });
             $('svg').unbind('contextmenu').bind('contextmenu', false); // disable context menu
             
@@ -311,17 +318,30 @@ function waitNextTurn()
                         path = AStar(grid, [x0, y0], [x1, y1]);
                         if(path.length && units_info[selection.data('name')].MP >= path.length)
                         {
-                            pathstring = "M" + getRelativeCenter(path[0]) + "C";
-                            for(var i = 1; i < path.length; ++i)
+                            pathstring = "M" + getRelativeCenter(path[0]);
+                            var i = 1;
+                            for(; i < path.length - 2; i += 3)
                             {
-                                pathstring += " " + getRelativeCenter(path[i]);
+                                var pair1 = getRelativeCenter(path[i]);
+                                var pair2 = getRelativeCenter(path[i + 1]);
+                                var pair3 = getRelativeCenter(path[i + 2]);
+                                pathstring += "C" + pair1.concat(pair2).concat(pair3).join(" ");
                             }
-                            for(var i = 4 - path.length; i > 0; --i)
+                            if(i < path.length)
                             {
-                                pathstring += " " + getRelativeCenter(path[path.length-1]);
+                                var points = [];
+                                for(j = 0; j < 3; ++j, ++i)
+                                {
+                                    var point = getRelativeCenter(path[i < path.length ? i: (path.length - 1)]);
+                                    points.push(point[0], point[1]);
+                                }
+                                pathstring += "C" + points.join(" ");
                             }
-                            line = canvas.path(pathstring);
-                            line.attr({'stroke-width': 3, 'stroke': 'rgba(100%, 100%, 100%, 50%)'});
+                            var line = canvas.path(pathstring);
+                            line.attr({
+                                'stroke-width': 3,
+                                'stroke': a_white,
+                                'stroke-dasharray': '-'});
                             if(selection.data('path'))
                                 selection.data('path').remove();
                             selection.data({ 'destX': x1, 'destY': y1, 'path': line, 'distance': path.length });
@@ -343,6 +363,7 @@ function waitNextTurn()
                     }
                 }
             });
+            centeringMap($('#fullMap'));
         }
         else
         {
@@ -366,7 +387,7 @@ function getRelativeCenter(pair)
     var pos = getPos(pair[0], pair[1]);
     x = pos.x + (44 / 2);
     y = pos.y + (44 / 2);
-    return x + " " + y;
+    return [x,y];
 }
 
 function fillInfo(obj)
