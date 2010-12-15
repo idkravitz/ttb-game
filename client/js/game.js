@@ -2,7 +2,6 @@ var have_units_placed = false;
 
 function startGame(map, army, player_number)
 {
-    drawMap(map, player_number);
     grid = generateGrid(map);
 
     grabFactionInfo();
@@ -12,6 +11,7 @@ function startGame(map, army, player_number)
     sessionStorage.player_number = player_number;
     if(!is_aborted)
     {
+        drawMap(map, player_number);
         sendRequest({ cmd: 'getArmy', armyName: army },
            function (json) {
                var units = json.units;
@@ -184,6 +184,11 @@ function detachFromCell(obj)
     }
 }
 
+function getPos(x, y)
+{
+    return {x: x * 48 + 2, y: y * 48 + 2};
+}
+
 /* Loops  until we receive new turn information */
 function waitNextTurn()
 {
@@ -194,6 +199,7 @@ function waitNextTurn()
             $('#end-placing-btn').hide().button('enable').button('option', 'label', 'End placing');
             $('#end-turn-btn').show().button('enable').button('option', 'label', 'End turn');
             $('.unit').remove();
+            $('#fullMap > *').remove();
             sessionStorage.turn = json.turnNumber;
             delete selection;
             if(!(sessionStorage.username in json.players))
@@ -211,7 +217,24 @@ function waitNextTurn()
             {
                 alert('You win!');
             }
+            canvas = Raphael($('#fullMap').get(0), 48 * grid.length + 2, 48 * grid[0].length + 2);
+            map = new Array(grid.length);
+            for(i = 0; i < grid.length; ++i)
+            {
+                map[i] = new Array(grid[i].length);
+                for(j = 0; j < grid[i].length; ++j)
+                {
+                    var pos = getPos(j, i);
+                    var r = canvas.rect(pos.x, pos.y, 46, 46, 1);
+                    r.attr({fill: (grid[i][j] ? 'grey': 'green')});
+                    $(r.node).data({x: j, y: i});
+                    map[i][j] = r.node;
+                }
+            }
             players = json.players;
+            your_units = canvas.set();
+            enemies_units = canvas.set();
+            placings = {};
             $.each(json.players, function(player, pval)
             {
                 var is_your = player == sessionStorage.username;
@@ -219,59 +242,101 @@ function waitNextTurn()
                 {
                     var x = unit.X;
                     var y = unit.Y;
-                    var nunit = staticUnit({ 
+                    var pos = getPos(x, y);
+                    var un = canvas.image('images/person1.bmp', pos.x + 2, pos.y + 2, 42, 42);
+                    $(un.node).data({ 
                         'name': unit.name,
                         'HP': unit.HP,
+                        'path': 0,
                         'distance': 0,
                         'player': player,
+                        'posX': x,
+                        'posY': y,
                         'destX': x,
                         'destY': y,
                         'attackX': -1,
                         'attackY': -1 });
-                    if(is_your)
-                    {
-                        nunit.addClass('your');
-                    }
-                    map[y][x].append(nunit);
+                    placings[[x, y]] = un;
+                    (is_your ? your_units: enemies_units).push(un);
                 });
             });
             /*
              * left btndown  -- select/attack
              * right btndown -- move
-             */
-            $('.unit, .cell').unbind('contextmenu').bind('contextmenu', false); // disable context menu
-            $('.your').unbind('mousedown').mousedown(function(e) // click cann't catch right button 
+            */
+            var yours = $.map(your_units.items, function(i) { return i.node });
+            var enemies = $.map(enemies_units.items, function(i) { return i.node });
+            $(yours).mousedown(function(e){
+                if(e.which == 1) // Left
+                {
+                    selection = $(this);
+                    fillInfo($(this));
+                }
+                else
+                {
+                    var cell = $(map[$(this).data('posY')][$(this).data('posX')]);
+                    e.currentTarget = cell.get(0);
+                    cell.trigger(e);
+                }   
+            });
+            $(yours).hover(function(e){
+                if($(this).data('path'))
+                    $(this).data('path').attr({'stroke': 'rgba(100%, 0%, 0%, 75%)'});
+            }, function(e){
+                if($(this).data('path'))
+                    $(this).data('path').attr({'stroke': 'rgba(100%, 100%, 100%, 50%)'});
+            });
+            $('svg').unbind('contextmenu').bind('contextmenu', false); // disable context menu
+            
+            /*
+            $('image').unbind('mousedown').mousedown(function(e) // click cann't catch right button 
             {
+                alert(1);
                 if(e.which == 1) // Left
                 {
                     selection = $(this);
                     fillInfo($(this));
                 }
             });
-            $('.cell').unbind('mousedown').mousedown(function(e)
+            */
+            
+            $('svg rect').unbind('mousedown').mousedown(function(e)
             {
                 if('selection' in window)
                 {
                     if(e.which == 3) // right
                     {
-                        var x0 = selection.parent().data('x'), y0 = selection.parent().data('y');
+                        var x0 = selection.data('posX'), y0 = selection.data('posY');
                         var x1 = $(this).data('x'), y1 = $(this).data('y');
                         path = AStar(grid, [x0, y0], [x1, y1]);
                         if(path.length && units_info[selection.data('name')].MP >= path.length)
                         {
-                            selection.data({ 'destX': x1, 'destY': y1, 'distance': path.length });
+                            pathstring = "M" + getRelativeCenter(path[0]) + "C";
+                            for(var i = 1; i < path.length; ++i)
+                            {
+                                pathstring += " " + getRelativeCenter(path[i]);
+                            }
+                            for(var i = 4 - path.length; i > 0; --i)
+                            {
+                                pathstring += " " + getRelativeCenter(path[path.length-1]);
+                            }
+                            line = canvas.path(pathstring);
+                            line.attr({'stroke-width': 3, 'stroke': 'rgba(100%, 100%, 100%, 50%)'});
+                            if(selection.data('path'))
+                                selection.data('path').remove();
+                            selection.data({ 'destX': x1, 'destY': y1, 'path': line, 'distance': path.length });
                             fillInfo(selection);
                         }
                     }
                 }
             });
-            $('.unit').not('.your').unbind('mousedown').mousedown(function(e)
+            $(enemies).unbind('mousedown').mousedown(function(e)
             { // this == enemy, selection == your
                 if('selection' in window)
                 {
                     if(e.which == 1) // Left
                     {
-                        var x0 = selection.parent().data('x'), y0 = selection.parent().data('y');
+                        var x0 = selection.data('posX'), y0 = selection.data('posY');
                         var x1 = $(this).parent().data('x'), y1 = $(this).parent().data('y');
                         selection.data({ 'attackX': x1, 'attackY': y1 });
                         fillInfo(selection);
@@ -296,6 +361,14 @@ function waitNextTurn()
     });
 }
 
+function getRelativeCenter(pair)
+{
+    var pos = getPos(pair[0], pair[1]);
+    x = pos.x + (44 / 2);
+    y = pos.y + (44 / 2);
+    return x + " " + y;
+}
+
 function fillInfo(obj)
 {
     function addRow(name, value)
@@ -305,15 +378,14 @@ function fillInfo(obj)
     $('#info').empty();
     var unit_info = units_info[obj.data('name')];
     addRow('Name', obj.data('name'));
-    addRow('Pos', '(' + obj.parent().data('x') + ',' + obj.parent().data('y') + ')');
+    addRow('Pos', '(' + obj.data('posX') + ',' + obj.data('posY') + ')');
     addRow('HP', obj.data('HP') + '/' + unit_info.HP);
     addRow('MP', (unit_info.MP - obj.data('distance')) + '/' + unit_info.MP);
-    addRow('Dest', '(' + obj.data('destX') + ',' + obj.data('destY') + ')');
     addRow('Attack', (obj.data('attackX') == -1) ? 'nothing' : ('(' + obj.data('attackX') + ',' + obj.data('attackY') + ')'));
     addRow('Range', unit_info.range);
     addRow('Defence', unit_info.defence);
     addRow('Damage', unit_info.damage);
-    //addRow('Protection', unint_info.protection);
+    addRow('Protection', unint_info.protection);
     //addRow('Initiative', unit_info.initiative);
 }
 
