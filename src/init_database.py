@@ -66,7 +66,7 @@ factions = [{
         {
             "name": "speedy",
             "HP": 4,
-            "MP": 4,
+            "MP": 8,
             "defence": 1,
             "attack": 2,
             "range": 2,

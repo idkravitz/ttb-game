@@ -39,7 +39,7 @@ function generateGrid(map)
 }
 
 /*
- * Obtains info for each unit in fraction, attributes of units: 
+ * Obtains info for each unit in fraction, attributes of units:
  *
  * 'name': str,
  * 'HP': int,
@@ -200,9 +200,10 @@ function waitNextTurn()
     sendNonAuthorizedRequest({ cmd: 'getGameState', name: sessionStorage.gameName }, function(json) {
         if(sessionStorage.turn != json.turnNumber)
         {
-            $('.cell').not('.stone').removeClass().addClass('cell point');
             $('#end-placing-btn').hide().button('enable').button('option', 'label', 'End placing');
             $('#end-turn-btn').show().button('enable').button('option', 'label', 'End turn');
+
+            $('.cell').not('.stone').removeClass().addClass('cell point');
             $('.unit').remove();
             $('#fullMap > *').remove();
             sessionStorage.turn = json.turnNumber;
@@ -222,7 +223,14 @@ function waitNextTurn()
             {
                 alert('You win!');
             }
-            canvas = Raphael($('#fullMap').get(0), 48 * grid.length + 2, 48 * grid[0].length + 2);
+            if(typeof(canvas) !== undefined)
+            {
+                canvas = Raphael($('#fullMap').get(0), 48 * grid.length + 2, 48 * grid[0].length + 2);
+            }
+            else
+            {
+                canvas.clear();
+            }
             map = new Array(grid.length);
             for(i = 0; i < grid.length; ++i)
             {
@@ -249,7 +257,7 @@ function waitNextTurn()
                     var y = unit.Y;
                     var pos = getPos(x, y);
                     var un = canvas.image('images/person1.bmp', pos.x + 2, pos.y + 2, 42, 42);
-                    $(un.node).data({ 
+                    $(un.node).data({
                         'name': unit.name,
                         'HP': unit.HP,
                         'path': 0,
@@ -282,7 +290,7 @@ function waitNextTurn()
                     var cell = $(map[$(this).data('posY')][$(this).data('posX')]);
                     e.currentTarget = cell.get(0);
                     cell.trigger(e);
-                }   
+                }
             });
             const a_red = 'rgba(100%, 0%, 0%, 75%)';
             const a_white = 'rgba(100%, 100%, 100%, 50%)';
@@ -294,22 +302,10 @@ function waitNextTurn()
                     $(this).data('path').attr({'stroke': a_white });
             });
             $('svg').unbind('contextmenu').bind('contextmenu', false); // disable context menu
-            
-            /*
-            $('image').unbind('mousedown').mousedown(function(e) // click cann't catch right button 
-            {
-                alert(1);
-                if(e.which == 1) // Left
-                {
-                    selection = $(this);
-                    fillInfo($(this));
-                }
-            });
-            */
-            
+
             $('svg rect').unbind('mousedown').mousedown(function(e)
             {
-                if('selection' in window)
+                if(typeof(selection) !== undefined)
                 {
                     if(e.which == 3) // right
                     {
@@ -352,14 +348,20 @@ function waitNextTurn()
             });
             $(enemies).unbind('mousedown').mousedown(function(e)
             { // this == enemy, selection == your
-                if('selection' in window)
+                if(typeof(selection) !== undefined)
                 {
                     if(e.which == 1) // Left
                     {
                         var x0 = selection.data('posX'), y0 = selection.data('posY');
-                        var x1 = $(this).parent().data('x'), y1 = $(this).parent().data('y');
+                        var x1 = $(this).data('posX'), y1 = $(this).data('posY');
                         selection.data({ 'attackX': x1, 'attackY': y1 });
                         fillInfo(selection);
+                    }
+                    else
+                    {
+                        var cell = $(map[$(this).data('posY')][$(this).data('posX')]);
+                        e.currentTarget = cell.get(0);
+                        cell.trigger(e);
                     }
                 }
             });
@@ -406,7 +408,7 @@ function fillInfo(obj)
     addRow('Range', unit_info.range);
     addRow('Defence', unit_info.defence);
     addRow('Damage', unit_info.damage);
-    addRow('Protection', unint_info.protection);
+    addRow('Protection', unit_info.protection);
     //addRow('Initiative', unit_info.initiative);
 }
 
@@ -436,11 +438,12 @@ function endTurn()
     {
         $(this).button('option', 'label', 'waiting for players');
         $(this).button('disable');
-        units = $('.your').map(function(i, unit) {
-            var data = $(unit).data();
-            return { 
-                'posX': $(unit).parent().data('x'),
-                'posY': $(unit).parent().data('y'),
+        $('#info').empty();
+        units = $.map(your_units, function(v) {
+            var data = $(v.node).data();
+            return {
+                'posX': data.posX,
+                'posY': data.posY,
                 'destX': data.destX,
                 'destY': data.destY,
                 'attackX': data.attackX,
