@@ -1,4 +1,15 @@
 var have_units_placed = false;
+const players_colors = [
+    "#ff1717",
+    "#0042ff",
+    "#1ce6b9",
+    "#540081",
+    "#fffc01",
+    "#fe8a0e",
+    "#959697",
+    "#e55bb0",
+    "#7ebff1",
+];
 
 function startGame(map, army, player_number)
 {
@@ -241,7 +252,7 @@ function waitNextTurn()
                     var r = canvas.rect(pos.x, pos.y, 46, 46, 1);
                     r.attr({fill: (grid[i][j] ? 'grey': 'green')});
                     $(r.node).data({x: j, y: i});
-                    map[i][j] = r.node;
+                    map[i][j] = r;
                 }
             }
             players = json.players;
@@ -270,6 +281,7 @@ function waitNextTurn()
                         'attackX': -1,
                         'attackY': -1 });
                     placings[[x, y]] = un;
+                    map[y][x].attr({fill: players_colors[pval.player_number - 1]});
                     (is_your ? your_units: enemies_units).push(un);
                 });
             });
@@ -287,7 +299,7 @@ function waitNextTurn()
                 }
                 else
                 {
-                    var cell = $(map[$(this).data('posY')][$(this).data('posX')]);
+                    var cell = $(map[$(this).data('posY')][$(this).data('posX')].node);
                     e.currentTarget = cell.get(0);
                     cell.trigger(e);
                 }
@@ -359,7 +371,7 @@ function waitNextTurn()
                     }
                     else
                     {
-                        var cell = $(map[$(this).data('posY')][$(this).data('posX')]);
+                        var cell = $(map[$(this).data('posY')][$(this).data('posX')].node);
                         e.currentTarget = cell.get(0);
                         cell.trigger(e);
                     }
