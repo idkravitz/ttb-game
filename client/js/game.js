@@ -10,6 +10,10 @@ const players_colors = [
     "#e55bb0",
     "#7ebff1",
 ];
+const a_yellow = 'rgba(100%, 100%, 0%, 75%)';
+const a_white = 'rgba(100%, 100%, 100%, 50%)';
+const a_red = 'rgba(100%, 0%, 0%, 50%)';
+const selection_color = 'rgb(100%, 100%, 0%)';
 
 function startGame(map, army, player_number)
 {
@@ -294,8 +298,13 @@ function waitNextTurn()
             $(yours).mousedown(function(e){
                 if(e.which == 1) // Left
                 {
+                    if(typeof selection != 'undefined')
+                    {
+                        getSelectedCell().attr({fill: players_colors[sessionStorage.player_number - 1]});
+                    }
                     selection = $(this);
-                    fillInfo($(this));
+                    getSelectedCell().attr({fill: selection_color});
+                    fillInfo(selection);
                 }
                 else
                 {
@@ -304,20 +313,22 @@ function waitNextTurn()
                     cell.trigger(e);
                 }
             });
-            const a_red = 'rgba(100%, 0%, 0%, 75%)';
-            const a_white = 'rgba(100%, 100%, 100%, 50%)';
             $(yours).hover(function(e){
                 if($(this).data('path'))
-                    $(this).data('path').attr({'stroke': a_red }).toFront();
+                    $(this).data('path').attr({'stroke': a_yellow }).toFront();
+                if('attackLine' in $(this).data())
+                    $(this).data('attackLine').attr({'stroke': a_yellow }).toFront();
             }, function(e){
                 if($(this).data('path'))
                     $(this).data('path').attr({'stroke': a_white });
+                if('attackLine' in $(this).data())
+                    $(this).data('attackLine').attr({'stroke': a_red });
             });
             $('svg').unbind('contextmenu').bind('contextmenu', false); // disable context menu
 
             $('svg rect').unbind('mousedown').mousedown(function(e)
             {
-                if(typeof(selection) !== undefined)
+                if(typeof selection != 'undefined')
                 {
                     if(e.which == 3) // right
                     {
@@ -360,13 +371,23 @@ function waitNextTurn()
             });
             $(enemies).unbind('mousedown').mousedown(function(e)
             { // this == enemy, selection == your
-                if(typeof(selection) !== undefined)
+                if(typeof selection != 'undefined')
                 {
                     if(e.which == 1) // Left
                     {
                         var x0 = selection.data('posX'), y0 = selection.data('posY');
                         var x1 = $(this).data('posX'), y1 = $(this).data('posY');
-                        selection.data({ 'attackX': x1, 'attackY': y1 });
+                        var pathstring = 'M' + getRelativeCenter([x0, y0]).join(' ')
+                            + 'L' + getRelativeCenter([x1, y1]).join(' ');
+                        var line = canvas.path(pathstring).attr({
+                            stroke: a_red,
+                            'stroke-dasharray': '-',
+                            'stroke-width': 2});
+                        if('attackLine' in selection.data())
+                        {
+                            selection.data('attackLine').remove();
+                        }
+                        selection.data({ 'attackX': x1, 'attackY': y1, 'attackLine': line});
                         fillInfo(selection);
                     }
                     else
@@ -444,6 +465,11 @@ function endPlacing()
     return false;
 }
 
+function getSelectedCell()
+{
+    return map[window.selection.data('posY')][window.selection.data('posX')];
+}
+
 function endTurn()
 {
     if(!$(this).button('option', 'disabled'))
@@ -451,6 +477,8 @@ function endTurn()
         $(this).button('option', 'label', 'waiting for players');
         $(this).button('disable');
         $('#info').empty();
+        if(typeof selection != 'undefined')
+            getSelectedCell().attr({fill: players_colors[sessionStorage.player_number - 1]});
         units = $.map(your_units, function(v) {
             var data = $(v.node).data();
             return {
