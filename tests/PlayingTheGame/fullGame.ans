@@ -63,6 +63,7 @@
 {
     "players": {
         "Barney": {
+            "player_number": 2, 
             "units": [
                 {
                     "HP": 1, 
@@ -79,6 +80,7 @@
             ]
         }, 
         "Gordon": {
+            "player_number": 1, 
             "units": [
                 {
                     "HP": 1, 
@@ -101,6 +103,7 @@
             ]
         }
     }, 
+    "players_count": 2, 
     "status": "ok", 
     "turnNumber": 4
 }
@@ -113,6 +116,7 @@
 {
     "players": {
         "Barney": {
+            "player_number": 2, 
             "units": [
                 {
                     "HP": 1, 
@@ -123,6 +127,7 @@
             ]
         }, 
         "Gordon": {
+            "player_number": 1, 
             "units": [
                 {
                     "HP": 1, 
@@ -145,6 +150,7 @@
             ]
         }
     }, 
+    "players_count": 2, 
     "status": "ok", 
     "turnNumber": 5
 }

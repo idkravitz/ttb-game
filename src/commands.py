@@ -562,6 +562,7 @@ def getGameState(name):
         raise BadTurn("You can't request game status before everyone place their units")
     result = {
         process.get_username(player_number): {
+                "player_number": player_number,
                 "units": [
                             {
                                 "name": process.previous_placements[pos].unit,

@@ -58,6 +58,7 @@
 }
 {
     "players": {}, 
+    "players_count": 0, 
     "status": "ok", 
     "turnNumber": 2
 }

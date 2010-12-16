@@ -1,9 +1,9 @@
 {
-    "sid": "GordonFreeman",
+    "sid": "GordonFreeman", 
     "status": "ok"
 }
 {
-    "sid": "BarneyColhoun",
+    "sid": "BarneyColhoun", 
     "status": "ok"
 }
 {
@@ -45,34 +45,37 @@
 {
     "players": {
         "Barney": {
+            "player_number": 2, 
             "units": [
                 {
-                    "HP": 1,
-                    "X": 2,
-                    "Y": 2,
+                    "HP": 1, 
+                    "X": 2, 
+                    "Y": 2, 
                     "name": "brown"
                 }
             ]
-        },
+        }, 
         "Gordon": {
+            "player_number": 1, 
             "units": [
                 {
-                    "HP": 1,
-                    "X": 0,
-                    "Y": 0,
+                    "HP": 1, 
+                    "X": 0, 
+                    "Y": 0, 
                     "name": "white"
                 }
             ]
         }
-    },
-    "status": "ok",
+    }, 
+    "players_count": 2, 
+    "status": "ok", 
     "turnNumber": 1
 }
 {
-    "message": "Unit placing allowed only on zero turn",
+    "message": "Unit placing allowed only on zero turn", 
     "status": "badTurn"
 }
 {
-    "message": "Unit placing allowed only on zero turn",
+    "message": "Unit placing allowed only on zero turn", 
     "status": "badTurn"
 }
