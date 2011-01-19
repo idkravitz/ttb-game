@@ -1,139 +1,54 @@
 #!/usr/bin/env python3
+import os
+import glob
+import json
+
 import settings
 import common
+from utils.path import join
+
 common.COMMANDLINE = True
+
 import commands as com
 
-com.clear()
+if __name__ == '__main__':
+    com.clear()
 
-sid = com.register('admin', 'maintance')['sid']
-print("Log in as administrator, sid: {0}". format(sid))
-maps = {
-    'x_2': """
-        11111
-        .x1x.
-        ..x..
-        .x2x.
-        22222
-        """,
-    'simple_2': """
-        111
-        ...
-        222
-        """,
-#    'big': """
-#        1111.....xx.........
-#        1111......x.........
-#        1111...x............
-#        1111.xx...x...x.....
-#        ............x.......
-#        xxxx...xxxxxxxx.....
-#        ...x.......x...33333
-#        ...x...........33333
-#        ...............33333
-#        ..x............33333
-#        ......x.x..x...33333
-#        ....................
-#        ...x................
-#        ....xxx....xxx......
-#        ....................
-#        .........x..x...xx..
-#        2222.........xx.....
-#        2222.........xx.....
-#        2222.........xx.....
-#        2222................
-#        """
-}
-for name, terrain in maps.items():
-    terrain = [y for y in (x.strip() for x in terrain.splitlines()) if len(y)]
-    print("Add map: " + name)
-    com.uploadMap(sid, name, terrain)
-factions = [{
-    "factionName": "Headcrabs",
-    "units": [
-        {
-            "name": "regular",
-            "HP": 5,
-            "MP": 2,
-            "defence": 2,
-            "attack": 3,
-            "range": 2,
-            "damage": 2,
-            "protection": 1,
-            "initiative": 1,
-            "cost": 1
-        },
-        {
-            "name": "speedy",
-            "HP": 4,
-            "MP": 8,
-            "defence": 1,
-            "attack": 2,
-            "range": 2,
-            "damage": 1,
-            "protection": 1,
-            "initiative": 1,
-            "cost": 2
-        },
-        {
-            "name": "poisoned",
-            "HP": 6,
-            "MP": 2,
-            "defence": 1,
-            "attack": 4,
-            "range": 2,
-            "damage": 3,
-            "protection": 1,
-            "initiative": 2,
-            "cost": 3
-        }
-    ]
-},
-{
-    "factionName": "Zombies",
-    "units": [
-        {
-            "name": "raaarghh",
-            "HP": 5,
-            "MP": 2,
-            "defence": 2,
-            "attack": 3,
-            "range": 2,
-            "damage": 2,
-            "protection": 1,
-            "initiative": 1,
-            "cost": 1
-        },
-        {
-            "name": "yabaaaa",
-            "HP": 4,
-            "MP": 4,
-            "defence": 1,
-            "attack": 2,
-            "range": 2,
-            "damage": 1,
-            "protection": 1,
-            "initiative": 1,
-            "cost": 2
-        },
-        {
-            "name": "myicing!!",
-            "HP": 6,
-            "MP": 2,
-            "defence": 1,
-            "attack": 4,
-            "range": 2,
-            "damage": 3,
-            "protection": 1,
-            "initiative": 2,
-            "cost": 3
-        }
-    ]
-}]
-for faction in factions:
-    com.uploadFaction(sid, **faction)
-    print("Add faction:" + faction['factionName'])
+    sid = com.register('admin', 'maintance')['sid']
+    print('Log in as administrator, sid: {0}'. format(sid))
 
-print("Log out, sid {0}".format(sid))
-com.unregister(sid)
+    maps_dir = join('data/maps')
+    units_dir = join('data/units')
 
+    factions = {}
+    for dirpath, dirnames, filenames in os.walk(units_dir):
+        faction = os.path.basename(dirpath)
+        if faction not in factions:
+            factions[faction] = []
+        filenames = [os.path.join(dirpath, f)
+                     for f in filenames if os.path.splitext(f)[1] == '.cfg']
+        for unit_file in filenames:
+            with open(unit_file, "r") as file:
+                unit = json.loads(file.read())
+                unit_name = os.path.splitext(os.path.basename(unit_file))[0]
+                print(unit_name)
+                unit['name'] = unit_name
+                factions[faction].append(unit)
+
+    for faction, units in factions.items():
+        if len(units):
+            print('Adding faction {0}, with {1} units'.format(faction, len(units)))
+            com.uploadFaction(sid, factionName=faction, units=units)
+
+    for dirpath, dirnames, filenames in os.walk(maps_dir):
+        filenames = [os.path.join(dirpath, f)
+                     for f in filenames if os.path.splitext(f)[1] == '.map']
+        for map_file in filenames:
+            with open(map_file, "r") as file:
+                lines = [line.replace(" ","").rstrip() for line in file.readlines()]
+                name = os.path.splitext(os.path.basename(map_file))[0]
+                print('Adding map {0}[{1}x{2}]'.format(name, len(lines), len(lines[0])))
+                com.uploadMap(sid, name=name, terrain=lines)                     
+        
+    print('Log out, sid: {0}'.format(sid))
+    com.unregister(sid)
