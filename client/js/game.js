@@ -142,9 +142,22 @@ function showHelp(player_number)
   return 'Place units on ' + player_color[player_number - 1] + ' cells';
 }
 
+function getRawName(name)
+{
+  return name.toLowerCase().replace(" ", "_");
+}
+
 function getPictUnit(name)
 {
-  return 'url(images/person1.bmp)';
+  var faction = getRawName(sessionStorage.factionName);
+  var name = getRawName(name);
+  return 'images/units/' + faction + '/' + name + '.png';
+}
+
+
+function getCssPictUnit(name)
+{
+  return 'url(' + getPictUnit(name) + ')'; 
 }
 
 function clearUnitStyle(unit)
@@ -176,7 +189,7 @@ function showUnits(unitsGame)
 function staticUnit(data)
 {
   var unit = $('<div>').addClass('unit');
-  unit.css('background-image', getPictUnit(data.name));
+  unit.css('background-image', getCssPictUnit(data.name));
   unit.data(data);
   unit.dblclick(function() {
     $('#about-fact').show();
@@ -271,7 +284,7 @@ function waitNextTurn()
           var x = unit.X;
           var y = unit.Y;
           var pos = getPos(x, y);
-          var un = canvas.image('images/person1.bmp', pos.x + 2, pos.y + 2, 42, 42);
+          var un = canvas.image(getPictUnit(unit.name), pos.x + 2, pos.y + 2, 42, 42);
           $(un.node).data({
             'name': unit.name,
             'HP': unit.HP,

@@ -22,6 +22,11 @@ def serve_root_statics(filename):
 
 @route('/ajax')
 def serve_ajax():
-    return main.parse_request(request.GET['data'])
+    try:
+        response = main.parse_request(request.GET['data'])
+    except Exception as e:
+        print(e)
+        raise
+    return response
 
 run(reloader=True, host='127.0.0.1', port=PORT)
