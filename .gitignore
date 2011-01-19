@@ -1,3 +1,7 @@
 *.swp
 *~
 *.db3
+\#*\#
+.elc
+auto-save-list
+tramp
