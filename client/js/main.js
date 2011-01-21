@@ -46,109 +46,114 @@ function innerShowSection()
   sections[section].show();
 }
 
-function Section(name)
-{
-  this.name = name;
-}
-
-function inherit(child, super)
-{
-  child.prototype = new super;
-}
-
-Section.prototype = {
-  show: function() {
-    $('#content > *, #menu, #menu > li').hide();
-    $('#' + this.name).show();
+Section = $.inherit(
+  {
+    __constructor: function(name) 
+    {
+      this.name = name
+    },
+    show: function()
+    {
+      $('#content > *, #menu, #menu > li').hide();
+      $('#' + this.name).show();
+    }
   }
-}
+);
 
-function SectionWithNavigation(name)
-{
-  Section.call(this, name);
-}
+SectionWithNavigation = $.inherit(
+  Section,
+  {
+    show: function ()
+    {
+      this.__base();
+      $('nav > p').removeClass('nav-current');
+      $('#nav-' + this.name).addClass('nav-current');
 
-inherit(SectionWithNavigation, Section);
-$.extend(SectionWithNavigation.prototype, {
-  show: function() {
-    Section.prototype.show.call(this);
-    $('nav > p').removeClass('nav-current');
-    $('#nav-' + this.name).addClass('nav-current');
+      showCurrentUser('Welcome, ');
 
-    showCurrentUser('Welcome, ');
-
-    $('#menu, #menu li[id!="leave-game"], nav, #nav-vertical-line').show();
+      $('#menu, #menu li[id!="leave-game"], nav, #nav-vertical-line').show();
+    }
   }
-});
+);
 
-function ActiveGamesSection()
-{
-  SectionWithNavigation.call(this, 'active-games');
-}
-
-inherit(ActiveGamesSection, SectionWithNavigation);
-$.extend(ActiveGamesSection.prototype, {
-  show: function() {
-    SectionWithNavigation.prototype.show.call(this);
-    $('#active-games > *').hide();
-    getGamesList();
+ActiveGamesSection = $.inherit(
+  SectionWithNavigation,
+  {
+    __constructor: function ()
+    {
+      this.__base('active-games');
+    },
+    show: function()
+    {
+      this.__base();
+      $('#active-games > *').hide();
+      getGamesList();
+    }
   }
-});
+);
 
-function CreateGameSection()
-{
-  SectionWithNavigation.call(this, 'create-game');
-}
-
-inherit(CreateGameSection, SectionWithNavigation);
-$.extend(CreateGameSection.prototype, {
-  show: function() {
-    SectionWithNavigation.prototype.show.call(this);
-    initCreateGame();
+CreateGameSection = $.inherit(
+  SectionWithNavigation,
+  {
+    __constructor: function()
+    {
+      this.__base('create-game');
+    },
+    show: function()
+    {
+      this.__base();
+      initCreateGame();
+    }
   }
-});
+);
 
-function ManageArmiesSection()
-{
-  SectionWithNavigation.call(this, 'manage-armies');
-}
-
-inherit(ManageArmiesSection, SectionWithNavigation);
-$.extend(ManageArmiesSection.prototype, {
-  show: function() {
-    SectionWithNavigation.prototype.show.call(this);
-    initManageArmies();
+ManageArmiesSection = $.inherit(
+  SectionWithNavigation,
+  {
+    __constructor: function()
+    {
+      this.__base('manage-armies');
+    },
+    show: function()
+    {
+      this.__base();
+      initManageArmies();
+    }
   }
-});
+);
 
-function LobbySection()
-{
-  Section.call(this, 'lobby');
-}
-
-inherit(LobbySection, Section);
-$.extend(LobbySection.prototype, {
-  show: function() {
-    Section.prototype.show.call(this);
-    $('#menu, #leave-game, #current-user').show();
-    showCurrentUser('');
-    initLobby();
+LobbySection = $.inherit(
+  Section,
+  {
+    __constructor: function()
+    {
+      this.__base('lobby');
+    },
+    show: function() {
+      this.__base();
+      $('#menu, #leave-game, #current-user').show();
+      showCurrentUser('');
+      initLobby();
+    }
   }
-});
+);
 
-function GameSection()
-{
-  Section.call(this, 'game');
-}
-inherit(GameSection, Section);
-$.extend(GameSection.prototype, {
-  show: function() {
-    Section.prototype.show.call(this);
-    $('#end-turn-btn').hide().button('enable');
-    $('#end-placing-btn').show().button('disable');
-    initGame();
+GameSection = $.inherit(
+  Section,
+  {
+    __constructor: function()
+    {
+      this.__base('game');
+    },
+    show: function()
+    {
+      Section.prototype.show.call(this);
+      $('#end-turn-btn').hide().button('enable');
+      $('#end-placing-btn').show().button('disable');
+      initGame();
+    }
   }
-});
+);
 
 function describeSections()
 {
