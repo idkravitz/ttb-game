@@ -37,6 +37,9 @@
     "status": "ok"
 }
 {
+    "status": "ok"
+}
+{
     "games": [
         {
             "connectedPlayersCount": 2, 

@@ -486,7 +486,7 @@ def chooseArmy(sid, armyName):
             user_id=user.id, state='in_lobby').one()
     except sqlalchemy.orm.exc.NoResultFound:
         raise NotInGame('Can\'t choose army, because you\'re not in game')
-    army = dbi().get_army(armyName)
+    army = dbi().get_army(armyName, user.id)
     total_cost = sum(squad.unit.cost * squad.count for squad in army.unitArmy)
     if total_cost > player.game.total_cost:
         raise BadArmy('Your army is too expensive')

@@ -51,6 +51,19 @@
 }
 
 {
+    "cmd": "uploadArmy",
+    "sid": "headcrabarrgh",
+    "armyName": "People",
+    "factionName": "People",
+    "armyUnits": [
+        {
+            "name": "first",
+            "count": 1
+        }
+    ]
+}
+
+{
     "cmd": "createGame",
     "sid": "GordonFreeman",
     "gameName": "Half-life",

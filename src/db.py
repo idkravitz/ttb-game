@@ -293,9 +293,9 @@ class Database:
         except NoResultFound:
             raise BadFaction('No faction with that name')
 
-    def get_army(self, name):
+    def get_army(self, name, user_id):
         try:
-            return self.session.query(Army).filter_by(name=name).one()
+            return self.session.query(Army).filter_by(name=name, user_id=user_id).one()
         except NoResultFound:
             raise BadArmy('No army with that name')
 

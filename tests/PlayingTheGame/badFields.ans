@@ -25,6 +25,9 @@
     "status": "ok"
 }
 {
+    "status": "ok"
+}
+{
     "message": "User is not playing game", 
     "status": "badGame"
 }

@@ -34,6 +34,9 @@
     "status": "ok"
 }
 {
+    "status": "ok"
+}
+{
     "message": "User is not in lobby", 
     "status": "badUser"
 }
