@@ -6,6 +6,7 @@ import json
 import functools
 import random
 import hashlib
+import sys
 from functools import reduce
 from collections import namedtuple
 
@@ -544,12 +545,10 @@ def move(sid, turn, units):
         if len(path) > process.get_unit(pos).MP:
             raise BreakRules("Not enough MP")
         actions += [Action(pos, dest, attack)]
-        #moves.append(construct_turn_from_previous(prevTurn, latest_process, *[u[f] for f in fields]))
     moved = set(a.pos for a in actions)
     actions += [Action(pos, pos, NO_TARGET)
         for pos in process.player_previous_placements[player.player_number]
         if pos not in moved]
-    #dbi().add_all(moves + skips)
     process.current_actions += actions
     process.turn_finished()
     return response_ok()

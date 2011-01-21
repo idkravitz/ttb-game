@@ -78,7 +78,7 @@ def gen_graph(land, start_pos, target_pos):
             pos = x, y
             if char == "x":
                 walkable[pos] = False
-    mapsize = len(land), len(land[0])
+    mapsize = len(land[0]), len(land)
     start_node = RectNode(start_pos, walkable=walkable, mapsize=mapsize)
     if target_pos in walkable:
         target_node = None
@@ -94,7 +94,7 @@ def find_shortest_path(land, start_pos, target_pos):
     closed = set()
     open_set = set()
     open = []
-    mapsize = len(land), len(land[0])
+    mapsize = len(land[0]), len(land)
     h = start_node._h = start_node.heuristic(target_node)
     g = start_node._g = 0
     f = start_node._h # + start_node._g

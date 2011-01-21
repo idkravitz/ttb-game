@@ -86,9 +86,9 @@ function drawMap(mapJson, player_number)
   var table = $('<table>');
   for (var i = 0; i < mapJson.length; i++)
   {
-    map[i] = new Array(mapJson.length);
+    map[i] = new Array(mapJson[i].length);
     var row = $('<tr>');
-    for (var j = 0; j < mapJson.length; j++)
+    for (var j = 0; j < mapJson[i].length; j++)
     {
       map[i][j] = $('<div>').addClass(getClassDiv(mapJson[i][j]))
         .data({'x': j, 'y': i});
@@ -125,6 +125,8 @@ function centeringMap(obj)
     my: 'center center',
     at: 'center center',
     of: $(obj).parent()});
+  $(obj).css('left', Math.max(parseInt($(obj).css('left')), 0));
+  $(obj).css('top', Math.max(parseInt($(obj).css('top')), 0));
 }
 
 function getClassDiv(charMap)
@@ -253,7 +255,7 @@ function waitNextTurn()
       }
       if(typeof(canvas) !== undefined)
       {
-        canvas = Raphael($('#fullMap').get(0), 48 * grid.length + 2, 48 * grid[0].length + 2);
+        canvas = Raphael($('#fullMap').get(0), 48 * grid[0].length + 2, 48 * grid.length + 2);
       }
       else
       {
