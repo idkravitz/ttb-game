@@ -1,3 +1,4 @@
+
 var have_units_placed = false;
 const players_colors = [
   "#ff1717",
@@ -17,107 +18,465 @@ const selection_color = 'rgb(100%, 100%, 0%)';
 
 function startGame(map, army, player_number)
 {
-  grid = generateGrid(map);
-
-  grabFactionInfo();
-
-  var is_aborted = 'turn' in sessionStorage && sessionStorage.turn != 0;
-  sessionStorage.turn = 0;
-  sessionStorage.player_number = player_number;
-  if(!is_aborted)
-  {
-    drawMap(map, player_number);
-    sendRequest({ cmd: 'getArmy', armyName: army },
-       function (json) {
-         var units = json.units;
-         showUnits(units);
-       });
-  }
-  else
-  {
-    waitNextTurn();
-  }
+  player = new Player(map, player_number, army, Viewer);
 };
 
-function generateGrid(map)
-{
-  result = new Array(map.length);
-  $.each(result, function(i)
+Player = $.inherit(
   {
-    result[i] = new Array(map[0].length);
-    $.each(result[i], function(j)
+    __constructor: function(map, player_number, army_name, Viewer)
     {
-      result[i][j] = map[i][j] == 'x';
-    });
-  });
-  return result;
-}
-
-/*
- * Obtains info for each unit in fraction, attributes of units:
- *
- * 'name': str,
- * 'HP': int,
- * 'attack': int,
- * 'defence': int,
- * 'range': int,
- * 'damage': int,
- * 'MP': int,
- * 'protection': int,
- * 'initiative': int,
- * 'cost': int,
-*/
-function grabFactionInfo() // grab from currentGame info in sessionStorage
-{
-  sendRequest({cmd: 'getFaction', factionName: sessionStorage.factionName }, function(json)
-  {
-    units_info = {};
-    $.each(json.unitList, function(i, unit)
-    {
-      units_info[unit.name] = unit;
-    });
-  });
-}
-
-function drawMap(mapJson, player_number)
-{
-  map = new Array(mapJson.length);
-  var mapDiv = $('#fullMap');
-  var table = $('<table>');
-  for (var i = 0; i < mapJson.length; i++)
-  {
-    map[i] = new Array(mapJson[i].length);
-    var row = $('<tr>');
-    for (var j = 0; j < mapJson[i].length; j++)
-    {
-      map[i][j] = $('<div>').addClass(getClassDiv(mapJson[i][j]))
-        .data({'x': j, 'y': i});
-      $('#player-color').html(showHelp(player_number));
-      if (map[i][j].hasClass('player-' + player_number))
+      this.map = map;
+      this.viewer = new Viewer(this);
+      this.player_number = player_number;
+      this.army_name = army_name;
+      this.placings = {};
+ 
+      var is_aborted = ('turn' in sessionStorage && sessionStorage.turn != 0);
+      sessionStorage.turn = 0;
+      //sessionStorage.player_number = player_number;
+      this.grid = this._generate_grid();
+      this._grabFactionInfo();
+      if(!is_aborted)
       {
-        map[i][j].droppable({
-          accept: '.unit',
-          scope: 'free',
-          drop: function(event, ui)
-          {
-            var dropped = ui.draggable;
-            have_units_placed = true;
-            $('#end-placing-btn').button('enable');
-            $(this).setDroppableScope('default');
-            detachFromCell(dropped);
-            $(dropped).appendTo(this);
-            clearUnitStyle(dropped);
-          }
+        this.viewer.drawInitialMap(this.map);
+        this._requestArmy();
+      }
+      else
+      {
+        this.waitNextTurn();
+      }
+    },
+
+    _generate_grid: function()
+    {
+      var map = this.map;
+      grid = new Array(map.length);
+      $.each(grid, function(i)
+      {
+        grid[i] = new Array(map[0].length);
+        $.each(grid[i], function(j)
+        {
+          grid[i][j] = (map[i][j] == 'x');
+        });
+      });
+      return grid;
+    },
+
+    _requestArmy: function()
+    {
+      sendRequest({ cmd: 'getArmy', armyName: this.army_name }, function (json)
+      {
+        var units = json.units;
+        player.viewer.showUnits(units);
+      });
+    },
+
+    _grabFactionInfo: function()
+    {
+      sendRequest({cmd: 'getFaction', factionName: sessionStorage.factionName }, function(json)
+      {
+        units_info = {};
+        $.each(json.unitList, function(i, unit)
+        {
+          units_info[unit.name] = unit;
+        });
+      });
+    },
+
+    endPlacing: function()
+    {
+      this.viewer.endPlacing();
+      var units = [];
+      pipa = this.placings;
+      for(var pos in this.placings)
+      {
+        pos = pos.split(',');
+        units.push({'name': this.placings[pos], 'posX': parseInt(pos[0]), 'posY': parseInt(pos[1])});
+      }
+      sendRequest({ cmd: 'placeUnits', 'units': units }, $.proxy(this.waitNextTurn, this));
+    },
+
+    endTurn: function()
+    {
+      this.viewer.endTurn();
+      var units = []
+      for (var pos in this.placings) if (this.placings[pos].player == sessionStorage.username)
+      {
+        pos = pos.split(',');
+        units.push({
+          'posX': parseInt(pos[0]),
+          'posY': parseInt(pos[1]),
+          'destX': parseInt(this.placings[pos].destX),
+          'destY': parseInt(this.placings[pos].destY),
+          'attackX': parseInt(this.placings[pos].attackX),
+          'attackY': parseInt(this.placings[pos].attackY)
         });
       }
-      row.append($('<td>').append(map[i][j]));
+      sendRequest({ cmd: 'move', turn: parseInt(sessionStorage.turn), units: units },
+                  $.proxy(this.waitNextTurn, this));
+    },
+
+    placeUnit: function(unit, x, y)
+    {
+      this.placings[[x, y]] = unit;
+    },
+
+    move: function(from, to)
+    {
+      var path = AStar(this.grid, from, to);
+      if(path.length && units_info[this.placings[from]['name']].MP >= path.length)
+      {
+        this.placings[from]['destX'] = to[0];
+        this.placings[from]['destY'] = to[1];
+        this.placings[from]['distance'] = path.length;
+        return path;
+      }
+      else
+      {
+        return [];
+      }
+    },
+
+    attack: function(from, to)
+    {
+      this.placings[from]['attackX'] = to[0];
+      this.placings[from]['attackY'] = to[1];
+    },
+
+    waitNextTurn: function()
+    {
+      sendNonAuthorizedRequest({ cmd: 'getGameState', name: sessionStorage.gameName }, function(json) {
+        if(sessionStorage.turn != json.turnNumber)
+        {
+          sessionStorage.turn = json.turnNumber;
+          
+          if(!(sessionStorage.username in json.players))
+          {
+            if(json.players_count)
+            {
+              player.viewer.fail();
+            }
+            else
+            {
+              player.viewer.draw();
+            }
+          }
+          else if(json.players_count == 1)
+          {
+            player.viewer.win();
+          }
+
+          player.placings = {};
+
+          $.each(json.players, function(p, pval)
+          {
+            $.each(pval.units, function(i, unit)
+            {
+              var x = unit.X;
+              var y = unit.Y;
+              player.placings[[x, y]] = {
+                'name': unit.name,
+                'HP': unit.HP,
+                'path': 0,
+                'distance': 0,
+                'player': p,
+                'posX': x,
+                'posY': y,
+                'destX': x,
+                'destY': y,
+                'attackX': -1,
+                'attackY': -1 };
+            });
+          });
+
+          player.viewer.nextTurnStarted(json, player.grid);
+        }
+        else
+        {
+          setTimeout(waitNextTurn, 3000);
+        }
+      },
+      function(msg, status) 
+      {
+        if(status == 'badTurn') // placing in progress
+        {
+          setTimeout(waitNextTurn, 3000);
+        }
+        else
+        {
+          alert(msg);
+        }
+      });
     }
-    table.append(row);
   }
-  mapDiv.append(table);
-  centeringMap(mapDiv);
-  return map;
-};
+);
+
+Viewer = $.inherit(
+  {
+    __constructor: function(player)
+    {
+      this.player = player;
+    },
+    drawInitialMap: function(map, player_number)
+    {
+      var mapDiv = $('#fullMap');
+      var table = $('<table>');
+      for (var i = 0; i < map.length; i++)
+      {
+        var row = $('<tr>');
+        for (var j = 0; j < map[i].length; j++)
+        {
+          var cell  = $('<div>').addClass(getClassDiv(map[i][j]))
+            .data({'x': j, 'y': i});
+          $('#player-color').html(showHelp(this.player.player_number));
+          if (cell.hasClass('player-' + this.player.player_number))
+          {
+            cell.droppable({
+              accept: '.unit',
+              scope: 'free',
+              drop: function(event, ui)
+              {
+                var dropped = ui.draggable;
+                have_units_placed = true;
+                $('#end-placing-btn').button('enable');
+                $(this).setDroppableScope('default');
+                detachFromCell(dropped);
+                $(dropped).appendTo(this);
+                clearUnitStyle(dropped);
+              }
+            });
+          }
+          row.append($('<td>').append(cell));
+        }
+        table.append(row);
+      }
+      mapDiv.append(table);
+      centeringMap(mapDiv);
+    },
+    showUnits: function(unitsGame)
+    {
+      $('#control-panel').droppable({
+        accept: '.unit',
+        scope: 'free',
+        drop: function(event, ui) {
+          detachFromCell(ui.draggable);
+          have_units_placed = have_units_placed && ($('.cell .unit').length != 0);
+          $('#end-placing-btn').button('option', 'disabled', !have_units_placed);
+        }
+      });
+      for(var i = 0; i < unitsGame.length; i++){
+        for(var j = 0; j < unitsGame[i].count; j++){
+          var unit = newUnit(unitsGame[i].name);
+          $('#control-panel').append(unit);
+        }
+      }
+    },
+    win: function()
+    {
+      alert('You win');
+    },
+    fail: function()
+    {
+      alert('You lose');
+    },
+    draw: function()
+    {
+      alert('Draw');
+    },
+    nextTurnStarted: function(json, grid)
+    {
+      $('#end-placing-btn').hide().button('enable').button('option', 'label', 'End placing');
+      $('#end-turn-btn').show().button('enable').button('option', 'label', 'End turn');
+      $('.cell').not('.stone').removeClass().addClass('cell point');
+      $('.unit').remove();
+      $('#fullMap > *').remove();
+      delete selection;
+      if(typeof(canvas) !== undefined)
+      {
+        canvas = Raphael($('#fullMap').get(0), 48 * grid[0].length + 2, 48 * grid.length + 2);
+      }
+      else
+      {
+        canvas.clear();
+      }
+      this.map = new Array(grid.length);
+      var viewer = this.player.viewer;
+      for(i = 0; i < grid.length; ++i)
+      {
+        this.map[i] = new Array(grid[i].length);
+        for(j = 0; j < grid[i].length; ++j)
+        {
+          var pos = getPos(j, i);
+          var r = canvas.rect(pos.x, pos.y, 46, 46, 1);
+          r.attr({fill: (grid[i][j] ? 'grey': 'green')});
+          $(r.node).data({x: j, y: i});
+          this.map[i][j] = r;
+        }
+      }
+      var players = json.players;
+      var your_units = canvas.set();
+      var enemies_units = canvas.set();
+      var placings = {};
+      $.each(players, function(player, pval)
+      {
+        var is_your = (player == sessionStorage.username);
+        $.each(pval.units, function(i, unit)
+        {
+          var x = unit.X;
+          var y = unit.Y;
+          var pos = getPos(x, y);
+          var un = canvas.image(getPictUnit(unit.name), pos.x + 2, pos.y + 2, 42, 42);
+          $(un.node).data({'pos': [x,y]});
+          placings[[x, y]] = un;
+          viewer.map[y][x].attr({fill: players_colors[pval.player_number - 1]});
+          (is_your ? your_units: enemies_units).push(un);
+        });
+      });
+      /*
+       * left btndown  -- select/attack
+       * right btndown -- move
+       */
+      var yours = $.map(your_units.items, function(i) { return i.node });
+      var enemies = $.map(enemies_units.items, function(i) { return i.node });
+      
+      $(yours).mousedown(function(e)
+      {
+        if(e.which == 1) // Left -- selection
+        {
+          if(typeof selection != 'undefined')
+          {
+            viewer.getSelectedCell().attr({fill: players_colors[player.player_number - 1]});
+          }
+          selection = $(this);
+          viewer.getSelectedCell().attr({fill: selection_color});
+          fillInfo(selection);
+        }
+        else
+        {
+          var cell = $(map[$(this).data('posY')][$(this).data('posX')].node);
+          e.currentTarget = cell.get(0);
+          cell.trigger(e);
+        }
+      });
+      $(yours).hover(function(e)
+      {
+        if($(this).data('path'))
+          $(this).data('path').attr({'stroke': a_yellow }).toFront();
+        if('attackLine' in $(this).data())
+          $(this).data('attackLine').attr({'stroke': a_yellow }).toFront();
+      }, function(e)
+      {
+        if($(this).data('path'))
+          $(this).data('path').attr({'stroke': a_white });
+        if('attackLine' in $(this).data())
+          $(this).data('attackLine').attr({'stroke': a_red });
+      });
+      
+      $('svg').unbind('contextmenu').bind('contextmenu', false); // disable context menu
+      
+      $('svg rect').unbind('mousedown').mousedown(function(e)
+      {
+        if(typeof selection != 'undefined')
+        {
+          if(e.which == 3) // right
+          {
+            var from = selection.data('pos');
+            var to = [$(this).data('x'), y1 = $(this).data('y')];
+            
+            var path = player.move(from, to);
+            if(path.length)
+            {
+              pathstring = "M" + getRelativeCenter(path[0]);
+              var i = 1;
+              for(; i < path.length - 2; i += 3)
+              {
+                var pair1 = getRelativeCenter(path[i]);
+                var pair2 = getRelativeCenter(path[i + 1]);
+                var pair3 = getRelativeCenter(path[i + 2]);
+                pathstring += "C" + pair1.concat(pair2).concat(pair3).join(" ");
+              }
+              if(i < path.length)
+              {
+                var points = [];
+                for(j = 0; j < 3; ++j, ++i)
+                {
+                  var point = getRelativeCenter(path[i < path.length ? i: (path.length - 1)]);
+                  points.push(point[0], point[1]);
+                }
+                pathstring += "C" + points.join(" ");
+              }
+              var line = canvas.path(pathstring);
+              line.attr({
+                'stroke-width': 3,
+                'stroke': a_white,
+                'stroke-dasharray': '-'});
+              if(selection.data('path'))
+                selection.data('path').remove();
+              selection.data({'path': line});
+              fillInfo(selection);
+            }
+          }
+        }
+      });
+      $(enemies).unbind('mousedown').mousedown(function(e)
+      { // this == enemy, selection == your
+        if(typeof selection != 'undefined')
+        {
+          if(e.which == 1) // Left
+          {
+            var from = selection.data('pos');
+            var to = $(this).data('pos');
+            var pathstring = 'M' + getRelativeCenter(from).join(' ')
+              + 'L' + getRelativeCenter(to).join(' ');
+            var line = canvas.path(pathstring).attr({
+              'stroke': a_red,
+              'stroke-dasharray': '-',
+              'stroke-width': 2});
+            player.attack(from, to);
+            if('attackLine' in selection.data())
+            {
+              selection.data('attackLine').remove();
+            }
+            selection.data({'attackLine': line});
+            fillInfo(selection);
+          }
+          else
+          {
+            var cell = $(viewer.map[$(this).data('posY')][$(this).data('posX')].node);
+            e.currentTarget = cell.get(0);
+            cell.trigger(e);
+          }
+        }
+      });
+      centeringMap($('#fullMap'));
+    },
+    endPlacing: function()
+    {
+      $('.unit').not('.cell .unit').remove();
+      $('.unit').each(function(i, v) {
+        var data = $(v).data();
+        var cdata = $(v).parent().data();
+        player.placeUnit(data.name, cdata.x, cdata.y);
+      });
+    },
+    endTurn: function()
+    {
+      $('#info').empty();
+      if(typeof selection != 'undefined')
+        this.getSelectedCell().attr({fill: players_colors[this.player.player_number - 1]});
+    },
+
+    getSelectedCell: function()
+    {
+      return this.map[window.selection.data('pos')[1]][window.selection.data('pos')[0]];
+    }
+  }
+);
+
+function waitNextTurn()
+{
+  player.waitNextTurn();
+}
 
 function centeringMap(obj)
 {
@@ -169,24 +528,6 @@ function clearUnitStyle(unit)
   $(unit).css('background-image', img).css('position', 'relative');
 }
 
-function showUnits(unitsGame)
-{
-  $('#control-panel').droppable({
-    accept: '.unit',
-    scope: 'free',
-    drop: function(event, ui) {
-      detachFromCell(ui.draggable);
-      have_units_placed = have_units_placed && ($('.cell .unit').length != 0);
-      $('#end-placing-btn').button('option', 'disabled', !have_units_placed);
-    }
-  });
-  for(var i = 0; i < unitsGame.length; i++){
-    for(var j = 0; j < unitsGame[i].count; j++){
-      var unit = newUnit(unitsGame[i].name);
-      $('#control-panel').append(unit);
-    }
-  }
-}
 
 function staticUnit(data)
 {
@@ -224,213 +565,6 @@ function getPos(x, y)
   return {x: x * 48 + 2, y: y * 48 + 2};
 }
 
-/* Loops  until we receive new turn information */
-function waitNextTurn()
-{
-  sendNonAuthorizedRequest({ cmd: 'getGameState', name: sessionStorage.gameName }, function(json) {
-    if(sessionStorage.turn != json.turnNumber)
-    {
-      $('#end-placing-btn').hide().button('enable').button('option', 'label', 'End placing');
-      $('#end-turn-btn').show().button('enable').button('option', 'label', 'End turn');
-
-      $('.cell').not('.stone').removeClass().addClass('cell point');
-      $('.unit').remove();
-      $('#fullMap > *').remove();
-      sessionStorage.turn = json.turnNumber;
-      delete selection;
-      if(!(sessionStorage.username in json.players))
-      {
-        if(json.players_count)
-        {
-          alert('You failed');
-        }
-        else
-        {
-          alert('Draw');
-        }
-      }
-      else if(json.players_count == 1 && sessionStorage.username in json.players)
-      {
-        alert('You win!');
-      }
-      if(typeof(canvas) !== undefined)
-      {
-        canvas = Raphael($('#fullMap').get(0), 48 * grid[0].length + 2, 48 * grid.length + 2);
-      }
-      else
-      {
-        canvas.clear();
-      }
-      map = new Array(grid.length);
-      for(i = 0; i < grid.length; ++i)
-      {
-        map[i] = new Array(grid[i].length);
-        for(j = 0; j < grid[i].length; ++j)
-        {
-          var pos = getPos(j, i);
-          var r = canvas.rect(pos.x, pos.y, 46, 46, 1);
-          r.attr({fill: (grid[i][j] ? 'grey': 'green')});
-          $(r.node).data({x: j, y: i});
-          map[i][j] = r;
-        }
-      }
-      players = json.players;
-      your_units = canvas.set();
-      enemies_units = canvas.set();
-      placings = {};
-      $.each(json.players, function(player, pval)
-      {
-        var is_your = player == sessionStorage.username;
-        $.each(pval.units, function(i, unit)
-        {
-          var x = unit.X;
-          var y = unit.Y;
-          var pos = getPos(x, y);
-          var un = canvas.image(getPictUnit(unit.name), pos.x + 2, pos.y + 2, 42, 42);
-          $(un.node).data({
-            'name': unit.name,
-            'HP': unit.HP,
-            'path': 0,
-            'distance': 0,
-            'player': player,
-            'posX': x,
-            'posY': y,
-            'destX': x,
-            'destY': y,
-            'attackX': -1,
-            'attackY': -1 });
-          placings[[x, y]] = un;
-          map[y][x].attr({fill: players_colors[pval.player_number - 1]});
-          (is_your ? your_units: enemies_units).push(un);
-        });
-      });
-      /*
-       * left btndown  -- select/attack
-       * right btndown -- move
-      */
-      var yours = $.map(your_units.items, function(i) { return i.node });
-      var enemies = $.map(enemies_units.items, function(i) { return i.node });
-      $(yours).mousedown(function(e){
-        if(e.which == 1) // Left
-        {
-          if(typeof selection != 'undefined')
-          {
-            getSelectedCell().attr({fill: players_colors[sessionStorage.player_number - 1]});
-          }
-          selection = $(this);
-          getSelectedCell().attr({fill: selection_color});
-          fillInfo(selection);
-        }
-        else
-        {
-          var cell = $(map[$(this).data('posY')][$(this).data('posX')].node);
-          e.currentTarget = cell.get(0);
-          cell.trigger(e);
-        }
-      });
-      $(yours).hover(function(e){
-        if($(this).data('path'))
-          $(this).data('path').attr({'stroke': a_yellow }).toFront();
-        if('attackLine' in $(this).data())
-          $(this).data('attackLine').attr({'stroke': a_yellow }).toFront();
-      }, function(e){
-        if($(this).data('path'))
-          $(this).data('path').attr({'stroke': a_white });
-        if('attackLine' in $(this).data())
-          $(this).data('attackLine').attr({'stroke': a_red });
-      });
-      $('svg').unbind('contextmenu').bind('contextmenu', false); // disable context menu
-
-      $('svg rect').unbind('mousedown').mousedown(function(e)
-      {
-        if(typeof selection != 'undefined')
-        {
-          if(e.which == 3) // right
-          {
-            var x0 = selection.data('posX'), y0 = selection.data('posY');
-            var x1 = $(this).data('x'), y1 = $(this).data('y');
-            path = AStar(grid, [x0, y0], [x1, y1]);
-            if(path.length && units_info[selection.data('name')].MP >= path.length)
-            {
-              pathstring = "M" + getRelativeCenter(path[0]);
-              var i = 1;
-              for(; i < path.length - 2; i += 3)
-              {
-                var pair1 = getRelativeCenter(path[i]);
-                var pair2 = getRelativeCenter(path[i + 1]);
-                var pair3 = getRelativeCenter(path[i + 2]);
-                pathstring += "C" + pair1.concat(pair2).concat(pair3).join(" ");
-              }
-              if(i < path.length)
-              {
-                var points = [];
-                for(j = 0; j < 3; ++j, ++i)
-                {
-                  var point = getRelativeCenter(path[i < path.length ? i: (path.length - 1)]);
-                  points.push(point[0], point[1]);
-                }
-                pathstring += "C" + points.join(" ");
-              }
-              var line = canvas.path(pathstring);
-              line.attr({
-                'stroke-width': 3,
-                'stroke': a_white,
-                'stroke-dasharray': '-'});
-              if(selection.data('path'))
-                selection.data('path').remove();
-              selection.data({ 'destX': x1, 'destY': y1, 'path': line, 'distance': path.length });
-              fillInfo(selection);
-            }
-          }
-        }
-      });
-      $(enemies).unbind('mousedown').mousedown(function(e)
-      { // this == enemy, selection == your
-        if(typeof selection != 'undefined')
-        {
-          if(e.which == 1) // Left
-          {
-            var x0 = selection.data('posX'), y0 = selection.data('posY');
-            var x1 = $(this).data('posX'), y1 = $(this).data('posY');
-            var pathstring = 'M' + getRelativeCenter([x0, y0]).join(' ')
-              + 'L' + getRelativeCenter([x1, y1]).join(' ');
-            var line = canvas.path(pathstring).attr({
-              stroke: a_red,
-              'stroke-dasharray': '-',
-              'stroke-width': 2});
-            if('attackLine' in selection.data())
-            {
-              selection.data('attackLine').remove();
-            }
-            selection.data({ 'attackX': x1, 'attackY': y1, 'attackLine': line});
-            fillInfo(selection);
-          }
-          else
-          {
-            var cell = $(map[$(this).data('posY')][$(this).data('posX')].node);
-            e.currentTarget = cell.get(0);
-            cell.trigger(e);
-          }
-        }
-      });
-      centeringMap($('#fullMap'));
-    }
-    else
-    {
-      setTimeout(waitNextTurn, 3000);
-    }
-  },
-  function(msg, status) {
-    if(status == 'badTurn') // placing in progress
-    {
-      setTimeout(waitNextTurn, 3000);
-    }
-    else
-    {
-      alert(msg);
-    }
-  });
-}
 
 function getRelativeCenter(pair)
 {
@@ -447,12 +581,15 @@ function fillInfo(obj)
     $('#info').append($('<tr/>').append($('<td/>').text(name)).append($('<td/>').text(value)));
   }
   $('#info').empty();
-  var unit_info = units_info[obj.data('name')];
-  addRow('Name', obj.data('name'));
-  addRow('Pos', '(' + obj.data('posX') + ',' + obj.data('posY') + ')');
-  addRow('HP', obj.data('HP') + '/' + unit_info.HP);
-  addRow('MP', (unit_info.MP - obj.data('distance')) + '/' + unit_info.MP);
-  addRow('Attack', (obj.data('attackX') == -1) ? 'nothing' : ('(' + obj.data('attackX') + ',' + obj.data('attackY') + ')'));
+  var pos = obj.data('pos');
+  var params = player.placings[pos];
+  var unit_info = units_info[params['name']];
+
+  addRow('Name', params['name']);
+  addRow('Pos', '(' + pos[0] + ',' + pos[1] + ')');
+  addRow('HP', params['HP'] + '/' + unit_info.HP);
+  addRow('MP', (unit_info.MP - params['distance']) + '/' + unit_info.MP);
+  addRow('Attack', (params['attackX'] == -1) ? 'nothing' : ('(' + params['attackX'] + ',' + params['attackY'] + ')'));
   addRow('Range', unit_info.range);
   addRow('Defence', unit_info.defence);
   addRow('Damage', unit_info.damage);
@@ -469,21 +606,12 @@ function endPlacing()
      * any empty cells for placing and free units */
     $(this).button('option', 'label', 'waiting for players');
     $(this).button('disable');
-    $('.unit').not('.cell .unit').remove();
-    units = $('.unit').map(function(i, v) {
-        var data = $(v).data();
-        var cdata = $(v).parent().data();
-        return { 'name': data.name, 'posX': cdata.x, 'posY': cdata.y };
-      });
-    sendRequest({ cmd: 'placeUnits', 'units': $.makeArray(units) }, waitNextTurn);
+    player.endPlacing();
   }
   return false;
 }
 
-function getSelectedCell()
-{
-  return map[window.selection.data('posY')][window.selection.data('posX')];
-}
+
 
 function endTurn()
 {
@@ -491,21 +619,7 @@ function endTurn()
   {
     $(this).button('option', 'label', 'waiting for players');
     $(this).button('disable');
-    $('#info').empty();
-    if(typeof selection != 'undefined')
-      getSelectedCell().attr({fill: players_colors[sessionStorage.player_number - 1]});
-    units = $.map(your_units, function(v) {
-      var data = $(v.node).data();
-      return {
-        'posX': data.posX,
-        'posY': data.posY,
-        'destX': data.destX,
-        'destY': data.destY,
-        'attackX': data.attackX,
-        'attackY': data.attackY
-      }
-    });
-    sendRequest({ cmd: 'move', turn: parseInt(sessionStorage.turn), units: $.makeArray(units) }, waitNextTurn);
+    player.endTurn();
   }
   return false;
 }
@@ -539,4 +653,3 @@ jQuery.fn.extend({
     });
   }
 });
-
