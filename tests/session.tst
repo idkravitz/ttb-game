@@ -4,37 +4,9 @@
     "username": "user_1"
 }
 {
-    "cmd": "getGamesList", 
-    "sid": "user_11"
-}
-{
-    "cmd": "getGamesList", 
-    "sid": "user_11"
-}
-{
-    "cmd": "getGamesList", 
-    "sid": "user_11"
-}
-{
     "cmd": "register", 
     "password": "b", 
     "username": "user_2"
-}
-{
-    "cmd": "getGamesList", 
-    "sid": "user_2b"
-}
-{
-    "cmd": "getGamesList", 
-    "sid": "user_11"
-}
-{
-    "cmd": "getArmiesList", 
-    "sid": "user_2b"
-}
-{
-    "cmd": "getFactionList", 
-    "sid": "user_2b"
 }
 {
     "cmd": "uploadFaction",
@@ -67,20 +39,6 @@
         }
    ]
 }
-
-{
-    "cmd": "getFaction", 
-    "factionName": "goblins", 
-    "sid": "user_2b"
-}
-{
-    "cmd": "getGamesList", 
-    "sid": "user_11"
-}
-{
-    "cmd": "getGamesList", 
-    "sid": "user_11"
-}
 {
     "armyName": "my", 
     "armyUnits": [
@@ -98,36 +56,6 @@
     "sid": "user_2b"
 }
 {
-    "cmd": "getArmiesList", 
-    "sid": "user_2b"
-}
-{
-    "cmd": "getFactionList", 
-    "sid": "user_2b"
-}
-{
-    "cmd": "getFaction", 
-    "factionName": "goblins", 
-    "sid": "user_2b"
-}
-{
-    "cmd": "getGamesList", 
-    "sid": "user_11"
-}
-{
-    "cmd": "getArmiesList", 
-    "sid": "user_11"
-}
-{
-    "cmd": "getFactionList", 
-    "sid": "user_11"
-}
-{
-    "cmd": "getFaction", 
-    "factionName": "goblins", 
-    "sid": "user_11"
-}
-{
     "armyName": "my", 
     "armyUnits": [
         {
@@ -141,27 +69,6 @@
     ], 
     "cmd": "uploadArmy", 
     "factionName": "goblins", 
-    "sid": "user_11"
-}
-{
-    "cmd": "getArmiesList", 
-    "sid": "user_11"
-}
-{
-    "cmd": "getFactionList", 
-    "sid": "user_11"
-}
-{
-    "cmd": "getFaction", 
-    "factionName": "goblins", 
-    "sid": "user_11"
-}
-{
-    "cmd": "getMapList", 
-    "sid": "user_11"
-}
-{
-    "cmd": "getFactionList", 
     "sid": "user_11"
 }
 {
@@ -186,39 +93,6 @@
     "totalCost": 100
 }
 {
-    "cmd": "getGamesList", 
-    "sid": "user_11"
-}
-{
-    "cmd": "getChatHistory", 
-    "gameName": "my", 
-    "sid": "user_11"
-}
-{
-    "cmd": "getPlayersListForGame", 
-    "gameName": "my", 
-    "sid": "user_11"
-}
-{
-    "cmd": "getArmiesList", 
-    "sid": "user_11"
-}
-{
-    "cmd": "getMap", 
-    "name": "small", 
-    "sid": "user_11"
-}
-{
-    "cmd": "getChatHistory", 
-    "gameName": "my", 
-    "sid": "user_11"
-}
-{
-    "cmd": "getPlayersListForGame", 
-    "gameName": "my", 
-    "sid": "user_11"
-}
-{
     "armyName": "my", 
     "cmd": "chooseArmy", 
     "sid": "user_11"
@@ -227,20 +101,6 @@
     "cmd": "setPlayerStatus", 
     "sid": "user_11", 
     "status": "ready"
-}
-{
-    "cmd": "getChatHistory", 
-    "gameName": "my", 
-    "sid": "user_11"
-}
-{
-    "cmd": "getPlayersListForGame", 
-    "gameName": "my", 
-    "sid": "user_11"
-}
-{
-    "cmd": "getGamesList", 
-    "sid": "user_2b"
 }
 {
     "cmd": "joinGame", 
@@ -248,51 +108,8 @@
     "sid": "user_2b"
 }
 {
-    "cmd": "getGamesList", 
-    "sid": "user_2b"
-}
-{
-    "cmd": "getChatHistory", 
-    "gameName": "my", 
-    "sid": "user_2b"
-}
-{
-    "cmd": "getPlayersListForGame", 
-    "gameName": "my", 
-    "sid": "user_2b"
-}
-{
-    "cmd": "getArmiesList", 
-    "sid": "user_2b"
-}
-{
-    "cmd": "getMap", 
-    "name": "small", 
-    "sid": "user_2b"
-}
-{
-    "cmd": "getChatHistory", 
-    "gameName": "my", 
-    "sid": "user_11"
-}
-{
-    "cmd": "getPlayersListForGame", 
-    "gameName": "my", 
-    "sid": "user_11"
-}
-{
     "armyName": "my", 
     "cmd": "chooseArmy", 
-    "sid": "user_2b"
-}
-{
-    "cmd": "getChatHistory", 
-    "gameName": "my", 
-    "sid": "user_2b"
-}
-{
-    "cmd": "getPlayersListForGame", 
-    "gameName": "my", 
     "sid": "user_2b"
 }
 {
@@ -301,74 +118,6 @@
     "status": "ready"
 }
 {
-    "cmd": "getChatHistory", 
-    "gameName": "my", 
-    "sid": "user_11"
-}
-{
-    "cmd": "getPlayersListForGame", 
-    "gameName": "my", 
-    "sid": "user_11"
-}
-{
-    "cmd": "getGamesList", 
-    "sid": "user_11"
-}
-{
-    "cmd": "getMap", 
-    "name": "small", 
-    "sid": "user_11"
-}
-{
-    "cmd": "getPlayerNumber", 
-    "gameName": "my", 
-    "sid": "user_11"
-}
-{
-    "cmd": "getFaction", 
-    "factionName": "goblins", 
-    "sid": "user_11"
-}
-{
-    "armyName": "my", 
-    "cmd": "getArmy", 
-    "sid": "user_11"
-}
-{
-    "cmd": "getChatHistory", 
-    "gameName": "my", 
-    "sid": "user_2b"
-}
-{
-    "cmd": "getPlayersListForGame", 
-    "gameName": "my", 
-    "sid": "user_2b"
-}
-{
-    "cmd": "getGamesList", 
-    "sid": "user_2b"
-}
-{
-    "cmd": "getMap", 
-    "name": "small", 
-    "sid": "user_2b"
-}
-{
-    "cmd": "getPlayerNumber", 
-    "gameName": "my", 
-    "sid": "user_2b"
-}
-{
-    "cmd": "getFaction", 
-    "factionName": "goblins", 
-    "sid": "user_2b"
-}
-{
-    "armyName": "my", 
-    "cmd": "getArmy", 
-    "sid": "user_2b"
-}
-{
     "cmd": "placeUnits", 
     "sid": "user_2b", 
     "units": [
@@ -389,10 +138,6 @@
     "name": "my"
 }
 {
-    "cmd": "getGameState", 
-    "name": "my"
-}
-{
     "cmd": "placeUnits", 
     "sid": "user_11", 
     "units": [
@@ -407,10 +152,6 @@
             "posY": 0
         }
     ]
-}
-{
-    "cmd": "getGameState", 
-    "name": "my"
 }
 {
     "cmd": "getGameState", 
@@ -444,10 +185,6 @@
     "name": "my"
 }
 {
-    "cmd": "getGameState", 
-    "name": "my"
-}
-{
     "cmd": "move", 
     "sid": "user_2b", 
     "turn": 1, 
@@ -469,10 +206,6 @@
             "posY": 4
         }
     ]
-}
-{
-    "cmd": "getGameState", 
-    "name": "my"
 }
 {
     "cmd": "getGameState", 
