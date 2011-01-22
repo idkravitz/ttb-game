@@ -3,6 +3,7 @@ from utils.path import join
 from bottle import route, run, static_file, request
 import main
 import json
+import traceback
 
 STATIC_FILES_ROOT = join("./client/")
 PORT = 80
@@ -25,7 +26,7 @@ def serve_ajax():
     try:
         response = main.parse_request(request.GET['data'])
     except Exception as e:
-        print(e)
+        traceback.print_exc()
         raise
     return response
 
