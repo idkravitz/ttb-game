@@ -69,7 +69,7 @@ class RectNode(object):
         return self._heuristic(self.pos, node.pos)
 
     def __repr__(self):
-        return str(self.pos)
+        return "<RectNode:str(self.pos)>"
 
 def gen_graph(land, start_pos, target_pos):
     walkable = {}
@@ -241,7 +241,7 @@ def movement_phase(process):
         for node in turn.path:
             if node not in occupied:
                 occupied.add(node)
-                sorted_moves.append(Action(turn.action.pos, node, turn.action.attack))
+                sorted_moves.append(Action(turn.action.pos, node.pos, turn.action.attack))
                 break
         else:
             sorted_moves.append(Action(turn.action.pos, turn.action.pos, turn.action.attack))

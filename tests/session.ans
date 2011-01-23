@@ -1,0 +1,177 @@
+{
+    "sid": "user_11", 
+    "status": "ok"
+}
+{
+    "sid": "user_2b", 
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "status": "ok"
+}
+{
+    "message": "You can't request game status before everyone place their units", 
+    "status": "badTurn"
+}
+{
+    "status": "ok"
+}
+{
+    "players": {
+        "user_1": {
+            "player_number": 1, 
+            "units": [
+                {
+                    "HP": 26, 
+                    "X": 1, 
+                    "Y": 0, 
+                    "name": "impaler"
+                }, 
+                {
+                    "HP": 61, 
+                    "X": 3, 
+                    "Y": 0, 
+                    "name": "direwolf_rider"
+                }
+            ]
+        }, 
+        "user_2": {
+            "player_number": 2, 
+            "units": [
+                {
+                    "HP": 61, 
+                    "X": 1, 
+                    "Y": 4, 
+                    "name": "direwolf_rider"
+                }, 
+                {
+                    "HP": 26, 
+                    "X": 3, 
+                    "Y": 4, 
+                    "name": "impaler"
+                }
+            ]
+        }
+    }, 
+    "players_count": 2, 
+    "status": "ok", 
+    "turnNumber": 1
+}
+{
+    "status": "ok"
+}
+{
+    "players": {
+        "user_1": {
+            "player_number": 1, 
+            "units": [
+                {
+                    "HP": 26, 
+                    "X": 1, 
+                    "Y": 0, 
+                    "name": "impaler"
+                }, 
+                {
+                    "HP": 61, 
+                    "X": 3, 
+                    "Y": 0, 
+                    "name": "direwolf_rider"
+                }
+            ]
+        }, 
+        "user_2": {
+            "player_number": 2, 
+            "units": [
+                {
+                    "HP": 61, 
+                    "X": 1, 
+                    "Y": 4, 
+                    "name": "direwolf_rider"
+                }, 
+                {
+                    "HP": 26, 
+                    "X": 3, 
+                    "Y": 4, 
+                    "name": "impaler"
+                }
+            ]
+        }
+    }, 
+    "players_count": 2, 
+    "status": "ok", 
+    "turnNumber": 1
+}
+{
+    "status": "ok"
+}
+{
+    "players": {
+        "user_1": {
+            "player_number": 1, 
+            "units": [
+                {
+                    "HP": 26, 
+                    "X": 2, 
+                    "Y": 1, 
+                    "name": "impaler"
+                }, 
+                {
+                    "HP": 61, 
+                    "X": 2, 
+                    "Y": 0, 
+                    "name": "direwolf_rider"
+                }
+            ]
+        }, 
+        "user_2": {
+            "player_number": 2, 
+            "units": [
+                {
+                    "HP": 26, 
+                    "X": 2, 
+                    "Y": 3, 
+                    "name": "impaler"
+                }, 
+                {
+                    "HP": 61, 
+                    "X": 2, 
+                    "Y": 4, 
+                    "name": "direwolf_rider"
+                }
+            ]
+        }
+    }, 
+    "players_count": 2, 
+    "status": "ok", 
+    "turnNumber": 2
+}
