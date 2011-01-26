@@ -354,7 +354,7 @@ Viewer = $.inherit(
         }
         else
         {
-          var cell = $(map[$(this).data('posY')][$(this).data('posX')].node);
+          var cell = $(viewer.map[$(this).data('pos')[1]][$(this).data('pos')[0]].node);
           e.currentTarget = cell.get(0);
           cell.trigger(e);
         }
@@ -443,7 +443,7 @@ Viewer = $.inherit(
           }
           else
           {
-            var cell = $(viewer.map[$(this).data('posY')][$(this).data('posX')].node);
+            var cell = $(viewer.map[$(this).data('pos')[1]][$(this).data('pos')[0]].node);
             e.currentTarget = cell.get(0);
             cell.trigger(e);
           }
