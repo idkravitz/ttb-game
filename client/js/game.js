@@ -124,11 +124,12 @@ Player = $.inherit(
     move: function(from, to)
     {
       var path = AStar(this.grid, from, to);
-      if(path.length && units_info[this.placings[from]['name']].MP >= path.length)
+      // path includes start point too
+      if(path.length && units_info[this.placings[from]['name']].MP >= (path.length - 1))
       {
         this.placings[from]['destX'] = to[0];
         this.placings[from]['destY'] = to[1];
-        this.placings[from]['distance'] = path.length;
+        this.placings[from]['distance'] = path.length - 1;
         return path;
       }
       else
