@@ -4,9 +4,14 @@
 
 function startAI()
 {
+  AIs = {
+    'RandomAI': RandomAI,
+    'NearestAI': RunToNearestAI
+  };
   $(this).hide();
   $('#stop-ai').show().button('enable');
-  AI = new RandomAI(player);
+  AIclass = AIs[$('#choose-ai').val()];
+  AI = new AIclass(player);
   AI.start();
   return false;
 }
@@ -41,13 +46,12 @@ RandomAI = $.inherit(
       return;
     var json = this.player.json;
     var our_units = json.players[sessionStorage.username].units;
-    var AI = this;
     $(our_units).each(function(i, unit)
     {
       if(!AI.break_cycle)
       {
-        var move = AI._random_move(unit);
-        AI._nearest_attack(unit, move);
+        var move = AI.move(unit);
+        AI.attack(unit, move);
       }
     });
     if(this.break_cycle)
@@ -63,7 +67,7 @@ RandomAI = $.inherit(
     this.break_cycle = true;
   },
 
-  _random_move: function(unit)
+  move: function(unit)
   {
     var possible = this._deikstra(unit.X, unit.Y, units_info[unit.name].MP);
     var L = this.grid.length;
@@ -80,11 +84,10 @@ RandomAI = $.inherit(
     return cell;
   },
 
-  _nearest_attack: function(unit, pos)
+  get_enemies_units: function()
   {
-    var players = this.player.json.players;
     var enemies_units = [];
-    $.each(players, function(player, pval)
+    $.each(this.player.json.players, function(player, pval)
     {
       if(player != sessionStorage.username)
         $.each(pval.units, function(i, unit)
@@ -92,8 +95,14 @@ RandomAI = $.inherit(
           enemies_units.push(unit);
         });
     });
-    var attackX = -1, attackY = -1;
+    return enemies_units
+  },
+
+  get_nearest_enemy: function(pos)
+  {
+    var enemies_units = this.get_enemies_units();
     var minDistance = Number.POSITIVE_INFINITY;
+    var min_i = 0;
     for(var i = 0; i < enemies_units.length; ++i)
     {
       var enemy = enemies_units[i];
@@ -101,11 +110,16 @@ RandomAI = $.inherit(
       if(distance < minDistance)
       {
         minDistance = distance;
-        attackX = enemy.X;
-        attackY = enemy.Y;
+        min_i = i;
       }
     }
-    this.player.attack([unit.X, unit.Y], [attackX, attackY]);
+    return enemies_units[min_i];
+  },
+
+  attack: function(unit, pos)
+  {
+    var enemy = this.get_nearest_enemy(pos);
+    this.player.attack([unit.X, unit.Y], [enemy.X, enemy.Y]);
   },
 
   to_linear: function(pos)
@@ -121,7 +135,6 @@ RandomAI = $.inherit(
 
   _deikstra: function(x, y, mp)
   {
-    var AI = this;
     var l = this.grid[0].length;
     var L = this.grid.length;
 
@@ -181,3 +194,20 @@ function squaredDistance(from, to)
 {
   return Math.pow(from[0] - to[0], 2) + Math.pow(from[1] - to[1], 2);
 }
+
+RunToNearestAI = $.inherit(RandomAI,
+{
+  move: function(unit)
+  {
+    var enemy = this.get_nearest_enemy([unit.X, unit.Y]);
+    var path = AStar(this.grid, [unit.X, unit.Y], [enemy.X, enemy.Y]);
+    var index = Math.min(path.length - 1, units_info[unit.name].MP);
+    this.target_enemy = [enemy.X, enemy.Y];
+    this.player.move([unit.X, unit.Y], path[index]);
+    return path[index];
+  },
+  attack: function(unit, pos)
+  {
+    this.player.attack([unit.X, unit.Y], this.target_enemy);
+  }
+});
