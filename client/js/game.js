@@ -16,6 +16,11 @@ const a_white = 'rgba(100%, 100%, 100%, 50%)';
 const a_red = 'rgba(100%, 0%, 0%, 50%)';
 const selection_color = 'rgb(100%, 100%, 0%)';
 
+const PLAYER_STATUS_NORMAL = 0;
+const PLAYER_STATUS_WIN = 1;
+const PLAYER_STATUS_LOSE = 2;
+const PLAYER_STATUS_DRAW = 3;
+
 function startGame(map, army, player_number)
 {
   player = new Player(map, player_number, army, Viewer);
@@ -30,6 +35,7 @@ Player = $.inherit(
       this.player_number = player_number;
       this.army_name = army_name;
       this.placings = {};
+      this.status = PLAYER_STATUS_NORMAL;
  
       var is_aborted = ('turn' in sessionStorage && sessionStorage.turn != 0);
       sessionStorage.turn = 0;
@@ -96,7 +102,7 @@ Player = $.inherit(
       sendRequest({ cmd: 'placeUnits', 'units': units }, $.proxy(this.waitNextTurn, this));
     },
 
-    endTurn: function()
+    endTurn: function(feedback)
     {
       this.viewer.endTurn();
       var units = []
@@ -113,7 +119,7 @@ Player = $.inherit(
         });
       }
       sendRequest({ cmd: 'move', turn: parseInt(sessionStorage.turn), units: units },
-                  $.proxy(this.waitNextTurn, this));
+                  function() { player.waitNextTurn(feedback); });
     },
 
     placeUnit: function(unit, x, y)
@@ -145,28 +151,44 @@ Player = $.inherit(
       this.placings[from]['attackY'] = to[1];
       this.viewer.drawAttack(from, to);
     },
+    fail: function()
+    {
+      this.status = PLAYER_STATUS_LOSE;
+      this.viewer.fail();
+    },
+    win: function()
+    {
+      this.status = PLAYER_STATUS_WIN;
+      this.viewer.win();
+    },
+    draw: function()
+    {
+      this.status = PLAYER_STATUS_DRAW;
+      this.viewer.draw();
+    },
 
-    waitNextTurn: function()
+    waitNextTurn: function(feedback)
     {
       sendNonAuthorizedRequest({ cmd: 'getGameState', name: sessionStorage.gameName }, function(json) {
         if(sessionStorage.turn != json.turnNumber)
         {
           sessionStorage.turn = json.turnNumber;
+          player.json = json;
           
           if(!(sessionStorage.username in json.players))
           {
             if(json.players_count)
             {
-              player.viewer.fail();
+              player.fail()
             }
             else
             {
-              player.viewer.draw();
+              player.draw();
             }
           }
           else if(json.players_count == 1)
           {
-            player.viewer.win();
+            player.win();
           }
 
           player.placings = {};
@@ -193,17 +215,21 @@ Player = $.inherit(
           });
 
           player.viewer.nextTurnStarted(json, player.grid);
+          if(feedback)
+          {
+            feedback();
+          }
         }
         else
         {
-          setTimeout(waitNextTurn, 3000);
+          setTimeout(function() { waitNextTurn(feedback); }, 3000);
         }
       },
       function(msg, status) 
       {
         if(status == 'badTurn') // placing in progress
         {
-          setTimeout(waitNextTurn, 3000);
+          setTimeout(function() { waitNextTurn(feedback); }, 3000);
         }
         else
         {
@@ -341,6 +367,7 @@ Viewer = $.inherit(
     {
       $('#end-placing-btn').hide().button('enable').button('option', 'label', 'End placing');
       $('#end-turn-btn').show().button('enable').button('option', 'label', 'End turn');
+      $('#start-ai').button('enable');
       $('.cell').not('.stone').removeClass().addClass('cell point');
       $('.unit').remove();
       $('#fullMap > *').remove();
@@ -471,6 +498,11 @@ Viewer = $.inherit(
     },
     endTurn: function()
     {
+      if(!$('#end-turn-btn').button('option', 'disabled'))
+      {
+        $('#end-turn-btn').button('option', 'label', 'waiting for players');
+        $('#end-turn-btn').button('disable');
+      }
       $('#info').empty();
       if(typeof selection != 'undefined')
         this.getSelectedCell().attr({fill: players_colors[this.player.player_number - 1]});
@@ -483,9 +515,9 @@ Viewer = $.inherit(
   }
 );
 
-function waitNextTurn()
+function waitNextTurn(feedback)
 {
-  player.waitNextTurn();
+  player.waitNextTurn(feedback);
 }
 
 function centeringMap(obj)
@@ -625,12 +657,7 @@ function endPlacing()
 
 function endTurn()
 {
-  if(!$(this).button('option', 'disabled'))
-  {
-    $(this).button('option', 'label', 'waiting for players');
-    $(this).button('disable');
-    player.endTurn();
-  }
+  player.endTurn();
   return false;
 }
 

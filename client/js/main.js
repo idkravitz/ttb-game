@@ -150,6 +150,8 @@ GameSection = $.inherit(
       Section.prototype.show.call(this);
       $('#end-turn-btn').hide().button('enable');
       $('#end-placing-btn').show().button('disable');
+      $('#start-ai').show().button('disable');
+      $('#stop-ai').hide().button('disable');
       initGame();
     }
   }
@@ -778,6 +780,8 @@ function initBinds()
   });
   $('#end-placing-btn').click(endPlacing); // definition of endPlacing appears in game.js
   $('#end-turn-btn').click(endTurn); // definition of endTurn appears in game.js
+  $('#start-ai').click(startAI);
+  $('#stop-ai').click(stopAI);
 }
 
 $(document).ready(function()
@@ -787,6 +791,7 @@ $(document).ready(function()
   initBinds();
 
   $('input:submit, a.button').button();
+  //$('#auto-turn').button();
   $('input:text').addClass('ui-widget');
 
   describeSections();
