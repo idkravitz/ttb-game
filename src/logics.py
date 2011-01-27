@@ -286,7 +286,8 @@ def attack_phase(sorted_moves, process):
             else:
                 del process.current_placements[target.dest]
                 t = process.previous_placements[target.pos]
-                process.player_current_placements[t.player].remove(target.dest)
+                if target.dest in process.player_current_placements[t.player]:
+                    process.player_current_placements[t.player].remove(target.dest)
                 if not len(process.player_current_placements[t.player]):
                     del process.player_current_placements[t.player]
 
