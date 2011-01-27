@@ -11,6 +11,9 @@ common.COMMANDLINE = True
 
 import commands as com
 
+def prettify_name(name):
+    return name.capitalize().replace("_", " ")
+
 if __name__ == '__main__':
     com.clear()
 
@@ -31,12 +34,13 @@ if __name__ == '__main__':
             with open(unit_file, "r") as file:
                 unit = json.loads(file.read())
                 unit_name = os.path.splitext(os.path.basename(unit_file))[0]
-                print(unit_name)
-                unit['name'] = unit_name
+                unit['name'] = prettify_name(unit_name)
+                print(unit['name'])
                 factions[faction].append(unit)
 
     for faction, units in factions.items():
         if len(units):
+            faction = prettify_name(faction)
             print('Adding faction {0}, with {1} units'.format(faction, len(units)))
             com.uploadFaction(sid, factionName=faction, units=units)
 
@@ -48,7 +52,7 @@ if __name__ == '__main__':
                 lines = [line.replace(" ","").rstrip() for line in file.readlines()]
                 name = os.path.splitext(os.path.basename(map_file))[0]
                 print('Adding map {0}[{1}x{2}]'.format(name, len(lines), len(lines[0])))
-                com.uploadMap(sid, name=name, terrain=lines)                     
-        
+                com.uploadMap(sid, name=name, terrain=lines)
+
     print('Log out, sid: {0}'.format(sid))
     com.unregister(sid)

@@ -130,6 +130,7 @@ Player = $.inherit(
         this.placings[from]['destX'] = to[0];
         this.placings[from]['destY'] = to[1];
         this.placings[from]['distance'] = path.length - 1;
+        this.viewer.drawMove(path);
         return path;
       }
       else
@@ -142,6 +143,7 @@ Player = $.inherit(
     {
       this.placings[from]['attackX'] = to[0];
       this.placings[from]['attackY'] = to[1];
+      this.viewer.drawAttack(from, to);
     },
 
     waitNextTurn: function()
@@ -284,6 +286,57 @@ Viewer = $.inherit(
     {
       alert('Draw');
     },
+    drawMove: function(path)
+    {
+      if(path.length)
+      {
+        pathstring = "M" + getRelativeCenter(path[0]);
+        var i = 1;
+        for(; i < path.length - 2; i += 3)
+        {
+          var pair1 = getRelativeCenter(path[i]);
+          var pair2 = getRelativeCenter(path[i + 1]);
+          var pair3 = getRelativeCenter(path[i + 2]);
+          pathstring += "C" + pair1.concat(pair2).concat(pair3).join(" ");
+        }
+        if(i < path.length)
+        {
+          var points = [];
+          for(j = 0; j < 3; ++j, ++i)
+          {
+            var point = getRelativeCenter(path[i < path.length ? i: (path.length - 1)]);
+            points.push(point[0], point[1]);
+          }
+          pathstring += "C" + points.join(" ");
+        }
+        var line = canvas.path(pathstring);
+        line.attr({
+          'stroke-width': 3,
+          'stroke': a_white,
+          'stroke-dasharray': '-'});
+        var unit = $(this.placings[path[0]].node);
+        if(unit.data('path'))
+          unit.data('path').remove();
+        unit.data({'path': line});
+        fillInfo(unit);
+      }
+    },
+    drawAttack: function(from, to)
+    {
+      var pathstring = 'M' + getRelativeCenter(from).join(' ')
+        + 'L' + getRelativeCenter(to).join(' ');
+      var line = canvas.path(pathstring).attr({
+        'stroke': a_red,
+        'stroke-dasharray': '-',
+        'stroke-width': 2});
+      var unit = $(this.placings[from].node);
+      if('attackLine' in unit.data())
+      {
+        unit.data('attackLine').remove();
+      }
+      unit.data({'attackLine': line});
+      fillInfo(unit);
+    },
     nextTurnStarted: function(json, grid)
     {
       $('#end-placing-btn').hide().button('enable').button('option', 'label', 'End placing');
@@ -317,7 +370,7 @@ Viewer = $.inherit(
       var players = json.players;
       var your_units = canvas.set();
       var enemies_units = canvas.set();
-      var placings = {};
+      this.placings = {};
       $.each(players, function(player, pval)
       {
         var is_your = (player == sessionStorage.username);
@@ -328,7 +381,7 @@ Viewer = $.inherit(
           var pos = getPos(x, y);
           var un = canvas.image(getPictUnit(unit.name), pos.x + 2, pos.y + 2, 42, 42);
           $(un.node).data({'pos': [x,y]});
-          placings[[x, y]] = un;
+          viewer.placings[[x, y]] = un;
           viewer.map[y][x].attr({fill: players_colors[pval.player_number - 1]});
           (is_your ? your_units: enemies_units).push(un);
         });
@@ -383,39 +436,7 @@ Viewer = $.inherit(
           {
             var from = selection.data('pos');
             var to = [$(this).data('x'), y1 = $(this).data('y')];
-            
             var path = player.move(from, to);
-            if(path.length)
-            {
-              pathstring = "M" + getRelativeCenter(path[0]);
-              var i = 1;
-              for(; i < path.length - 2; i += 3)
-              {
-                var pair1 = getRelativeCenter(path[i]);
-                var pair2 = getRelativeCenter(path[i + 1]);
-                var pair3 = getRelativeCenter(path[i + 2]);
-                pathstring += "C" + pair1.concat(pair2).concat(pair3).join(" ");
-              }
-              if(i < path.length)
-              {
-                var points = [];
-                for(j = 0; j < 3; ++j, ++i)
-                {
-                  var point = getRelativeCenter(path[i < path.length ? i: (path.length - 1)]);
-                  points.push(point[0], point[1]);
-                }
-                pathstring += "C" + points.join(" ");
-              }
-              var line = canvas.path(pathstring);
-              line.attr({
-                'stroke-width': 3,
-                'stroke': a_white,
-                'stroke-dasharray': '-'});
-              if(selection.data('path'))
-                selection.data('path').remove();
-              selection.data({'path': line});
-              fillInfo(selection);
-            }
           }
         }
       });
@@ -427,19 +448,7 @@ Viewer = $.inherit(
           {
             var from = selection.data('pos');
             var to = $(this).data('pos');
-            var pathstring = 'M' + getRelativeCenter(from).join(' ')
-              + 'L' + getRelativeCenter(to).join(' ');
-            var line = canvas.path(pathstring).attr({
-              'stroke': a_red,
-              'stroke-dasharray': '-',
-              'stroke-width': 2});
             player.attack(from, to);
-            if('attackLine' in selection.data())
-            {
-              selection.data('attackLine').remove();
-            }
-            selection.data({'attackLine': line});
-            fillInfo(selection);
           }
           else
           {
