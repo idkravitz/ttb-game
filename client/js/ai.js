@@ -4,23 +4,29 @@
 
 function startAI()
 {
-  AIs = {
-    'RandomAI': RandomAI,
-    'NearestAI': RunToNearestAI
-  };
-  $(this).hide();
-  $('#stop-ai').show().button('enable');
-  AIclass = AIs[$('#choose-ai').val()];
-  AI = new AIclass(player);
-  AI.start();
+  if(!$(this).button('option', 'disabled'))
+  {
+    AIs = {
+      'RandomAI': RandomAI,
+      'NearestAI': RunToNearestAI
+    };
+    $(this).hide();
+    $('#stop-ai').show().button('enable');
+    AIclass = AIs[$('#choose-ai').val()];
+    AI = new AIclass(player);
+    AI.start();
+  }
   return false;
 }
 
 function stopAI()
 {
-  $(this).hide();
-  $('#start-ai').show().button('enable');
-  AI.stop();
+  if(!$(this).button('option', 'disabled'))
+  {
+    $(this).hide();
+    $('#start-ai').show().button('enable');
+    AI.stop();
+  }
   return false;
 }
 
