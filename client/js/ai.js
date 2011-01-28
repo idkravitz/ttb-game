@@ -9,7 +9,8 @@ function startAI()
     AIs = {
       'RandomAI': RandomAI,
       'NearestAI': RunToNearestAI,
-      'SmartChoose': IntelligentEnemyChooseAI
+      'SmartChoose': IntelligentEnemyChooseAI,
+      'SmartOnArea': SmartWithRandomAreaAI
     };
     $(this).hide();
     $('#stop-ai').show().button('enable');
@@ -258,7 +259,7 @@ IntelligentEnemyChooseAI = $.inherit(RunToNearestAI,
     var distance = squaredDistance([unit.X, unit.Y], [enemy.X, enemy.Y]);
     return maximum_damage * strike_chance * (1 / (1 + Math.sqrt(distance) / units_info[unit.name].MP));
   },
-  move: function(unit)
+  choose_valuable_enemy: function(unit)
   {
     var enemies_units = this.get_enemies_units();
     var min_value = Number.POSITIVE_INFINITY;
@@ -275,9 +276,42 @@ IntelligentEnemyChooseAI = $.inherit(RunToNearestAI,
     }
     var enemy = enemies_units[min_i];
     this.target_enemy = [enemy.X, enemy.Y];
-    var path = AStar(this.grid, [unit.X, unit.Y], [enemy.X, enemy.Y]);
+  },
+  move: function(unit)
+  {
+    this.choose_valuable_enemy(unit);
+    var enemy = this.target_enemy
+    var path = AStar(this.grid, [unit.X, unit.Y], enemy);
     var index = Math.min(path.length - 1, units_info[unit.name].MP);
     this.player.move([unit.X, unit.Y], path[index]);
-    return enemies_units[min_i];
+    return path[index];
+  }
+});
+
+SmartWithRandomAreaAI = $.inherit(IntelligentEnemyChooseAI,
+{
+  move: function(unit)
+  {
+    this.choose_valuable_enemy(unit);
+    var enemy = this.target_enemy;
+    var area = this._deikstra(enemy[0], enemy[1], units_info[unit.name].range);
+    cells = [];
+    $(area).each(function(i, v)
+    {
+      if(v != Number.POSITIVE_INFINITY)
+        cells.push(i);
+    });
+    var blocked = true;
+    var cell, path;
+    while(blocked)
+    {
+      cell = cells[Math.floor(Math.random() * cells.length)]; // choose random cell to move to
+      cell = this.from_linear(cell);
+      path = AStar(this.grid, [unit.X, unit.Y], cell);
+      blocked = !path.length && !(unit.X == cell[0] && unit.Y == cell[1]);
+    }
+    var index = Math.min(path.length - 1, units_info[unit.name].MP);
+    this.player.move([unit.X, unit.Y], path[index]);
+    return path[index];
   }
 });
