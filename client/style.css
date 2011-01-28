@@ -506,3 +506,85 @@ form .error img {
 #add-army {
     margin: 5px;
 }
+
+/* map editor */
+
+#map-editor {
+    font-family: Sans-Serif;
+    width: 555px;
+}
+
+#map-editor form {
+    padding: 10px;
+    width: 180px;
+}
+
+#map-editor label{
+    text-align: right;
+}
+
+#map-editor select, input[type="text"] {
+    margin: 2px 0 20px 10px;
+}
+
+#map-editor input[type="button"] {
+    float: right;
+    margin-right: 10px;
+    width: 80px;
+}
+
+#map-editor label, #map-editor select, #map-editor input[type="text"] {
+    float: left;
+    width: 80px;
+}
+
+#map1 {
+    float: left;
+    margin-top: 30px;
+    margin-left: 30px;
+}
+
+#map1-table {
+    float: left;
+    border: 1px black solid;
+    width: 400px;
+    height: 400px;
+    border-collapse: collapse;
+}
+
+#map1-table td {
+    border: 1px black solid;
+}
+
+#colors-menu {
+    margin-top: 30px;
+    float: right;
+    margin-left: 10px;
+}
+
+#colors-menu table {
+    float: left;
+    width: 109px;
+    border-collapse:collapse;
+}
+
+#colors-menu td {
+    border: 1px black solid;
+}
+
+#colors-menu .name-cell {
+    width: 70px;
+    text-align: center;
+}
+
+#save-controls {
+    display: none;
+    float: left;
+    width: 100%;
+    margin-top: 30px;
+    margin-left: 30px;
+}
+
+#save-controls input {
+    float:left;
+}

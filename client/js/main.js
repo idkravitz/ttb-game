@@ -162,6 +162,7 @@ function describeSections()
   sections = {
     'registration': new Section('registration'),
     'about': new SectionWithNavigation('about'),
+    'map-edit': new SectionWithNavigation('map-edit'),
     'active-games': new ActiveGamesSection,
     'create-game': new CreateGameSection,
     'manage-armies': new ManageArmiesSection,

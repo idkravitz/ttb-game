@@ -17,6 +17,7 @@
     <script type="text/javascript" src="js/game.js"></script>
     <script type="text/javascript" src="js/ai.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
+    <script type="text/javascript" src="js/map_editor.js"></script>
 </head>
 
 <body>
@@ -50,7 +51,7 @@
             <p id="nav-active-games">Active games</p>
             <p id="nav-manage-armies">Manage armies</p>
             <p id="nav-about">About</p>
-            <p id="nav-map-editor">Map editor</p>
+            <p id="nav-map-edit">Map editor</p>
         </nav>
         <div id="nav-vertical-line"></div>
 
@@ -111,8 +112,34 @@
             <h1>Hello, I'm a pony!</h1>
         </section>
 
-        <section id="map-editor" class="main-section">
-            <h1>Additional task!</h1>
+        <section id="map-edit" class="main-section" style="padding: 10px;">
+            <div id="map-editor">
+                <form>
+                    <label>Name:</label>
+                    <input type="text"></input>
+
+                    <label>Width:</label>
+                    <select id="width-select"></select>
+
+                    <label>Height:</label>
+                    <select id="height-select"></select>
+
+
+                    <label>Players:</label>
+                    <select id="players-select"></select>
+
+                    <input id="create-map-button" type="button" value="Create"></input>
+                </form>
+
+                <div id="map1"></div>
+
+                <div id="colors-menu"></div>
+
+                <div id="save-controls">
+                    <input id="save-map-button" type="button" value="Save"></input>
+                </div>
+
+            </div>
         </section>
 
         <section id="active-games" class="main-section">
@@ -180,8 +207,6 @@
         </section>
 
     </section>
-    <footer>
-        <p>FEFU IMCS, 2010</p>
-    </footer>
+
 </body>
 </html>
