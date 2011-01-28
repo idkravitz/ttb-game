@@ -136,6 +136,11 @@ MapEditor.prototype.exportMap = function() {
         map.push(row);
     }
     var name = $('#map-editor input[type="text"]').val();
+    //send json or create txt file(name,map)
+    $('#map-editor input[type="text"]').val('');
+    $('#map-editor select').val('2');
+    this.$map.children().remove();
+    this.$colorsMenu.children().remove();
 };
 
 
