@@ -8,7 +8,8 @@ function startAI()
   {
     AIs = {
       'RandomAI': RandomAI,
-      'NearestAI': RunToNearestAI
+      'NearestAI': RunToNearestAI,
+      'SmartChoose': IntelligentEnemyChooseAI
     };
     $(this).hide();
     $('#stop-ai').show().button('enable');
@@ -215,5 +216,68 @@ RunToNearestAI = $.inherit(RandomAI,
   attack: function(unit, pos)
   {
     this.player.attack([unit.X, unit.Y], this.target_enemy);
+  }
+});
+
+// Its a P(X - Y < x - y) discrete values
+// where X is 3d6 generated addition to enemy defence
+// and Y also is 3d6 generated addition to our attack,
+// X and Y are independent
+const DA_Probability = [4249/7776, 9905/15552, 11207/15552, 9263/11664, 9977/11664,
+  42155/46656, 541/576, 833/864, 847/864, 7699/7776, 7741/7776, 3881/3888,
+  11657/11664, 46649/46656, 46655/46656, 1, 1/46656, 7/46656, 7/11664, 7/3888,
+  35/7776, 77/7776, 17/864, 31/864, 35/576, 4501/46656, 1687/11664, 2401/11664,
+  4345/15552, 5647/15552, 3527/7776];
+const MAX_VALUE_3d6 = 18;
+
+IntelligentEnemyChooseAI = $.inherit(RunToNearestAI,
+{
+  get_strike_chance: function(unit, enemy)
+  {
+    var attack = units_info[unit.name].attack;
+    var defence = units_info[enemy.name].defence;
+    var x = defence - attack;
+    if(x < -15)
+      return 1;
+    if(x > 15)
+      return 0;
+    var index = x < 0 ? DA_Probability.length + x: x;
+    return 1 - DA_Probability[index];
+  },
+  get_maximum_damage: function(unit, enemy)
+  {
+    var damage = units_info[unit.name].damage + MAX_VALUE_3d6;
+    var protection = units_info[enemy.name].protection;
+    damage -= protection;
+    return damage > 0 ? damage: 0;
+  },
+  get_enemy_value: function(unit, enemy)
+  {
+    var maximum_damage = this.get_maximum_damage(unit, enemy);
+    var strike_chance = this.get_strike_chance(unit, enemy);
+    var distance = squaredDistance([unit.X, unit.Y], [enemy.X, enemy.Y]);
+    return maximum_damage * strike_chance * (1 / (1 + Math.sqrt(distance) / units_info[unit.name].MP));
+  },
+  move: function(unit)
+  {
+    var enemies_units = this.get_enemies_units();
+    var min_value = Number.POSITIVE_INFINITY;
+    var min_i = 0;
+    for(var i = 0; i < enemies_units.length; ++i)
+    {
+      var enemy = enemies_units[i];
+      var value = this.get_enemy_value(unit, enemy);
+      if(value < min_value)
+      {
+        min_value = value;
+        min_i = i;
+      }
+    }
+    var enemy = enemies_units[min_i];
+    this.target_enemy = [enemy.X, enemy.Y];
+    var path = AStar(this.grid, [unit.X, unit.Y], [enemy.X, enemy.Y]);
+    var index = Math.min(path.length - 1, units_info[unit.name].MP);
+    this.player.move([unit.X, unit.Y], path[index]);
+    return enemies_units[min_i];
   }
 });
