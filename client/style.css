@@ -525,6 +525,7 @@ form .error img {
 
 #map-editor select, input[type="text"] {
     margin: 2px 0 20px 10px;
+    font-size: 10px;
 }
 
 #map-editor input[type="button"] {
