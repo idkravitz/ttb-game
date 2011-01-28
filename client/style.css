@@ -539,13 +539,13 @@ form .error img {
     width: 80px;
 }
 
-#map1 {
+#map {
     float: left;
     margin-top: 30px;
     margin-left: 30px;
 }
 
-#map1-table {
+#map-table {
     float: left;
     border: 1px black solid;
     width: 400px;
@@ -553,7 +553,7 @@ form .error img {
     border-collapse: collapse;
 }
 
-#map1-table td {
+#map-table td {
     border: 1px black solid;
 }
 

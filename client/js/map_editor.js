@@ -42,7 +42,7 @@ MapEditor.prototype.drawMap = function() {
     this.$map.children().remove();
 
     var mapEditor = this,
-        $table = $('<table>').attr('id', 'map1-table');
+        $table = $('<table>').attr('id', 'map-table');
 
     for (var i = 0; i < this.$height.val(); i++) {
         var $row = $('<tr>');
@@ -144,7 +144,7 @@ $(function() {
     var elements = {
         container: $('#map-editor'),
         colorsMenu: $('#colors-menu'),
-        map: $('#map1'),
+        map: $('#map'),
         widthSelect: $('#width-select'),
         heightSelect: $('#height-select'),
         playersSelect: $('#players-select'),
