@@ -252,7 +252,9 @@ def attack(our_unit, their_unit, their_trgt):
     defence_chance = their_unit.defence + gen3d6()
     HP = their_trgt.HP
     if attack_chance > defence_chance:
-        HP -= our_unit.damage - their_unit.protection + gen3d6()
+        strike = our_unit.damage - their_unit.protection + gen3d6()
+        if strike > 0:
+            HP -= strike
         HP = 0 if HP < 0 else HP
     return Placement(their_trgt.player, their_trgt.unit, HP)
 
