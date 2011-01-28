@@ -4,7 +4,7 @@
 
 function startAI()
 {
-  if(!$(this).button('option', 'disabled'))
+  if(!$('#start-ai').button('option', 'disabled'))
   {
     AIs = {
       'RandomAI': RandomAI,
@@ -12,7 +12,7 @@ function startAI()
       'SmartChoose': IntelligentEnemyChooseAI,
       'SmartOnArea': SmartWithRandomAreaAI
     };
-    $(this).hide();
+    $('#start-ai').hide();
     $('#stop-ai').show().button('enable');
     AIclass = AIs[$('#choose-ai').val()];
     AI = new AIclass(player);
@@ -23,9 +23,9 @@ function startAI()
 
 function stopAI()
 {
-  if(!$(this).button('option', 'disabled'))
+  if(!$('#stop-ai').button('option', 'disabled'))
   {
-    $(this).hide();
+    $('#stop-ai').hide();
     $('#start-ai').show().button('enable');
     AI.stop();
   }
@@ -51,7 +51,10 @@ RandomAI = $.inherit(
   start: function()
   {
     if(this.player.status != PLAYER_STATUS_NORMAL || this.break_cycle)
-      return;
+    {
+        stopAI();
+        return;
+    }
     var json = this.player.json;
     var our_units = json.players[sessionStorage.username].units;
     $(our_units).each(function(i, unit)
@@ -67,6 +70,10 @@ RandomAI = $.inherit(
     if($('#auto-turn').is(':checked'))
     {
       this.player.endTurn(continueAI(this));
+    }
+    else
+    {
+        stopAI();
     }
   },
 

@@ -368,6 +368,7 @@ Viewer = $.inherit(
       $('#end-placing-btn').hide().button('enable').button('option', 'label', 'End placing');
       $('#end-turn-btn').show().button('enable').button('option', 'label', 'End turn');
       $('#start-ai').button('enable');
+      $('#stop-ai').button('enable');
       $('.cell').not('.stone').removeClass().addClass('cell point');
       $('.unit').remove();
       $('#fullMap > *').remove();
@@ -502,6 +503,8 @@ Viewer = $.inherit(
       {
         $('#end-turn-btn').button('option', 'label', 'waiting for players');
         $('#end-turn-btn').button('disable');
+        $('#start-ai').button('disable');
+        $('#stop-ai').button('disable');
       }
       $('#info').empty();
       if(typeof selection != 'undefined')
