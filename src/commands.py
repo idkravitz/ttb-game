@@ -305,7 +305,7 @@ def getPlayerNumber(sid, gameName):
     player = dbi().query(Player).join(Game).filter(Player.game_id==game.id).filter(Player.user_id==user.id).one()
     return response_ok(player_number=player.player_number)
 
-@commandline_only
+#@commandline_only
 @Command(str, str, list)
 def uploadMap(sid, name, terrain):
     dbi().check_sid(sid)
