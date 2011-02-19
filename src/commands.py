@@ -345,7 +345,7 @@ def getMapList(sid):
     maps = [{"map": name} for name in dbi().query(Map.name).all()]
     return response_ok(maps=maps)
 
-@commandline_only
+#@commandline_only
 @Command(str, str)
 def deleteMap(sid, name):
     dbi().check_sid(sid)

@@ -257,7 +257,7 @@ Viewer = $.inherit(
         {
           var cell  = $('<div>').addClass(getClassDiv(map[i][j]))
             .data({'x': j, 'y': i});
-          $('#player-color').html(showHelp(this.player.player_number));
+          $('#player-color').html(showHelp(this.player.player_number, true));
           if (cell.hasClass('player-' + this.player.player_number))
           {
             cell.droppable({
@@ -372,6 +372,7 @@ Viewer = $.inherit(
       $('.cell').not('.stone').removeClass().addClass('cell point');
       $('.unit').remove();
       $('#fullMap > *').remove();
+      $('#player-color').html(showHelp(this.player.player_number, false));
       delete selection;
       if(typeof(canvas) !== undefined)
       {
@@ -542,10 +543,11 @@ function getClassDiv(charMap)
   return common_class + ' cell'
 }
 
-function showHelp(player_number)
+function showHelp(player_number, is_placing_turn)
 {
-  var player_color = ['red', 'blue'];
-  return 'Place units on ' + player_color[player_number - 1] + ' cells';
+  var block = '<div style="display:inline-block;height:32px;width:32px;'
+    + 'background-image:url(images/mapcolors/color' + (player_number + 2) + '.png)"/>';
+  return (is_placing_turn ? 'Place units on ': 'Your units are ') + block;
 }
 
 function getRawName(name)

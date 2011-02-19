@@ -157,12 +157,31 @@ GameSection = $.inherit(
   }
 );
 
+MapEditSection = $.inherit(SectionWithNavigation,
+{
+  __constructor: function()
+  {
+    this.__base('map-edit');
+  },
+  show: function()
+  {
+    this.__base();
+    updateSelect('getMapList', 'map', '#select-edit-', function()
+    {
+      $('#select-edit-map').prepend($('<option>new</option>'));
+    });
+    $('#create-map-button').hide();
+    $('#create-map-fields').hide();
+  }
+});
+
+
 function describeSections()
 {
   sections = {
     'registration': new Section('registration'),
     'about': new SectionWithNavigation('about'),
-    'map-edit': new SectionWithNavigation('map-edit'),
+    'map-edit': new MapEditSection,
     'active-games': new ActiveGamesSection,
     'create-game': new CreateGameSection,
     'manage-armies': new ManageArmiesSection,
@@ -783,6 +802,7 @@ function initBinds()
   $('#end-turn-btn').click(endTurn); // definition of endTurn appears in game.js
   $('#start-ai').click(startAI);
   $('#stop-ai').click(stopAI);
+  $('#choose-map-button').click(chooseMap);
 }
 
 $(document).ready(function()

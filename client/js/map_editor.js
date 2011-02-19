@@ -5,6 +5,24 @@ var fillDropdownWithNumbers = function(opts) {
   }
 };
 
+function chooseMap()
+{
+  var select = $('#select-edit-map');
+  $('#choose-map-fields').hide();
+  $('#create-map-button').show();
+  $('#create-map-fields').show();
+  if(select.val() != 'new') {
+    sendRequest({ cmd: 'getMap', name: $(':selected', select).text() },
+      function (json) {
+        var map = json.map;
+        mapEditor.$height.val(map.length);
+        mapEditor.$width.val(map[0].length);
+        $('#map-editor input[type="text"]').val($(':selected', select).text());
+        mapEditor.drawMap(map);
+        mapEditor.drawColorsMenu();
+      });
+  }
+}
 
 var MapEditor = function(opts) {
   this.$container = opts.container;
@@ -37,8 +55,16 @@ MapEditor.prototype.draw = function() {
   this.drawColorsMenu();
 };
 
+MapEditor.prototype.getCellType = function(cell)
+{
+  if(cell == '.')
+    return 'free';
+  if(cell == 'x')
+    return 'occupied';
+  return 'player ' + cell;
+};
 
-MapEditor.prototype.drawMap = function() {
+MapEditor.prototype.drawMap = function(map) {
   this.$map.children().remove();
 
   var mapEditor = this,
@@ -48,14 +74,14 @@ MapEditor.prototype.drawMap = function() {
     var $row = $('<tr>');
     for (var j = 0; j < this.$width.val(); j++) {
       var $cell = $('<td>')
-        .css('background-color', this.cells.free[0])
+        .css('background-color', !map ? this.cells.free[0]: this.cells[this.getCellType(map[i][j])][0])
         .click(function() {
           var name = mapEditor.$selected.data('name');
           $(this).css('background-color', mapEditor.cells[name][0]);
           $(this).data('name', name);
         })
         .addClass('row'+i)
-        .data('name', 'free');
+        .data('name', !map ? 'free': this.getCellType(map[i][j]));
       $row.append($cell);
     }
     $table.append($row);
@@ -124,6 +150,22 @@ MapEditor.prototype.drawColorsMenu = function() {
   this.$colorsMenu.append($table);
 };
 
+function uploadMap(name, map)
+{
+  sendRequest({ cmd: "uploadMap", name: name, terrain: map }, function() 
+  {
+    //send json or create txt file(name,map)
+    $('#map-editor input[type="text"]').val('');
+    $('#map-editor select').val('2');
+    mapEditor.$map.children().remove();
+    mapEditor.$colorsMenu.children().remove();
+    mapEditor.$saveControls.hide();
+    $('#create-map-button').hide();
+    $('#create-map-fields').hide();
+    $('#choose-map-fields').show();
+    sections['map-edit'].show(); 
+  });
+}
 
 MapEditor.prototype.exportMap = function() {
   var mapEditor = this,
@@ -136,15 +178,14 @@ MapEditor.prototype.exportMap = function() {
     map.push(row);
   }
   var name = $('#map-editor input[type="text"]').val();
-  sendRequest({ cmd: "uploadMap", name: name, terrain: map }, function() 
+  var select = $('#select-edit-map');
+  if(select.val() == 'new') {
+      uploadMap(name, map);
+  }
+  else
   {
-    //send json or create txt file(name,map)
-    $('#map-editor input[type="text"]').val('');
-    $('#map-editor select').val('2');
-    mapEditor.$map.children().remove();
-    mapEditor.$colorsMenu.children().remove();
-    mapEditor.$saveControls.hide();
-  });
+    sendRequest({cmd: 'deleteMap', name: name}, function() { uploadMap(name, map) });
+  }
 };
 
 
@@ -178,7 +219,7 @@ $(function() {
   });
 
 
-  var mapEditor = new MapEditor(elements);
+  mapEditor = new MapEditor(elements);
   $('#create-map-button').click(function() { mapEditor.draw(); });
   $('#save-controls input').click(function() { mapEditor.exportMap(); });
 });

@@ -115,24 +115,34 @@
         <section id="map-edit" class="main-section">
             <div id="map-editor">
                 <form>
-                    <table><tr>
-                        <td><label>Name:</label></td>
-                        <td><input type="text"></input></td>
-                        <td>
-                            <label>Width:</label>
-                            <select id="width-select"></select>
-                        </td>
-                        <td>
-                            <label>Height:</label>
-                            <select id="height-select"></select>
-                        </td>
-                        <td>
-                            <label>Players:</label>
-                            <select id="players-select"></select>
-                        </td>
-                    </tr></table>
-
-                    <input id="create-map-button" type="button" value="Create"></input>
+                    <table>
+                        <tr id="choose-map-fields">
+                            <td>
+                                <label>Maps</label>
+                                <select id="select-edit-map"></select>
+                            </td>
+                            <td>
+                                <input id="choose-map-button" type="button" value="Choose"></input>
+                            </td>
+                        </tr>
+                        <tr id="create-map-fields" style="display:none">
+                            <td><label>Name:</label></td>
+                            <td><input type="text"></input></td>
+                            <td>
+                                <label>Width:</label>
+                                <select id="width-select"></select>
+                            </td>
+                            <td>
+                                <label>Height:</label>
+                                <select id="height-select"></select>
+                            </td>
+                            <td>
+                                <label>Players:</label>
+                                <select id="players-select"></select>
+                            </td>
+                        </tr>
+                    </table>
+                    <input style="display:none" id="create-map-button" type="button" value="Create"></input>
                 </form>
 
                 <div id="map"></div>
@@ -199,6 +209,8 @@
                         <option>NearestAI</option>
                         <option>SmartChoose</option>
                         <option>SmartOnArea</option>
+                        <option>SmartMin</option>
+                        <option>SmartMinOnArea</option>
                     </select>
                     <a id="start-ai" class="button" href="#">Start AI</a>
                     <a id="stop-ai" class="button" href="#">Stop AI</a>

@@ -288,10 +288,11 @@ def attack_phase(sorted_moves, process):
             else:
                 del process.current_placements[target.dest]
                 t = process.previous_placements[target.pos]
-                if target.dest in process.player_current_placements[t.player]:
-                    process.player_current_placements[t.player].remove(target.dest)
-                if not len(process.player_current_placements[t.player]):
-                    del process.player_current_placements[t.player]
+                if t.player in process.player_current_placements:
+                    if target.dest in process.player_current_placements[t.player]:
+                        process.player_current_placements[t.player].remove(target.dest)
+                    if not len(process.player_current_placements[t.player]):
+                        del process.player_current_placements[t.player]
 
 def in_range(pos1, pos2, range):
     return sum(abs(x1 - x2) ** 2 for x1, x2 in zip(pos1, pos2)) <= range ** 2

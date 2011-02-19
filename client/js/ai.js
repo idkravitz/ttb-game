@@ -10,7 +10,9 @@ function startAI()
       'RandomAI': RandomAI,
       'NearestAI': RunToNearestAI,
       'SmartChoose': IntelligentEnemyChooseAI,
-      'SmartOnArea': SmartWithRandomAreaAI
+      'SmartOnArea': SmartWithRandomAreaAI,
+      'SmartMin': SmartMinAI,
+      'SmartMinOnArea': SmartAreaMinAI
     };
     $('#start-ai').hide();
     $('#stop-ai').show().button('enable');
@@ -84,7 +86,7 @@ RandomAI = $.inherit(
 
   move: function(unit)
   {
-    var possible = this._deikstra(unit.X, unit.Y, units_info[unit.name].MP);
+    var possible = this._dijkstra(unit.X, unit.Y, units_info[unit.name].MP);
     var L = this.grid.length;
     var l = this.grid[0].length;
     cells = [];
@@ -148,7 +150,7 @@ RandomAI = $.inherit(
     return [i % l, Math.floor(i / l)];
   },
 
-  _deikstra: function(x, y, mp)
+  _dijkstra: function(x, y, mp)
   {
     var l = this.grid[0].length;
     var L = this.grid.length;
@@ -269,19 +271,19 @@ IntelligentEnemyChooseAI = $.inherit(RunToNearestAI,
   choose_valuable_enemy: function(unit)
   {
     var enemies_units = this.get_enemies_units();
-    var min_value = Number.POSITIVE_INFINITY;
-    var min_i = 0;
+    var max_value = 0;
+    var max_i = 0;
     for(var i = 0; i < enemies_units.length; ++i)
     {
       var enemy = enemies_units[i];
       var value = this.get_enemy_value(unit, enemy);
-      if(value < min_value)
+      if(value > max_value)
       {
-        min_value = value;
-        min_i = i;
+        max_value = value;
+        max_i = i;
       }
     }
-    var enemy = enemies_units[min_i];
+    var enemy = enemies_units[max_i];
     this.target_enemy = [enemy.X, enemy.Y];
   },
   move: function(unit)
@@ -301,7 +303,7 @@ SmartWithRandomAreaAI = $.inherit(IntelligentEnemyChooseAI,
   {
     this.choose_valuable_enemy(unit);
     var enemy = this.target_enemy;
-    var area = this._deikstra(enemy[0], enemy[1], units_info[unit.name].range);
+    var area = this._dijkstra(enemy[0], enemy[1], units_info[unit.name].range);
     cells = [];
     $(area).each(function(i, v)
     {
@@ -322,3 +324,28 @@ SmartWithRandomAreaAI = $.inherit(IntelligentEnemyChooseAI,
     return path[index];
   }
 });
+
+SmartMinAI = $.inherit(IntelligentEnemyChooseAI,
+{
+  choose_valuable_enemy: function(unit)
+  {
+    var enemies_units = this.get_enemies_units();
+    var min_value = 0;
+    var min_i = 0;
+    for(var i = 0; i < enemies_units.length; ++i)
+    {
+      var enemy = enemies_units[i];
+      var value = this.get_enemy_value(unit, enemy);
+      if(value < min_value)
+      {
+        min_value = value;
+        min_i = i;
+      }
+    }
+    var enemy = enemies_units[min_i];
+    this.target_enemy = [enemy.X, enemy.Y];
+  }
+});
+
+SmartAreaMinAI = $.inherit(SmartWithRandomAreaAI);
+SmartAreaMinAI.prototype.choose_valuable_enemy = SmartMinAI.prototype.choose_valuable_enemy;
