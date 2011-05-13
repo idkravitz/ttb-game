@@ -180,7 +180,6 @@ function describeSections()
 {
   sections = {
     'registration': new Section('registration'),
-    'about': new SectionWithNavigation('about'),
     'map-edit': new MapEditSection,
     'active-games': new ActiveGamesSection,
     'create-game': new CreateGameSection,
