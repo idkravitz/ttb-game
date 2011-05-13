@@ -36,7 +36,7 @@ Player = $.inherit(
       this.army_name = army_name;
       this.placings = {};
       this.status = PLAYER_STATUS_NORMAL;
- 
+
       var is_aborted = ('turn' in sessionStorage && sessionStorage.turn != 0);
       sessionStorage.turn = 0;
       //sessionStorage.player_number = player_number;
@@ -174,7 +174,7 @@ Player = $.inherit(
         {
           sessionStorage.turn = json.turnNumber;
           player.json = json;
-          
+
           if(!(sessionStorage.username in json.players))
           {
             if(json.players_count)
@@ -225,7 +225,7 @@ Player = $.inherit(
           setTimeout(function() { waitNextTurn(feedback); }, 3000);
         }
       },
-      function(msg, status) 
+      function(msg, status)
       {
         if(status == 'badTurn') // placing in progress
         {
@@ -421,7 +421,7 @@ Viewer = $.inherit(
        */
       var yours = $.map(your_units.items, function(i) { return i.node });
       var enemies = $.map(enemies_units.items, function(i) { return i.node });
-      
+
       $(yours).mousedown(function(e)
       {
         if(e.which == 1) // Left -- selection
@@ -454,9 +454,9 @@ Viewer = $.inherit(
         if('attackLine' in $(this).data())
           $(this).data('attackLine').attr({'stroke': a_red });
       });
-      
+
       $('svg').unbind('contextmenu').bind('contextmenu', false); // disable context menu
-      
+
       $('svg rect').unbind('mousedown').mousedown(function(e)
       {
         if(typeof selection != 'undefined')
@@ -565,7 +565,7 @@ function getPictUnit(name)
 
 function getCssPictUnit(name)
 {
-  return 'url(' + getPictUnit(name) + ')'; 
+  return 'url(' + getPictUnit(name) + ')';
 }
 
 function clearUnitStyle(unit)

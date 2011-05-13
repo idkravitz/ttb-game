@@ -163,7 +163,7 @@ RandomAI = $.inherit(
 
     var a = this.to_linear([x, y]);
     var d = [], U = [];
-    
+
     var n = L * l;
     var occupied_count = 0;
     for(var i = 0; i < n; ++i)

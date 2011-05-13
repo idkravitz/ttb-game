@@ -152,7 +152,7 @@ MapEditor.prototype.drawColorsMenu = function() {
 
 function uploadMap(name, map)
 {
-  sendRequest({ cmd: "uploadMap", name: name, terrain: map }, function() 
+  sendRequest({ cmd: "uploadMap", name: name, terrain: map }, function()
   {
     //send json or create txt file(name,map)
     $('#map-editor input[type="text"]').val('');
@@ -163,7 +163,7 @@ function uploadMap(name, map)
     $('#create-map-button').hide();
     $('#create-map-fields').hide();
     $('#choose-map-fields').show();
-    sections['map-edit'].show(); 
+    sections['map-edit'].show();
   });
 }
 

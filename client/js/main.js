@@ -48,7 +48,7 @@ function innerShowSection()
 
 Section = $.inherit(
   {
-    __constructor: function(name) 
+    __constructor: function(name)
     {
       this.name = name
     },
