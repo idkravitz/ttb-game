@@ -1,6 +1,6 @@
 *.swp
 *~
-*.db3
+*.db
 \#*\#
 .elc
 auto-save-list
