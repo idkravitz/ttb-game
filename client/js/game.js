@@ -1,4 +1,3 @@
-
 var have_units_placed = false;
 const players_colors = [
   "#ff1717",
@@ -42,7 +41,7 @@ Player = $.inherit(
       //sessionStorage.player_number = player_number;
       this.grid = this._generate_grid();
       this._grabFactionInfo();
-      if(!is_aborted)
+      if (!is_aborted)
       {
         this.viewer.drawInitialMap(this.map);
         this._requestArmy();
@@ -70,7 +69,7 @@ Player = $.inherit(
 
     _requestArmy: function()
     {
-      sendRequest({ cmd: 'getArmy', armyName: this.army_name }, function (json)
+      sendRequest({ cmd: 'getArmy', armyName: this.army_name }, function(json)
       {
         var units = json.units;
         player.viewer.showUnits(units);
@@ -79,14 +78,16 @@ Player = $.inherit(
 
     _grabFactionInfo: function()
     {
-      sendRequest({cmd: 'getFaction', factionName: sessionStorage.factionName }, function(json)
-      {
-        units_info = {};
-        $.each(json.unitList, function(i, unit)
-        {
-          units_info[unit.name] = unit;
-        });
-      });
+      sendRequest(
+        { cmd: 'getFaction', factionName: sessionStorage.factionName },
+        function(json) {
+          units_info = {};
+          $.each(json.unitList, function(i, unit)
+          {
+            units_info[unit.name] = unit;
+          });
+        }
+      );
     },
 
     endPlacing: function()
@@ -94,12 +95,19 @@ Player = $.inherit(
       this.viewer.endPlacing();
       var units = [];
       pipa = this.placings;
-      for(var pos in this.placings)
+      for (var pos in this.placings)
       {
         pos = pos.split(',');
-        units.push({'name': this.placings[pos], 'posX': parseInt(pos[0]), 'posY': parseInt(pos[1])});
+        units.push({
+          'name': this.placings[pos],
+          'posX': parseInt(pos[0]),
+          'posY': parseInt(pos[1])
+        });
       }
-      sendRequest({ cmd: 'placeUnits', 'units': units }, $.proxy(this.waitNextTurn, this));
+      sendRequest(
+        { cmd: 'placeUnits', 'units': units },
+        $.proxy(this.waitNextTurn, this)
+      );
     },
 
     endTurn: function(feedback)
@@ -118,8 +126,10 @@ Player = $.inherit(
           'attackY': parseInt(this.placings[pos].attackY)
         });
       }
-      sendRequest({ cmd: 'move', turn: parseInt(sessionStorage.turn), units: units },
-                  function() { player.waitNextTurn(feedback); });
+      sendRequest(
+        { cmd: 'move', turn: parseInt(sessionStorage.turn), units: units },
+        function() { player.waitNextTurn(feedback); }
+      );
     },
 
     placeUnit: function(unit, x, y)
@@ -131,7 +141,7 @@ Player = $.inherit(
     {
       var path = AStar(this.grid, from, to);
       // path includes start point too
-      if(path.length && units_info[this.placings[from]['name']].MP >= (path.length - 1))
+      if (path.length && units_info[this.placings[from]['name']].MP >= (path.length - 1))
       {
         this.placings[from]['destX'] = to[0];
         this.placings[from]['destY'] = to[1];
@@ -169,73 +179,77 @@ Player = $.inherit(
 
     waitNextTurn: function(feedback)
     {
-      sendNonAuthorizedRequest({ cmd: 'getGameState', name: sessionStorage.gameName }, function(json) {
-        if(sessionStorage.turn != json.turnNumber)
-        {
-          sessionStorage.turn = json.turnNumber;
-          player.json = json;
-
-          if(!(sessionStorage.username in json.players))
+      sendNonAuthorizedRequest(
+        { cmd: 'getGameState', name: sessionStorage.gameName },
+        function(json) {
+          if (sessionStorage.turn != json.turnNumber)
           {
-            if(json.players_count)
+            sessionStorage.turn = json.turnNumber;
+            player.json = json;
+
+            if (!(sessionStorage.username in json.players))
             {
-              player.fail()
+              if (json.players_count)
+              {
+                player.fail()
+              }
+              else
+              {
+                player.draw();
+              }
             }
-            else
+            else if (json.players_count == 1)
             {
-              player.draw();
+              player.win();
             }
-          }
-          else if(json.players_count == 1)
-          {
-            player.win();
-          }
 
-          player.placings = {};
+            player.placings = {};
 
-          $.each(json.players, function(p, pval)
-          {
-            $.each(pval.units, function(i, unit)
+            $.each(json.players, function(p, pval)
             {
-              var x = unit.X;
-              var y = unit.Y;
-              player.placings[[x, y]] = {
-                'name': unit.name,
-                'HP': unit.HP,
-                'path': 0,
-                'distance': 0,
-                'player': p,
-                'posX': x,
-                'posY': y,
-                'destX': x,
-                'destY': y,
-                'attackX': -1,
-                'attackY': -1 };
+              $.each(pval.units, function(i, unit)
+              {
+                var x = unit.X;
+                var y = unit.Y;
+                player.placings[[x, y]] = {
+                  'name': unit.name,
+                  'HP': unit.HP,
+                  'path': 0,
+                  'distance': 0,
+                  'player': p,
+                  'posX': x,
+                  'posY': y,
+                  'destX': x,
+                  'destY': y,
+                  'attackX': -1,
+                  'attackY': -1
+                };
+              });
             });
-          });
 
-          player.viewer.nextTurnStarted(json, player.grid);
-          if(feedback)
+            player.viewer.nextTurnStarted(json, player.grid);
+            if (feedback)
+            {
+              feedback();
+            }
+          }
+          else
           {
-            feedback();
+            setTimeout(function() { waitNextTurn(feedback); }, 3000);
+          }
+        },
+        function(msg, status)
+        {
+          if (status == 'badTurn') // placing in progress
+          {
+            setTimeout(function() { waitNextTurn(feedback); }, 3000);
+          }
+          else
+          {
+            alert(msg);
           }
         }
-        else
-        {
-          setTimeout(function() { waitNextTurn(feedback); }, 3000);
-        }
-      },
-      function(msg, status)
-      {
-        if(status == 'badTurn') // placing in progress
-        {
-          setTimeout(function() { waitNextTurn(feedback); }, 3000);
-        }
-        else
-        {
-          alert(msg);
-        }
-      });
+      );
     }
   }
 );
@@ -293,8 +307,8 @@ Viewer = $.inherit(
           $('#end-placing-btn').button('option', 'disabled', !have_units_placed);
         }
       });
-      for(var i = 0; i < unitsGame.length; i++){
-        for(var j = 0; j < unitsGame[i].count; j++){
+      for (var i = 0; i < unitsGame.length; i++) {
+        for (var j = 0; j < unitsGame[i].count; j++) {
           var unit = newUnit(unitsGame[i].name);
           $('#control-panel').append(unit);
         }
@@ -314,23 +328,25 @@ Viewer = $.inherit(
     },
     drawMove: function(path)
     {
-      if(path.length)
+      if (path.length)
       {
         pathstring = "M" + getRelativeCenter(path[0]);
         var i = 1;
-        for(; i < path.length - 2; i += 3)
+        for (; i < path.length - 2; i += 3)
         {
           var pair1 = getRelativeCenter(path[i]);
           var pair2 = getRelativeCenter(path[i + 1]);
           var pair3 = getRelativeCenter(path[i + 2]);
           pathstring += "C" + pair1.concat(pair2).concat(pair3).join(" ");
         }
-        if(i < path.length)
+        if (i < path.length)
         {
           var points = [];
-          for(j = 0; j < 3; ++j, ++i)
+          for (j = 0; j < 3; ++j, ++i)
           {
-            var point = getRelativeCenter(path[i < path.length ? i: (path.length - 1)]);
+            var point = getRelativeCenter(
+              path[i < path.length ? i: (path.length - 1)]
+            );
             points.push(point[0], point[1]);
           }
           pathstring += "C" + points.join(" ");
@@ -341,7 +357,7 @@ Viewer = $.inherit(
           'stroke': a_white,
           'stroke-dasharray': '-'});
         var unit = $(this.placings[path[0]].node);
-        if(unit.data('path'))
+        if (unit.data('path'))
           unit.data('path').remove();
         unit.data({'path': line});
         fillInfo(unit);
@@ -356,7 +372,7 @@ Viewer = $.inherit(
         'stroke-dasharray': '-',
         'stroke-width': 2});
       var unit = $(this.placings[from].node);
-      if('attackLine' in unit.data())
+      if ('attackLine' in unit.data())
       {
         unit.data('attackLine').remove();
       }
@@ -374,7 +390,7 @@ Viewer = $.inherit(
       $('#fullMap > *').remove();
       $('#player-color').html(showHelp(this.player.player_number, false));
       delete selection;
-      if(typeof(canvas) !== undefined)
+      if (typeof(canvas) !== undefined)
       {
         canvas = Raphael($('#fullMap').get(0), 48 * grid[0].length + 2, 48 * grid.length + 2);
       }
@@ -384,10 +400,10 @@ Viewer = $.inherit(
       }
       this.map = new Array(grid.length);
       var viewer = this.player.viewer;
-      for(i = 0; i < grid.length; ++i)
+      for (i = 0; i < grid.length; ++i)
       {
         this.map[i] = new Array(grid[i].length);
-        for(j = 0; j < grid[i].length; ++j)
+        for (j = 0; j < grid[i].length; ++j)
         {
           var pos = getPos(j, i);
           var r = canvas.rect(pos.x, pos.y, 46, 46, 1);
@@ -424,9 +440,9 @@ Viewer = $.inherit(
 
       $(yours).mousedown(function(e)
       {
-        if(e.which == 1) // Left -- selection
+        if (e.which == 1) // Left -- selection
         {
-          if(typeof selection != 'undefined')
+          if (typeof selection != 'undefined')
           {
             viewer.getSelectedCell().attr({fill: players_colors[player.player_number - 1]});
           }
@@ -443,15 +459,15 @@ Viewer = $.inherit(
       });
       $(yours).hover(function(e)
       {
-        if($(this).data('path'))
+        if ($(this).data('path'))
           $(this).data('path').attr({'stroke': a_yellow }).toFront();
-        if('attackLine' in $(this).data())
+        if ('attackLine' in $(this).data())
           $(this).data('attackLine').attr({'stroke': a_yellow }).toFront();
       }, function(e)
       {
-        if($(this).data('path'))
+        if ($(this).data('path'))
           $(this).data('path').attr({'stroke': a_white });
-        if('attackLine' in $(this).data())
+        if ('attackLine' in $(this).data())
           $(this).data('attackLine').attr({'stroke': a_red });
       });
 
@@ -459,9 +475,9 @@ Viewer = $.inherit(
 
       $('svg rect').unbind('mousedown').mousedown(function(e)
       {
-        if(typeof selection != 'undefined')
+        if (typeof selection != 'undefined')
         {
-          if(e.which == 3) // right
+          if (e.which == 3) // right
           {
             var from = selection.data('pos');
             var to = [$(this).data('x'), y1 = $(this).data('y')];
@@ -471,9 +487,9 @@ Viewer = $.inherit(
       });
       $(enemies).unbind('mousedown').mousedown(function(e)
       { // this == enemy, selection == your
-        if(typeof selection != 'undefined')
+        if (typeof selection != 'undefined')
         {
-          if(e.which == 1) // Left
+          if (e.which == 1) // Left
           {
             var from = selection.data('pos');
             var to = $(this).data('pos');
@@ -500,7 +516,7 @@ Viewer = $.inherit(
     },
     endTurn: function()
     {
-      if(!$('#end-turn-btn').button('option', 'disabled'))
+      if (!$('#end-turn-btn').button('option', 'disabled'))
       {
         $('#end-turn-btn').button('option', 'label', 'waiting for players');
         $('#end-turn-btn').button('disable');
@@ -508,7 +524,7 @@ Viewer = $.inherit(
         $('#stop-ai').button('disable');
       }
       $('#info').empty();
-      if(typeof selection != 'undefined')
+      if (typeof selection != 'undefined')
         this.getSelectedCell().attr({fill: players_colors[this.player.player_number - 1]});
     },
 
@@ -599,7 +615,7 @@ function newUnit(unitName)
 
 function detachFromCell(obj)
 {
-  if($(obj).parent().hasClass('cell'))
+  if ($(obj).parent().hasClass('cell'))
   {
     $(obj).parent().setDroppableScope('free');
     $(obj).appendTo($('#control-panel'));
@@ -625,7 +641,13 @@ function fillInfo(obj)
 {
   function addRow(name, value)
   {
-    $('#info').append($('<tr/>').append($('<td/>').text(name)).append($('<td/>').text(value)));
+    $('#info')
+      .append($('<tr/>')
+      .append($('<td/>')
+        .text(name))
+      .append($('<td/>')
+        .text(value))
+      );
   }
   $('#info').empty();
   var pos = obj.data('pos');
@@ -636,7 +658,10 @@ function fillInfo(obj)
   addRow('Pos', '(' + pos[0] + ',' + pos[1] + ')');
   addRow('HP', params['HP'] + '/' + unit_info.HP);
   addRow('MP', (unit_info.MP - params['distance']) + '/' + unit_info.MP);
-  addRow('Attack', (params['attackX'] == -1) ? 'nothing' : ('(' + params['attackX'] + ',' + params['attackY'] + ')'));
+  addRow('Attack',
+    (params['attackX'] == -1) ?
+      'nothing' :
+      ('(' + params['attackX'] + ',' + params['attackY'] + ')'));
   addRow('Range', unit_info.range);
   addRow('Defence', unit_info.defence);
   addRow('Damage', unit_info.damage);
@@ -647,7 +672,7 @@ function fillInfo(obj)
 /* Handler for #end-placing-btn */
 function endPlacing()
 {
-  if(!$(this).button('option', 'disabled'))
+  if (!$(this).button('option', 'disabled'))
   {
     /* probably ask about if the player wanna continue, when there are
      * any empty cells for placing and free units */
@@ -678,7 +703,7 @@ jQuery.fn.extend({
 
       //Remove from current scope and add to new scope
       var i, droppableArrayObject;
-      for(i = 0; i < $.ui.ddmanager.droppables[currentScope].length; i++) {
+      for (i = 0; i < $.ui.ddmanager.droppables[currentScope].length; i++) {
         var ui_element = $.ui.ddmanager.droppables[currentScope][i].element[0];
 
         if (this == ui_element) {

@@ -377,7 +377,7 @@ form .error img {
     margin-bottom: 10px;
 }
 
-/*game*/
+/* Game */
 
 #menu #current-game {
     float: left;
@@ -456,15 +456,15 @@ form .error img {
     display: none;
 }
 
-.unit{
+.unit {
     display: inline-block;
     border: solid 1px #333333;
     margin: 2px;
-	height: 40px;
-	width: 40px;
+    height: 40px;
+    width: 40px;
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
-	-o-background-size: 100% 100%;
+    -o-background-size: 100% 100%;
     -webkit-background-size: 100% 100%;
 }
 
@@ -587,5 +587,5 @@ form .error img {
 }
 
 #save-controls input {
-    float:left;
+    float: left;
 }

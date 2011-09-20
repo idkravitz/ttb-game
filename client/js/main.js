@@ -22,7 +22,7 @@ function showCurrentUser(prefix)
 
 function showSection(name)
 {
-  if(getCurrentSectionName() == name)
+  if (getCurrentSectionName() == name)
   {
     innerShowSection();
     return;
@@ -422,7 +422,7 @@ function updateSelect(command, attr, id, extra_success)
     $.each(json[array], function(i, option) {
       select.append(new Option(option[attr], i));
     });
-    if(extra_success)
+    if (extra_success)
       extra_success(json);
   });
 }

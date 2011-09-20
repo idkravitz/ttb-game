@@ -11,7 +11,7 @@ function chooseMap()
   $('#choose-map-fields').hide();
   $('#create-map-button').show();
   $('#create-map-fields').show();
-  if(select.val() != 'new') {
+  if (select.val() != 'new') {
     sendRequest({ cmd: 'getMap', name: $(':selected', select).text() },
       function (json) {
         var map = json.map;
@@ -57,9 +57,9 @@ MapEditor.prototype.draw = function() {
 
 MapEditor.prototype.getCellType = function(cell)
 {
-  if(cell == '.')
+  if (cell == '.')
     return 'free';
-  if(cell == 'x')
+  if (cell == 'x')
     return 'occupied';
   return 'player ' + cell;
 };
@@ -74,13 +74,15 @@ MapEditor.prototype.drawMap = function(map) {
     var $row = $('<tr>');
     for (var j = 0; j < this.$width.val(); j++) {
       var $cell = $('<td>')
-        .css('background-color', !map ? this.cells.free[0]: this.cells[this.getCellType(map[i][j])][0])
+        .css('background-color',
+          (!map ? this.cells.free[0]:
+                  this.cells[this.getCellType(map[i][j])][0]))
         .click(function() {
           var name = mapEditor.$selected.data('name');
           $(this).css('background-color', mapEditor.cells[name][0]);
           $(this).data('name', name);
         })
-        .addClass('row'+i)
+        .addClass('row' + i)
         .data('name', !map ? 'free': this.getCellType(map[i][j]));
       $row.append($cell);
     }
@@ -95,11 +97,11 @@ MapEditor.prototype.drawColorsMenu = function() {
   this.$colorsMenu.children().remove();
   this.$selected = null;
 
-  var mapEditor = this,
+  var mapEditor = this;
 
   generateName = function(index) {
     var names = {1: 'free', 2: 'occupied'};
-    return index <= 2 ? names[index] : 'player '+(index-2);
+    return index <= 2 ? names[index] : 'player ' + (index-2);
   },
 
   updateIcon = function($cell, isDown) {
@@ -119,7 +121,7 @@ MapEditor.prototype.drawColorsMenu = function() {
   },
 
   players = parseInt(this.$players.val(), 10) + 2,
-  $table = $('<table>').css('height', players * 36 +'px');
+  $table = $('<table>').css('height', players * 36 + 'px');
 
   for (var i = 1; i <= players; i++) {
     var name = generateName(i);
@@ -172,19 +174,22 @@ MapEditor.prototype.exportMap = function() {
     map = [];
   for (var i = 0; i < this.$height.val(); i++) {
     var row = '';
-    $('.row'+i).each(function(index, element) {
+    $('.row' + i).each(function(index, element) {
       row += mapEditor.cells[$(element).data('name')][1];
     });
     map.push(row);
   }
   var name = $('#map-editor input[type="text"]').val();
   var select = $('#select-edit-map');
-  if(select.val() == 'new') {
+  if (select.val() == 'new') {
       uploadMap(name, map);
   }
   else
   {
-    sendRequest({cmd: 'deleteMap', name: name}, function() { uploadMap(name, map) });
+    sendRequest(
+      {cmd: 'deleteMap', name: name},
+      function() { uploadMap(name, map); }
+    );
   }
 };
 
@@ -217,7 +222,6 @@ $(function() {
     lowerBound: 2,
     upperBound: 9
   });
-
 
   mapEditor = new MapEditor(elements);
   $('#create-map-button').click(function() { mapEditor.draw(); });

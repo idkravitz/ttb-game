@@ -10,10 +10,10 @@ from db import db_instance as dbi, User, Player, Game
 __all__ = ["gen3d6", "find_shortest_path", "attack_phase", "movement_phase", "Placement", "Action", "GameProcess"]
 
 def gen3d6():
-    return sum([random.randint(1,6) for i in range(3)])
+    return sum(random.randint(1, 6) for i in range(3))
 
 def manhattan(pos1, pos2):
-    return sum(abs(a-b) for a, b in zip(pos1, pos2))
+    return sum(abs(a - b) for a, b in zip(pos1, pos2))
 
 class RectNode(object):
     __slots__ = ('walkable', 'neighbor_gen', '_move_cost', 'pos',
@@ -58,8 +58,10 @@ class RectNode(object):
     def get_neighbors(self):
         for i in ((1, 0), (-1, 0), (0, 1), (0, -1)):
             pos = self.x - i[0], self.y - i[1]
-            if self.walkable.get(pos, self.default_walkable)\
-                and 0 <= pos[0] < self.mapsize[0] and 0 <= pos[1] < self.mapsize[1]:
+            if (self.walkable.get(pos, self.default_walkable) and
+                0 <= pos[0] < self.mapsize[0] and
+                0 <= pos[1] < self.mapsize[1]
+            ):
                 yield self.neighbor_gen(pos, walkable=self.walkable,
                     default_walkable=self.default_walkable,
                     neighbor_gen=self.neighbor_gen,
@@ -108,10 +110,9 @@ def find_shortest_path(land, start_pos, target_pos):
         if node == target_node:
             return reconstruct_path(node)
         closed.add(node)
-        for neighbor in node.get_neighbors():
-            if neighbor in closed:
-                continue
-
+        neighbors = (neighbor for neighbor in node.get_neighbors()
+            if neighbor not in closed)
+        for neighbor in neighbors:
             tentative_g = node._g + node.move_cost
             if neighbor not in open_d:
                 neighbor._came_from = node
@@ -189,7 +190,7 @@ class GameProcess(object):
 
     def turn_finished(self):
         self.ready_players += 1
-        if(self.turn and self.ready_players == self.game.players_count):
+        if self.turn and self.ready_players == self.game.players_count:
             attack_phase(movement_phase(self), self)
             self._next_turn()
 
@@ -209,14 +210,14 @@ class GameProcess(object):
 
     def placement_finished(self):
         self.ready_players += 1
-        if(not self.turn and self.ready_players == self.game.players_count):
+        if not self.turn and self.ready_players == self.game.players_count:
             self._next_turn()
 
     @classmethod
     def get(cls, game):
         name = game.name if type(game) == Game else game
         if name not in cls.games:
-            raise BadGame("No started game with that name")
+            raise BadGame('No started game with that name')
         return cls.games[name]
 
 def movement_phase(process):
@@ -255,7 +256,8 @@ def attack(our_unit, their_unit, their_trgt):
         strike = our_unit.damage - their_unit.protection + gen3d6()
         if strike > 0:
             HP -= strike
-        HP = 0 if HP < 0 else HP
+        if HP < 0:
+            HP = 0
     return Placement(their_trgt.player, their_trgt.unit, HP)
 
 def attack_phase(sorted_moves, process):

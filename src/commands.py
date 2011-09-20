@@ -223,8 +223,8 @@ def sendMessage(sid, text, gameName):
 def getChatHistory(sid, gameName, **opt):
     dbi().check_sid(sid)
     game = dbi().get_game(gameName)
-    if "since" in opt:
-        messages = dbi().query(Message).filter_by(game_id=game.id).filter(Message.id > int(opt["since"])).all()
+    if 'since' in opt:
+        messages = dbi().query(Message).filter_by(game_id=game.id).filter(Message.id > int(opt['since'])).all()
     else:
         messages = game.messages
     chat = [{
@@ -322,7 +322,7 @@ def uploadMap(sid, name, terrain):
     if not (0 < width < MAX_MAP_WIDTH):
         raise BadMap('Map width must be in range 1..{0}'.format(MAX_MAP_WIDTH))
     terrain = ''.join(terrain)
-    chars = set(char for char in terrain)
+    chars = set(terrain)
     if not chars < set('.x123456789'):
         raise BadMap('Bad character in map description')
     chars -= set('.x')
@@ -407,8 +407,9 @@ def prepareArmy(user, armyName, factionName, armyUnits, new=True):
         raise BadArmy('You have army with such name')
     squads = {}
     for unit in armyUnits:
-        if not(isinstance(unit, dict) and len(unit) == 2 and
-            'name' in unit and 'count'  in unit
+        if not (isinstance(unit, dict) and
+            len(unit) == 2 and
+            'name' in unit and 'count' in unit
         ):
             raise BadArmy(
                 "Each element of armyUnits must have fields 'name' and 'count'")
@@ -437,7 +438,12 @@ def getArmy(sid, armyName):
         army = dbi().query(Army).filter_by(name=armyName, user_id=user.id).one()
     except sqlalchemy.orm.exc.NoResultFound:
         raise BadArmy('No army with that name')
-    return response_ok(units=[dict(name=squad.unit.name, count=squad.count) for squad in army.unitArmy],
+    result = [ {
+            'name': squad.unit.name,
+            'count': squad.count,
+        }
+    for squad in army.unitArmy ]
+    return response_ok(units=result,
         factionName=army.unitArmy[0].unit.faction.name)
 
 @Command(str)
@@ -486,7 +492,7 @@ def chooseArmy(sid, armyName):
         player = dbi().query(Player).filter_by(
             user_id=user.id, state='in_lobby').one()
     except sqlalchemy.orm.exc.NoResultFound:
-        raise NotInGame('Can\'t choose army, because you\'re not in game')
+        raise NotInGame("Can't choose army, because you're not in game")
     army = dbi().get_army(armyName, user.id)
     total_cost = sum(squad.unit.cost * squad.count for squad in army.unitArmy)
     if total_cost > player.game.total_cost:
@@ -511,7 +517,7 @@ def placeUnits(sid, units):
         if not (0 <= u["posX"] < width and 0 <= u["posY"] < height):
             raise BadCommand("Outside the map limits")
         x, y, name = u["posX"], u["posY"], u["name"]
-        if not(name in store and store[name]):
+        if not store.get(name, 0):
             raise BadUnit("No such units in army")
         to_place += [(name, x, y, player.player_number)]
         store[name] -= 1
