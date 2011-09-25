@@ -63,10 +63,13 @@ def compare(testname):
 def launch(test, debug=False, verbose=False, interactive=False):
     random.seed(common.SEED)
     testname = os.path.splitext(os.path.normpath(test))[0]
+    outname = testname + '.out'
+    ansname = testname + '.ans'
+
     requests = load_json(test)
     try:
         oldout = sys.stdout
-        with open(testname + '.out', 'w') as sys.stdout:
+        with open(outname, 'w') as sys.stdout:
             for request in requests:
                 print(parse_request(request))
     finally:
@@ -77,13 +80,15 @@ def launch(test, debug=False, verbose=False, interactive=False):
     if result != 'OK' or verbose or debug:
         print('Test {0} {1}'.format(os.path.normpath(test), result))
     if debug or (interactive and result != 'OK'):
-        print(open(testname + '.out').read())
+        print(open(outname).read())
         if interactive and result != 'OK':
             ans = ""
             while ans not in ('y', 'yes', 'n', 'no', 'yea', 'nay'):
-                ans = input('Would you like to replace answer with this output?(y/n)').lower()
+                ans = input('Replace answer with this output? (y/n) ').lower().strip()
             if ans[0] == 'y':
-                os.rename(testname + '.out', testname + '.ans')
+                if os.path.exists(ansname):
+                    os.remove(ansname)
+                os.rename(outname, ansname)
 
 def main():
     parser = optparse.OptionParser(usage='test.py [options] <test(s)>')
