@@ -326,11 +326,12 @@ def uploadMap(sid, name, terrain):
     if not chars < set('.x123456789'):
         raise BadMap('Bad character in map description')
     chars -= set('.x')
-    if len(chars) < 2:
+    players = len(chars)
+    if players < 2:
         raise BadMap('There must be deploy spots at least for 2 players')
-    if len(chars) != int(max(chars)):
+    if players != int(max(chars)):
         raise BadMap('Player numbers must be consequetive')
-    dbi().add(Map(name, terrain, width))
+    dbi().add(Map(name, terrain, width, players))
     return response_ok()
 
 @Command(str, str)
@@ -342,7 +343,13 @@ def getMap(sid, name):
 @Command(str)
 def getMapList(sid):
     dbi().check_sid(sid)
-    maps = [{"map": name} for name in dbi().query(Map.name).all()]
+    maps = [{
+                'name': map.name,
+                'players': map.players,
+                'width': map.width,
+                'height': int(len(map.terrain) / map.width),
+            }
+            for map in dbi().query(Map).all()]
     return response_ok(maps=maps)
 
 #@commandline_only

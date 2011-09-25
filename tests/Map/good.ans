@@ -27,16 +27,17 @@
 {
     "maps": [
         {
-            "map": [
-                "de_dust"
-            ]
+            "height": 3, 
+            "name": "de_dust", 
+            "players": 2, 
+            "width": 3
         }, 
         {
-            "map": [
-                "de_rust"
-            ]
+            "height": 4, 
+            "name": "de_rust", 
+            "players": 2, 
+            "width": 4
         }
     ], 
     "status": "ok"
 }
-
