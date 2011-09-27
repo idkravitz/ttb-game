@@ -18,24 +18,26 @@ function addGame(data)
   return $.extend(data, { gameName: sessionStorage.gameName });
 }
 
-function convertToSlider(input, vmin, vmax, step)
+function convertToSlider(input, vmin, vmax, step, cur)
 {
   var label = input.prev();
   var prefix = label.text().split(':')[0] + ': ';
   var slider_id = input.attr('id') + '-slider';
+  cur = cur || vmin;
+  step = step || 1;
 
   input.hide();
-  input.val(vmin);
-  label.text(prefix + vmin);
+  input.val(cur);
+  label.text(prefix + cur);
 
   $('#' + slider_id).remove();
   input.after(
     $('<div/>', { id: slider_id }).slider({
       range: 'min',
-      value: vmin,
+      value: cur,
       min: vmin,
       max: vmax,
-      step: step || 1,
+      step: step,
       slide: function (event, ui) {
         input.val(parseInt(ui.value));
         label.text(prefix + ui.value);
