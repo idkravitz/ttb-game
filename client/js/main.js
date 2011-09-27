@@ -413,24 +413,32 @@ function joinGame()
   return false;
 }
 
-function updateSelect(command, attr, id, extra_success)
+function updateSelect($select, command, array, attr, extra_success)
 {
-  sendRequest({ cmd: command }, function (json) {
-    var array = attr + 's';
-    var select = $(id + attr);
-    select.empty();
+  sendRequest({ cmd: command }, function(json) {
+    $select.empty();
     $.each(json[array], function(i, option) {
-      select.append(new Option(option[attr], i));
+      $select.append(new Option(option[attr], i));
     });
     if (extra_success)
       extra_success(json);
   });
 }
 
+function fillWithMaps($select, callback)
+{
+  updateSelect($select, 'getMapList', 'maps', 'name', callback);
+}
+
+function fillWithFactions($select, callback)
+{
+  updateSelect($select, 'getFactionList', 'factions', 'faction', callback);
+}
+
 function initCreateGame()
 {
-  updateSelect('getMapList', 'map', '#creation-');
-  updateSelect('getFactionList', 'faction', '#creation-');
+  fillWithMaps($('#creation-map'));
+  fillWithFactions($('#creation-faction'));
   convertToSlider($('#creation-playerscount'), 2, 9);
   convertToSlider($('#creation-moneylimit'), 100, 1000, 50);
 }
@@ -502,9 +510,8 @@ function initManageArmies()
     }
     $('#army-view a.button').show();
   });
-  updateSelect('getFactionList', 'faction', '#upload-army-', function() {
-    $('#upload-army-faction').change();
-  });
+  var $uploadSelect = $('#upload-army-faction');
+  fillWithFactions($uploadSelect, function() { $uploadSelect.change(); });
 }
 
 function initNavigation()
