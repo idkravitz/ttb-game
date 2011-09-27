@@ -427,39 +427,12 @@ function updateSelect(command, attr, id, extra_success)
   });
 }
 
-function convertToSlider(id, vmin, vmax, step)
-{
-  var input = $('#' + id);
-  var label = input.prev();
-  var prefix = label.text().split(':')[0] + ': ';
-  var slider_id = id + '-slider';
-
-  input.hide();
-  input.val(vmin);
-  label.text(prefix + vmin);
-
-  $('#' + slider_id).remove();
-  input.after(
-    $('<div/>', { id: slider_id }).slider({
-      range: 'min',
-      value: vmin,
-      min: vmin,
-      max: vmax,
-      step: step || 1,
-      slide: function (event, ui) {
-        input.val(parseInt(ui.value));
-        label.text(prefix + ui.value);
-      }
-    })
-  );
-}
-
 function initCreateGame()
 {
   updateSelect('getMapList', 'map', '#creation-');
   updateSelect('getFactionList', 'faction', '#creation-');
-  convertToSlider('creation-playerscount', 2, 9);
-  convertToSlider('creation-moneylimit', 100, 1000, 50);
+  convertToSlider($('#creation-playerscount'), 2, 9);
+  convertToSlider($('#creation-moneylimit'), 100, 1000, 50);
 }
 
 function editArmy(event)
