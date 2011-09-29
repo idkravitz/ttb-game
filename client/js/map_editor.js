@@ -54,9 +54,6 @@ var MapEditor = function(opts) {
   this.$height = opts.heightSelect;
   this.$players = opts.playersSelect;
   this.$colorsMenu = opts.colorsMenu;
-  //this.$saveControls = opts.saveControls;
-
-  var colors =
 
   this.cells = {
     'free'    : ['#6c0',    '.'],
@@ -71,6 +68,7 @@ var MapEditor = function(opts) {
     'player 8': ['#e55bb0', '8'],
     'player 9': ['#7ebff1', '9']
   };
+
   this.$selected = null;
   this.currentMap = {};
 };
@@ -234,8 +232,7 @@ MapEditor.prototype.drawColorsMenu = function() {
   $('.free', $table).click();
 };
 
-function uploadMap(name)
-{
+function uploadMap(name) {
   var mapName = mapEditor.$name.val();
   var map = mapEditor.currentMap.raw;
 
