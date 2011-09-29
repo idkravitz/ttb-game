@@ -335,6 +335,16 @@ def uploadMap(sid, name, terrain):
     return response_ok()
 
 @Command(str, str)
+def isMapExists(sid, name):
+    dbi().check_sid(sid)
+    result = True
+    try:
+        dbi().get_map(name)
+    except BadMap:
+        result = False
+    return response_ok(exists=result)
+
+@Command(str, str)
 def getMap(sid, name):
     dbi().check_sid(sid)
     map_ = dbi().get_map(name)
