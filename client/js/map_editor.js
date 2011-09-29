@@ -230,7 +230,10 @@ MapEditor.prototype.drawColorsMenu = function() {
   this.$selected = null;
   this.$colorsMenu
     .append($table)
-    .append($('<div>').attr('id', 'editor-selected-color'));
+    .append($('<div>')
+      .attr('id', 'editor-selected-color')
+      .attr('title', 'Selected cell type')
+    );
   $('.free', $table).click();
 };
 
