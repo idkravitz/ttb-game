@@ -157,36 +157,79 @@ GameSection = $.inherit(
   }
 );
 
-MapEditSection = $.inherit(SectionWithNavigation,
+MapEditorSection = $.inherit(
+  SectionWithNavigation,
 {
   __constructor: function()
   {
-    this.__base('map-edit');
+    this.__base('map-editor');
   },
   show: function()
   {
     this.__base();
-    updateSelect('getMapList', 'map', '#select-edit-', function()
-    {
-      $('#select-edit-map').prepend($('<option>new</option>'));
-    });
-    $('#create-map-button').hide();
-    $('#create-map-fields').hide();
+    $('#editor-window').hide();
+    $('#editor-select > *').hide();
+    $('#editor-select-new').show();
+    initMapEditor();
   }
 });
 
+MapEditorWindowSection = $.inherit(
+  Section,
+{
+  __constructor: function()
+  {
+    this.__base('editor-window');
+  },
+  show: function()
+  {
+    this.__base();
+    $('#map-editor').hide();
+    $('#editor-window').show();
+  }
+});
 
 function describeSections()
 {
   sections = {
     'registration': new Section('registration'),
-    'map-edit': new MapEditSection,
     'active-games': new ActiveGamesSection,
     'create-game': new CreateGameSection,
     'manage-armies': new ManageArmiesSection,
+    'map-editor': new MapEditorSection,
+    'editor-window': new MapEditorWindowSection,
     'lobby': new LobbySection,
     'game': new GameSection
   }
+}
+
+function initMapEditor()
+{
+  var $table = $('#editor-select table');
+  $('tr', $table).not($('tr', $table).first()).remove();
+
+  sendRequest({ cmd: 'getMapList' }, function(json) {
+    if (json.maps.length != 0) {
+      $.each(json.maps, function(i, map) {
+        var $row = $('<tr/>');
+        var fields = [
+          $('<a/>', { href: '#', text: map.name }),
+          map.width + '×' + map.height,
+          map.players
+        ];
+
+        $.each(fields, function(i, field) {
+          $row.append($('<td/>').append(field));
+        });
+        $table.append($row);
+      });
+      $('a', $table).click(function() {
+        var players = parseInt($(this).parent().next().next().text());
+        chooseMap($(this).text(), players); return false; }
+      );
+    }
+    $table.show();
+  });
 }
 
 function initGame()
@@ -781,7 +824,30 @@ function initBinds()
   $('#end-turn-btn').click(endTurn); // definition of endTurn appears in game.js
   $('#start-ai').click(startAI);
   $('#stop-ai').click(stopAI);
-  $('#choose-map-button').click(chooseMap);
+
+  // map editor
+  $('#editor-select-new').click(function() {
+    chooseMap(); return false;
+  });
+  $('#editor-cancel').click(function() {
+    showSection('map-editor'); return false;
+  });
+  $('#editor-refresh').click(function() {
+    mapEditor.draw(); return false;
+  });
+  $('#editor-clear').click(function() {
+    mapEditor.currentMap = {};
+    mapEditor.draw();
+    return false;
+  });
+  $('#editor-save').click(function() {
+    mapEditor.exportMap();
+    return false;
+  });
+  $('#editor-delete').click(function() {
+    mapEditor.deleteMap();
+    return false;
+  })
 }
 
 $(document).ready(function()

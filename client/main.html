@@ -50,7 +50,7 @@
             <p id="nav-create-game">Create game</p>
             <p id="nav-active-games">Active games</p>
             <p id="nav-manage-armies">Manage armies</p>
-            <p id="nav-map-edit">Map editor</p>
+            <p id="nav-map-editor">Map editor</p>
         </nav>
         <div id="nav-vertical-line"></div>
 
@@ -105,50 +105,6 @@
                 </form>
                 <table id="unit-info"></table>
             </section>
-        </section>
-
-        <section id="map-edit" class="main-section">
-            <div id="map-editor">
-                <form>
-                    <table>
-                        <tr id="choose-map-fields">
-                            <td>
-                                <label>Maps</label>
-                                <select id="select-edit-map"></select>
-                            </td>
-                            <td>
-                                <input id="choose-map-button" type="button" value="Choose"></input>
-                            </td>
-                        </tr>
-                        <tr id="create-map-fields" style="display:none">
-                            <td><label>Name:</label></td>
-                            <td><input type="text"></input></td>
-                            <td>
-                                <label>Width:</label>
-                                <select id="width-select"></select>
-                            </td>
-                            <td>
-                                <label>Height:</label>
-                                <select id="height-select"></select>
-                            </td>
-                            <td>
-                                <label>Players:</label>
-                                <select id="players-select"></select>
-                            </td>
-                        </tr>
-                    </table>
-                    <input style="display:none" id="create-map-button" type="button" value="Create"></input>
-                </form>
-
-                <div id="map"></div>
-
-                <div id="colors-menu"></div>
-
-                <div id="save-controls">
-                    <input id="save-map-button" type="button" value="Save"></input>
-                </div>
-
-            </div>
         </section>
 
         <section id="active-games" class="main-section">
@@ -215,6 +171,49 @@
                 </div>
                 <table id="info"></table>
             </div>
+        </section>
+
+        <section id="map-editor" class="main-section">
+            <section id="editor-select">
+                <table class="main-table">
+                    <tr>
+                        <th>Name</th>
+                        <th>Size</th>
+                        <th>Players</th>
+                    </tr>
+                </table>
+                <a href="#" class="button" id="editor-select-new">Create map</a>
+            </section>
+        </section>
+        <section id="editor-window" class="main-section">
+            <div id="editor-panel">
+                <form>
+                    <label for="editor-name">Name</label>
+                    <input type="text" id="editor-name"></input>
+
+                    <label for="editor-width-select">Width</label>
+                    <input type="text" id="editor-width-select"></input>
+
+                    <label for="editor-height-select">Height</label>
+                    <input type="text" id="editor-height-select"></input>
+
+                    <label for="editor-players-select">Players</label>
+                    <input type="text" id="editor-players-select"></input>
+                </form>
+                <div class="editor-panel-inner">
+                    <a href="#" class="button" id="editor-refresh">Refresh</a>
+                    <a href="#" class="button" id="editor-clear">Clear</a>
+                </div>
+                <div class="editor-panel-inner">
+                    <div id="editor-colors"></div>
+                </div>
+                <div class="editor-panel-inner">
+                    <a href="#" class="button" id="editor-save">Save</a>
+                    <a href="#" class="button" id="editor-delete">Delete</a>
+                    <a href="#" class="button" id="editor-cancel">Cancel</a>
+                </div>
+            </div>
+            <div id="editor-map"></div>
         </section>
 
     </section>

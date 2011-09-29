@@ -346,11 +346,11 @@ form .error img {
     padding: 1px;
 }
 
-#map-thumbnail .free {
+.free {
     background-color: #6c0;
 }
 
-#map-thumbnail .occupied {
+.occupied {
     background-color: #666;
 }
 
@@ -508,85 +508,68 @@ form .error img {
     margin: 5px;
 }
 
-/* map editor */
+/* Map Editor */
 
-#map-editor {
-    font-family: Sans-Serif;
-    width: 555px;
-}
-
-#map-editor form {
-    padding: 10px;
-    width: 180px;
-}
-
-#map-editor label{
-    text-align: right;
-}
-
-#map-editor select, input[type="text"] {
-    margin: 2px 0 20px 10px;
-    font-size: 10px;
-}
-
-#map-editor input[type="button"] {
-    float: right;
-    margin-right: 10px;
-    width: 80px;
-}
-
-#map-editor label, #map-editor select, #map-editor input[type="text"] {
-    float: left;
-    width: 80px;
-}
-
-#map {
-    float: left;
-    margin-top: 30px;
-    margin-left: 30px;
-}
-
-#map-table {
-    float: left;
-    border: 1px black solid;
-    width: 400px;
-    height: 400px;
-    border-collapse: collapse;
-}
-
-#map-table td {
-    border: 1px black solid;
-}
-
-#colors-menu {
-    margin-top: 30px;
-    float: right;
-    margin-left: 10px;
-}
-
-#colors-menu table {
-    float: left;
-    width: 109px;
-    border-collapse: collapse;
-}
-
-#colors-menu td {
-    border: 1px black solid;
-}
-
-#colors-menu .name-cell {
-    width: 70px;
+#editor-select {
     text-align: center;
 }
 
-#save-controls {
-    display: none;
-    float: left;
+#editor-window {
     width: 100%;
-    margin-top: 30px;
-    margin-left: 30px;
 }
 
-#save-controls input {
+#editor-panel {
+    margin: 10px 40px 10px 0px;
+    width: 400px;
     float: left;
+}
+
+#editor-panel .button {
+    width: 85px;
+}
+
+.editor-panel-inner {
+    width: 100%;
+    clear: both;
+    float: left;
+    text-align: right;
+}
+
+#editor-map {
+    width: 500px;
+    height: 500px;
+    margin: 10px;
+    padding-bottom: 50px;
+    float: left;
+}
+
+#editor-map table {
+    margin: 0 auto;
+    border: 1px black solid;
+    border-collapse: collapse;
+}
+
+#editor-map table td {
+    border: 1px black solid;
+}
+
+#editor-colors {
+    margin: 20px auto;
+}
+
+#editor-colors table {
+    width: 100%;
+    height: 100%;
+    border-collapse: collapse;
+}
+
+#editor-colors td {
+    border: 1px black solid;
+}
+
+#editor-selected-color {
+    width: 30px;
+    height: 30px;
+    margin: 10px auto;
+    border: 1px black solid;
 }
