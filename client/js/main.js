@@ -69,7 +69,7 @@ SectionWithNavigation = $.inherit(
       $('nav > p').removeClass('nav-current');
       $('#nav-' + this.name).addClass('nav-current');
 
-      showCurrentUser('Welcome, ');
+      showCurrentUser('<i>Welcome</i>, ');
 
       $('#menu, #menu li[id!="leave-game"], nav, #nav-vertical-line').show();
     }
