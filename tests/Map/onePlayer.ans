@@ -3,6 +3,6 @@
     "status": "ok"
 }
 {
-    "message": "There must be deploy spots at least for 2 players", 
+    "message": "There should be deploy spots at least for two players", 
     "status": "badMap"
 }
