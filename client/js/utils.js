@@ -45,3 +45,7 @@ function convertToSlider(input, vmin, vmax, step, cur)
     })
   );
 }
+
+function px(number) {
+  return number + 'px';
+}
