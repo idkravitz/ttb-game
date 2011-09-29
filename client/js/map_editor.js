@@ -227,14 +227,17 @@ MapEditor.prototype.drawColorsMenu = function() {
   $table.append($row);
 
   this.$colorsMenu.children().remove();
-  this.$selected = null;
   this.$colorsMenu
     .append($table)
     .append($('<div>')
       .attr('id', 'editor-selected-color')
       .attr('title', 'Selected cell type')
     );
-  $('.free', $table).click();
+  selectedClass = '.' + (this.$selected != null ?
+                         this.$selected.attr('class') :
+                         'free'
+  );
+  $(selectedClass, $table).click();
 };
 
 function uploadMap(name) {
