@@ -259,7 +259,7 @@ form .error img {
 #chat-window {
     width: 100%;
     height: 390px;
-    border: 1px solid grey;
+    border: 1px solid gray;
     overflow: auto;
 }
 
@@ -334,7 +334,7 @@ form .error img {
 
 #map-thumbnail {
     margin: 0 auto;
-    border: 1px solid grey;
+    border: 1px solid gray;
     width: 100%;
     height: 342px;
 }
@@ -390,7 +390,7 @@ form .error img {
     overflow: auto;
     width: 600px;
     height: 550px;
-    border: 1px solid grey;
+    border: 1px solid gray;
     margin: 0 0 60px 20px;
     position: absolute;
 }
@@ -423,7 +423,7 @@ form .error img {
     float: right;
     width: 280px;
     height: 550px;
-    border: 1px solid grey;
+    border: 1px solid gray;
 }
 
 #help {
