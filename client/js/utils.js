@@ -18,7 +18,7 @@ function addGame(data)
   return $.extend(data, { gameName: sessionStorage.gameName });
 }
 
-function convertToSlider(input, vmin, vmax, step, cur)
+function convertToSlider(input, vmin, vmax, step, cur, callback)
 {
   var label = input.prev();
   var prefix = label.text().split(':')[0] + ': ';
@@ -41,6 +41,10 @@ function convertToSlider(input, vmin, vmax, step, cur)
       slide: function (event, ui) {
         input.val(parseInt(ui.value));
         label.text(prefix + ui.value);
+        if (callback)
+        {
+          callback();
+        }
       }
     })
   );
