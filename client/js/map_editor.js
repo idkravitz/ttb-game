@@ -209,6 +209,7 @@ MapEditor.prototype.drawColorsMenu = function() {
   var i = 0;
   $.each(mapEditor.cells, function(name, element) {
     i++;
+    genName = generateName(i);
     if (i <= cellCount) {
       var $cell = $('<td>')
         .addClass(name.replace(' ', '-'))
@@ -218,7 +219,8 @@ MapEditor.prototype.drawColorsMenu = function() {
             'background-color',
             mapEditor.$selected.css('background-color'));
         })
-        .attr('name', generateName(i));
+        .attr('name', genName)
+        .attr('title', genName.charAt(0).toUpperCase() + genName.slice(1));
       $row.append($cell);
     }
   });
