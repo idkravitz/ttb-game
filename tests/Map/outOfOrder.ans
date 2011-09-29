@@ -3,6 +3,6 @@
     "status": "ok"
 }
 {
-    "message": "Player numbers must be consequetive", 
+    "message": "Player numbers must be consecutive", 
     "status": "badMap"
 }

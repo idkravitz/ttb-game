@@ -330,7 +330,7 @@ def uploadMap(sid, name, terrain):
     if players < 2:
         raise BadMap('There should be deploy spots at least for two players')
     if players != int(max(chars)):
-        raise BadMap('Player numbers must be consequetive')
+        raise BadMap('Player numbers must be consecutive')
     dbi().add(Map(name, terrain, width, players))
     return response_ok()
 
