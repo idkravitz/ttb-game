@@ -223,6 +223,7 @@ form .error img {
     border: 1px solid;
     border-collapse: collapse;
     margin: 5px;
+    font-size: 130%;
 }
 
 .main-table td,
